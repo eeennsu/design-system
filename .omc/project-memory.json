@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1788164287064,
+  "lastScanned": 1788569504553,
   "projectRoot": "/Users/wonderround/Documents/Git/porfolio/design-system",
   "techStack": {
     "languages": [],
@@ -25,7 +25,10 @@
     "isMonorepo": false,
     "workspaces": [],
     "mainDirectories": [],
-    "gitBranches": null
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
   },
   "customNotes": [],
   "directoryMap": {},
