@@ -4,7 +4,7 @@
 - 개정 이력: **v2 (2026-09-05)** — [plan-verification.md](plan-verification.md) 검증 결과 반영. B 2건(F-2 tokens component export 누락, F-4 twMerge `override`), P 21건, N 13건. 사용자 결정 4건(F-1 children `string | string[]`, F-7 컨트롤 투명 테두리, F-9 Expo SDK 57 우선, F-18 ButtonGroup `size` 없음 유지). 각 변경 지점에 `(v2 F-n)` 표기
 - 기준 문서: [design-system-spec.md](design-system-spec.md) R23 개정. 결정 근거는 [decisions-r21.md](decisions-r21.md) · [decisions-r22.md](decisions-r22.md) · [decisions-r23.md](decisions-r23.md)이며 이 계획은 닫힌 결정을 다시 열지 않는다
 - 이 문서의 지위: 스펙이 "계획 단계"로 넘긴 항목(토큰 인벤토리·값, 컴포넌트별 축 매트릭스, 오버레이 세부, Stack/Box enum, focus ring 토큰, `IconName` 소스, exports·peer·lockstep 버전, 테스트 러너, 검증 앱 위치, R23 토큰 인벤토리 요구 2건)을 결정하고, 구현 태스크와 AC 매핑을 고정한다. 스펙과 충돌하는 내용이 발견되면 스펙을 고치지 않고 [§9 스펙 수정 필요](#9-스펙-수정-필요)에 모은다
-- `@<scope>`는 npm 스코프 변수다. 이 문서와 코드 주석에서는 끝까지 변수로 두고, **확정 시점은 T-0(레포 부트스트랩) 착수 직전**이다. T-0에서 `package.json`의 `name`에 실제 문자열이 필요하기 때문이다. T-0 전에 확정되지 않으면 임시 스코프로 진행하고 T-P1(publish 전 게이트)에서 치환한다. 치환은 `@<scope>` 문자열 전역 치환 1회이며 코드 구조에 영향이 없다
+- npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05 사용자 결정, §8 D-21). 이 문서·코드·검증 앱은 전부 이 문자열을 그대로 쓴다. 자리표시자는 남아 있지 않다
 
 ## 목차
 
@@ -23,7 +23,7 @@
 ## 1. 전체 순서와 의존성
 
 ```
-Phase 0  T-0   레포 부트스트랩 (pnpm workspace, tsconfig, vitest, `@<scope>` 확정)
+Phase 0  T-0   레포 부트스트랩 (pnpm workspace, tsconfig, vitest, 패키지 스캐폴드)
            │
 Phase 1  T-T1 → T-T2 → T-T3 → T-T4 → T-T5        tokens        (AC-1 ~ AC-6c)
            │
@@ -37,7 +37,7 @@ Phase 5  T-N1 → T-N2 → T-N3 → T-N4                                native  
            │
 Phase 6  T-R1                                                    RN 검증   (AC-3 RN, AC-11 RN, AC-19 RN, AC-23, AC-25, AC-26 RN)
            │
-Phase 7  T-P1                                                    publish 게이트 (AC-18 최종, `@<scope>` 치환 확인)
+Phase 7  T-P1                                                    publish 게이트 (AC-18 최종, lockstep 3패키지 동시 publish)
 ```
 
 의존성 규칙:
@@ -52,7 +52,7 @@ Phase 7  T-P1                                                    publish 게이�
 
 ## 2. C-19 착수 게이트
 
-`@<scope>/native` 구현(Phase 5) 착수 전에 아래 항목을 전부 확인한다. 결과는 `docs/gate-c19.md`에 항목별 통과/실패·확인 방법·고정한 버전을 기록한다(T-G2 산출물).
+`@eeennsu/native` 구현(Phase 5) 착수 전에 아래 항목을 전부 확인한다. 결과는 `docs/gate-c19.md`에 항목별 통과/실패·확인 방법·고정한 버전을 기록한다(T-G2 산출물).
 
 ### 2.1 게이트 실행 환경 (T-G1)
 
@@ -69,9 +69,9 @@ Phase 7  T-P1                                                    publish 게이�
 |---|---|---|---|---|---|
 | (1) | `@theme inline` | 토큰 파일의 `@theme inline { --color-brand: var(--bg-brand) }`가 있는 상태에서 `<View className="bg-brand">` 렌더. 배경이 `:root`의 `--bg-brand` 값인지 확인 | 클래스 생성 + 값이 `:root` 변수 해석값 | C-6 산출물 1본 문구, C-5b RN 항목, AC-3 | native용 토큰 파일을 별도 생성(`@theme` 비-inline + 값 직접 기입). AC-5 "동시 전파"는 빌드 스냅샷으로 유지 |
 | (2) | `.dark` 루트 셀렉터 | 토큰 파일의 `.dark { --bg-brand: … }` 블록이 있는 상태에서 RN `Appearance.setColorScheme("dark")`로 다크 전환 후 `bg-brand` 값 확인(v2 F-22: NativeWind v5는 자체 `colorScheme.set` API가 없고 `Appearance`를 쓰라고 안내한다. 자체 `useColorScheme`은 deprecated) | 다크 값으로 바뀜(또는 무시되되 `@media` 블록이 대신 동작) | C-20 RN 항목, AC-19 (c) | 무시되면 RN 다크는 (4)의 `@media` 블록만으로 동작하는지 확인하고 C-20 RN 문장을 "`.dark`는 무시, `@media`만 사용"으로 수정 |
-| (3) | `@source` | `packages/native/themes/base.css`에 `@source "../dist"`가 있고 dist에 `bg-brand`를 쓰는 파일(T-G1 스텁, v2 F-14)이 있는 상태에서, 소비자 `global.css`에 래퍼 import 한 줄만 두고 클래스가 생성되는지 확인. 소비자 앱 소스에는 `bg-brand`를 쓰지 않는다(래퍼 스캔만으로 생성돼야 함) | 소비자 코드에 클래스 없이도 스타일 적용 | C-3 native 항목, AC-23 | 미지원이면 대안 2개 중 택일 — (a) 소비자 `global.css`에 `@source "../node_modules/@<scope>/native/dist"` 한 줄 추가를 RN 규칙으로 문서화(C-3 "import 한 줄" RN 예외), (b) RN 컴포넌트 클래스를 빌드 시 CSS로 미리 컴파일해 래퍼에 동봉. (a) 권장 |
+| (3) | `@source` | `packages/native/themes/base.css`에 `@source "../dist"`가 있고 dist에 `bg-brand`를 쓰는 파일(T-G1 스텁, v2 F-14)이 있는 상태에서, 소비자 `global.css`에 래퍼 import 한 줄만 두고 클래스가 생성되는지 확인. 소비자 앱 소스에는 `bg-brand`를 쓰지 않는다(래퍼 스캔만으로 생성돼야 함) | 소비자 코드에 클래스 없이도 스타일 적용 | C-3 native 항목, AC-23 | 미지원이면 대안 2개 중 택일 — (a) 소비자 `global.css`에 `@source "../node_modules/@eeennsu/native/dist"` 한 줄 추가를 RN 규칙으로 문서화(C-3 "import 한 줄" RN 예외), (b) RN 컴포넌트 클래스를 빌드 시 CSS로 미리 컴파일해 래퍼에 동봉. (a) 권장 |
 | (4) | `:root:not(.light)` | `@media (prefers-color-scheme: dark) { :root:not(.light) { --bg-brand: … } }` 상태에서 `Appearance` 다크로 값 확인. `.light` 클래스가 RN에 개념이 없으므로 `:not(.light)`이 항상 참으로 평가되는지도 확인 | OS 다크에서 다크 값 | C-20 RN 항목, C-6 산출물 | 미지원이면 native 토큰 파일에서 `:not(.light)`을 뺀 `:root` 셀렉터로 낸다(native 전용 산출물 분기). 웹 파일은 무변경 |
-| (5) | 복합 폰트 변수 | `@theme { --text-xl: 20px; --text-xl--line-height: 28px; --text-xl--font-weight: 600 }` 상태에서 `<Text className="text-xl">`의 fontSize·lineHeight·fontWeight 확인 | 세 값 모두 적용 | 없음(스펙 C-19 (5)에 대체 경로가 이미 있음) | RN Text 어댑터가 `@<scope>/tokens`의 `text` JS 객체에서 세 값을 읽어 `style`로 넣는다(T-N2 분기). 이 경우 소비자 `className="text-lg"`는 RN에서 fontSize만 적용될 수 있으므로 `docs/gate-c19.md`에 알려진 동작 후보로 기록 |
+| (5) | 복합 폰트 변수 | `@theme { --text-xl: 20px; --text-xl--line-height: 28px; --text-xl--font-weight: 600 }` 상태에서 `<Text className="text-xl">`의 fontSize·lineHeight·fontWeight 확인 | 세 값 모두 적용 | 없음(스펙 C-19 (5)에 대체 경로가 이미 있음) | RN Text 어댑터가 `@eeennsu/tokens`의 `text` JS 객체에서 세 값을 읽어 `style`로 넣는다(T-N2 분기). 이 경우 소비자 `className="text-lg"`는 RN에서 fontSize만 적용될 수 있으므로 `docs/gate-c19.md`에 알려진 동작 후보로 기록 |
 | (6) | 소비자 `:root` 재선언 last-wins | 소비자 `global.css`에 래퍼 import 다음 줄에 `:root { --bg-brand: X }` + `.dark` + `@media` 3블록을 쓰고, 라이트/다크 각각에서 `bg-brand` 값이 X/Y인지 확인 | 3블록 모두 last-wins | C-5b RN 항목, AC-26 RN절 | RN 로컬 오버라이드 채널을 `VariableContextProvider` 루트 래핑으로 재설계. 웹 채널 무영향 |
 | (7) | Expo SDK · RN 버전 | `nativewind@preview`의 `package.json` peer와 문서 요구 사양을 읽고, `npx create-expo-app@latest`(SDK 57)로 만든 프로젝트에서 (1)~(6)이 도는지 확인. 안 돌면 `--template blank@sdk-54`로 재시도(§2.1, v2 F-9) | 빈 프로젝트가 생성되고 `npx expo start`가 뜬다(수동 확인) + (1)~(6)이 그 SDK에서 판정 가능 | C-19 손절 대체안 검토 → C-3, AC-3, AC-25 | 요구 사양이 현행 Expo SDK와 맞지 않으면 손절 기준과 무관하게 대체안(RN만 Tailwind v3 + NativeWind v4) 검토. 토큰 빌드를 `@theme` CSS + `tailwind.config.js` 두 갈래로 |
 | (8) | native 래퍼 구성 | NativeWind v5 문서의 `global.css` 예시는 `@import "tailwindcss/theme.css" layer(theme)` · `preflight.css layer(base)` · `utilities.css` + `@import "nativewind/theme"` 형태다. 래퍼가 C-3대로 `@import "tailwindcss"`를 먼저 포함해도 되는지, `@import "nativewind/theme"`가 필수인지, 소비자 `global.css`에 이미 있는 tailwindcss import와 중복 시 문제가 없는지 확인 | 래퍼 import 한 줄로 RN 컴포넌트 클래스·다크·`:root` 변수가 모두 동작 | C-3 래퍼 규칙(native 항목) | 중복이 문제면 래퍼에서 `@import "tailwindcss"`를 빼고 "소비자 `global.css`에서 tailwindcss(및 `nativewind/theme`) 다음 줄에 래퍼 import"를 규칙으로 문서화(스펙 C-3이 이미 이 대체를 허용) |
@@ -179,7 +179,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 
 ### 3.8 component 계층 (소스에는 있으나 CSS 변수로 내지 않음)
 
-component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 스텝(§3.5)뿐이다. 나머지는 컴포넌트 구현이 **정적 클래스 문자열**로 옮겨 쓰고(C-4 (2)), 단위 테스트가 JS 객체와 클래스 문자열의 일치를 검사한다(T-W8). 그 JS 객체는 `@<scope>/tokens`가 `component`로 export한다(§3.10, v2 F-2). 값은 전부 §3.4·3.5의 열거 키로만 구성한다 — 열거에 없는 40px 같은 높이는 고정 `h-*`가 아니라 `py-* + text-*` 조합으로 만든다.
+component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 스텝(§3.5)뿐이다. 나머지는 컴포넌트 구현이 **정적 클래스 문자열**로 옮겨 쓰고(C-4 (2)), 단위 테스트가 JS 객체와 클래스 문자열의 일치를 검사한다(T-W8). 그 JS 객체는 `@eeennsu/tokens`가 `component`로 export한다(§3.10, v2 F-2). 값은 전부 §3.4·3.5의 열거 키로만 구성한다 — 열거에 없는 40px 같은 높이는 고정 `h-*`가 아니라 `py-* + text-*` 조합으로 만든다.
 
 **테두리와 높이(v2 F-7, 사용자 확정)**: Input은 `border border-border`(1px)를 갖고 Button·Badge는 `border border-transparent`를 갖는다. 컨트롤 셋이 같은 `py + text` 조합에서 같은 높이가 되게 하기 위해서다(테두리 없이 두면 Input이 2px 높다). 결과 높이는 `2 × py + line-height + 2` = **sm 30 / md 42 / lg 54**. `border`·`border-transparent`는 정적 유틸리티라 리셋 대상이 아니다.
 
@@ -218,12 +218,12 @@ component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 �
 ### 3.10 JS 객체 (RN 런타임)
 
 ```ts
-// @<scope>/tokens                       브랜드 무관
+// @eeennsu/tokens                       브랜드 무관
 export const spacing, radius, shadow, text, fontFamily, twMergeConfig, semanticVariables
 export const component   // { button, input, textarea, badge, icon, card, dialog, drawer, tooltip } — §3.8 값. T-W8 (6)·T-N2가 읽는다 (v2 F-2)
 export type { Contracts, Platform, Variant, Size, TypographyStep, ControlSize, BadgeSize, Tone, InputKind, FocusHandle, ElementChildren, IconName, WebKey, NativeKey }
 export { webComponents, nativeComponents }   // contracts.ts re-export (v2 F-2)
-// @<scope>/tokens/brands/base, /brands/bakery   브랜드별 해석값
+// @eeennsu/tokens/brands/base, /brands/bakery   브랜드별 해석값
 export const colors = { light: { bg: {…}, fg: {…}, border: {…} }, dark: {…} }
 ```
 
@@ -251,7 +251,7 @@ export const colors = { light: { bg: {…}, fg: {…}, border: {…} }, dark: {�
 
 ## 4. 컴포넌트 API
 
-### 4.1 공통 타입 (`@<scope>/tokens/src/contracts.ts`)
+### 4.1 공통 타입 (`@eeennsu/tokens/src/contracts.ts`)
 
 ```ts
 export type Platform = "web" | "native";
@@ -344,7 +344,7 @@ Base UI 패키지는 `@base-ui/react`(구 `@base-ui-components/react`에서 2025
 
 ### 4.5 `IconName`
 
-- **소스: `@<scope>/tokens`에 큐레이션한 문자열 리터럴 유니온.** lucide 전체 이름을 타입으로 파생하지 않는다 — 계약이 tokens에 있어 lucide 패키지에 의존할 수 없고, 1,500개 유니온은 타입 검사 비용만 늘리며, 웹·RN lucide 패키지 버전이 어긋나면 이름이 갈린다
+- **소스: `@eeennsu/tokens`에 큐레이션한 문자열 리터럴 유니온.** lucide 전체 이름을 타입으로 파생하지 않는다 — 계약이 tokens에 있어 lucide 패키지에 의존할 수 없고, 1,500개 유니온은 타입 검사 비용만 늘리며, 웹·RN lucide 패키지 버전이 어긋나면 이름이 갈린다
 - v1 목록 24개: `check` `x` `plus` `minus` `trash` `pencil` `search` `chevron-down` `chevron-up` `chevron-left` `chevron-right` `arrow-left` `arrow-right` `menu` `settings` `user` `mail` `lock` `eye` `eye-off` `info` `alert-circle` `loader` `external-link`
 - 웹 `packages/web/src/icon.tsx`: `const icons: Record<IconName, LucideIcon> = { check: Check, trash: Trash2, "alert-circle": CircleAlert, … }` — `Record<IconName, …>`이라 목록에 있는데 매핑이 빠지면 컴파일 에러. RN도 `lucide-react-native`로 동일 맵. 이름 추가는 tokens 목록 + 양쪽 맵 3곳이며 한쪽만 고치면 타입 에러가 잡는다. 맵에는 lucide **정식 export 이름**만 쓴다(v2 F-6: lucide 1.41.0에서 `AlertCircle`은 `CircleAlert`의 별칭이며 별칭은 major에서 사라질 수 있다). 24개 전부 `lucide-react`·`lucide-react-native` 1.41.0 양쪽에 존재함을 검증에서 확인
 - 크기는 `icon.size`(§3.8)를 lucide `size` prop으로 전달(v2 F-8), 색은 `currentColor`(글자색 상속. C-7c "색은 토큰으로"의 간접 형태, §9 S-17). `size`·`color` prop 없음
@@ -412,17 +412,17 @@ design-system/
 ├─ tsconfig.base.json
 ├─ vitest.config.ts           test.projects: ["packages/*"] — `vitest.workspace`는 3.2 deprecated·4.0 제거, 현재 5.0 (v2 F-5)
 ├─ packages/
-│  ├─ tokens/                 @<scope>/tokens
+│  ├─ tokens/                 @eeennsu/tokens
 │  │  ├─ src/tokens/{primitive,semantic,component}/*.json   DTCG 소스
 │  │  ├─ src/contracts.ts     Contracts · 키 목록 · IconName
 │  │  ├─ scripts/build.ts     CSS · JS · twMergeConfig · 래퍼 4개 생성
 │  │  ├─ themes/{base,bakery}.css     생성. 내부 산출물
 │  │  └─ dist/                tsc + 생성 JS
-│  ├─ web/                    @<scope>/web
+│  ├─ web/                    @eeennsu/web
 │  │  ├─ src/{button,input,…}.tsx · src/cn.ts · src/icon.tsx · src/index.ts
 │  │  ├─ themes/{base,bakery}.css     tokens 빌드가 생성
 │  │  └─ dist/                tsc 출력(파일별, 번들 없음)
-│  └─ native/                 @<scope>/native (Phase 5)
+│  └─ native/                 @eeennsu/native (Phase 5)
 │     ├─ src/…  themes/…  dist/
 └─ apps/                      검증 앱. private. publish 대상 아님
    ├─ verify-next/            AC-16 · AC-19 (b) · AC-24 · AC-26 웹
@@ -432,7 +432,7 @@ design-system/
 
 ### 5.2 exports · peer dependencies
 
-**`@<scope>/tokens`**
+**`@eeennsu/tokens`**
 
 ```jsonc
 {
@@ -448,7 +448,7 @@ design-system/
 }
 ```
 
-**`@<scope>/web`**
+**`@eeennsu/web`**
 
 ```jsonc
 {
@@ -457,12 +457,12 @@ design-system/
     "./themes/*.css": "./themes/*.css"
   },
   "sideEffects": ["*.css"],
-  "dependencies":     { "@<scope>/tokens": "workspace:*", "@base-ui/react": "<T-W1 고정>", "lucide-react": "<T-W1 고정>", "tailwind-merge": "^3" },
+  "dependencies":     { "@eeennsu/tokens": "workspace:*", "@base-ui/react": "<T-W1 고정>", "lucide-react": "<T-W1 고정>", "tailwind-merge": "^3" },
   "peerDependencies": { "react": ">=19", "react-dom": ">=19", "tailwindcss": ">=4.1" }
 }
 ```
 
-**`@<scope>/native`**
+**`@eeennsu/native`**
 
 ```jsonc
 {
@@ -471,12 +471,12 @@ design-system/
     "./themes/*.css": "./themes/*.css"
   },
   "sideEffects": ["*.css"],
-  "dependencies":     { "@<scope>/tokens": "workspace:*", "lucide-react-native": "<T-N1 고정. lucide-react와 같은 버전>", "tailwind-merge": "^3" },
+  "dependencies":     { "@eeennsu/tokens": "workspace:*", "lucide-react-native": "<T-N1 고정. lucide-react와 같은 버전>", "tailwind-merge": "^3" },
   "peerDependencies": { "react": ">=19", "react-native": ">=0.81", "react-native-svg": "*", "nativewind": "<게이트가 고정한 정확한 preview 버전>", "react-native-css": "<게이트 고정>", "tailwindcss": ">=4.1" }
 }
 ```
 
-- `@<scope>/tokens`는 web·native의 **일반 의존성**이다. 소비자가 tokens를 직접 설치하지 않아도 래퍼 CSS의 `@import "@<scope>/tokens/themes/base.css"`가 web 패키지의 `node_modules`에서 해석된다. RN 소비자가 JS 객체를 쓰려고 tokens를 직접 설치하면 버전이 두 벌이 될 수 있으므로 lockstep(§5.3)으로 항상 같은 버전만 존재하게 한다
+- `@eeennsu/tokens`는 web·native의 **일반 의존성**이다. 소비자가 tokens를 직접 설치하지 않아도 래퍼 CSS의 `@import "@eeennsu/tokens/themes/base.css"`가 web 패키지의 `node_modules`에서 해석된다. RN 소비자가 JS 객체를 쓰려고 tokens를 직접 설치하면 버전이 두 벌이 될 수 있으므로 lockstep(§5.3)으로 항상 같은 버전만 존재하게 한다
 - `tailwindcss`는 web·native 양쪽 peer다. 래퍼의 `@import "tailwindcss"`가 이 peer로 해석돼야 한다(T-W0 확인)
 - `nativewind`는 peer이되 **정확한 버전**을 적는다(C-19 고정 정책). peer에 범위가 아닌 정확한 버전을 쓰는 것이 이례적이지만 스펙이 요구하는 바이며, 승격 후 한 번만 올린다
 - `react-native-svg`는 `lucide-react-native`의 peer라 소비자에게 요구된다. Expo 기본 템플릿에 포함되는지 T-G1에서 확인하고 없으면 AC-23 설치 절차에 한 줄 추가한다
@@ -505,7 +505,7 @@ design-system/
 | 러너 | 위치 | 담당 |
 |---|---|---|
 | **Vitest** (`--typecheck` 포함) | `packages/*` | 빌드 스냅샷(AC-5) · diff(AC-6a) · probe 컴파일(AC-6, AC-6b) · 타입 테스트(AC-9 · 10 · 11a · 12 · 13 · 14 · 15 · 15a · 21) · 웹 단위(jsdom + `@testing-library/react`, AC-11 단위 · AC-22 웹 대응) · dist 검사(C-4, AC-18) |
-| **Playwright** | `apps/verify-next` · `apps/verify-vite` | AC-16 · AC-17 · AC-19 (a)(b) · AC-24 · AC-26 웹 (a)~(d). computed style을 `@<scope>/tokens/brands/base` JS 값과 비교 |
+| **Playwright** | `apps/verify-next` · `apps/verify-vite` | AC-16 · AC-17 · AC-19 (a)(b) · AC-24 · AC-26 웹 (a)~(d). computed style을 `@eeennsu/tokens/brands/base` JS 값과 비교 |
 | `jest-expo` + `@testing-library/react-native` | `apps/verify-expo`만 | 게이트 (9) · AC-11 RN · AC-19 (c) · AC-22 · AC-25 · AC-26 RN. `packages/native`는 Vitest 타입 테스트만 갖는다 |
 
 - `packages/native`에서 RN 런타임 테스트를 돌리지 않는 이유: RN 컴포넌트 렌더는 Metro 변환·`react-native` preset이 필요해 Vitest에 얹기 어렵고, `jest-expo`를 패키지에 넣으면 러너가 3개가 된다. 검증 앱이 어차피 `jest-expo`를 가지므로 RN 런타임 검증을 거기로 모은다
@@ -515,7 +515,7 @@ design-system/
 
 - **레포 안 `apps/`** (위 §5.1). 형제 프로젝트를 쓰지 않는다(C-4a). 새 빈 프로젝트 3개를 각 프레임워크 공식 생성기로 만든다 — `create-next-app`(Tailwind v4 옵션), `create-vite`(react-ts) + Tailwind v4 수동 설치, `create-expo-app`(게이트가 정한 SDK)
 - 개발 중에는 `workspace:*`로 DS를 소비한다. **AC-16 · AC-17 · AC-23의 "설치" 판정은 T-V3 · T-R1에서 `pnpm pack` 타르볼을 `file:` 경로로 설치해 다시 돌린다** — `workspace:*`는 심링크라 exports 맵·`files` 필드·`.d.ts` 동봉(AC-18)을 검증하지 못하기 때문이다
-- **타르볼 설치는 워크스페이스 밖에서 한다(v2 F-11).** `pnpm pack`은 `workspace:*`를 실제 버전으로 치환하므로 web 타르볼은 `@<scope>/tokens@0.1.0`을 npm에서 찾다 실패한다(`ERR_PNPM_FETCH_404`, probe 확인). 루트 `pnpm.overrides`로 tokens 타르볼을 지정하면 풀리지만 워크스페이스 소스 `packages/web`의 `workspace:*`까지 타르볼 사본으로 바뀐다. 그래서 `pnpm verify:pack`(node 스크립트)은 (1) tokens·web(T-R1은 native 포함)을 pack, (2) `apps/verify-*`를 워크스페이스 밖 임시 디렉터리로 복사, (3) 그 앱 `package.json`에 `"@<scope>/web": "file:…tgz"` + `pnpm.overrides: { "@<scope>/tokens": "file:…tgz" }`, (4) `pnpm install --ignore-workspace`, (5) Playwright/jest 실행. `apps/*` 원본은 `workspace:*`를 유지한다
+- **타르볼 설치는 워크스페이스 밖에서 한다(v2 F-11).** `pnpm pack`은 `workspace:*`를 실제 버전으로 치환하므로 web 타르볼은 `@eeennsu/tokens@0.1.0`을 npm에서 찾다 실패한다(`ERR_PNPM_FETCH_404`, probe 확인). 루트 `pnpm.overrides`로 tokens 타르볼을 지정하면 풀리지만 워크스페이스 소스 `packages/web`의 `workspace:*`까지 타르볼 사본으로 바뀐다. 그래서 `pnpm verify:pack`(node 스크립트)은 (1) tokens·web(T-R1은 native 포함)을 pack, (2) `apps/verify-*`를 워크스페이스 밖 임시 디렉터리로 복사, (3) 그 앱 `package.json`에 `"@eeennsu/web": "file:…tgz"` + `pnpm.overrides: { "@eeennsu/tokens": "file:…tgz" }`, (4) `pnpm install --ignore-workspace`, (5) Playwright/jest 실행. `apps/*` 원본은 `workspace:*`를 유지한다
 - 검증 앱은 `private: true`이고 publish 대상이 아니다. Playwright · jest 설정은 각 앱 안에 둔다
 - Expo 검증은 Windows 환경이라 iOS 시뮬레이터가 없다. Android 에뮬레이터 또는 Expo Go 기기로 화면 확인을 하고, 기기 확인이 필요한 항목은 결과 문서에 "수동 확인(Android)"으로 적는다
 
@@ -543,7 +543,7 @@ design-system/
 
 **T-0 레포 부트스트랩**
 - 읽을 파일: 스펙 "패키지 구조", C-4a, [CLAUDE.md](../CLAUDE.md). 이 문서 §5.1 · §5.7
-- 할 일: `pnpm-workspace.yaml`, 루트 `package.json`(private, `packageManager`, node 스크립트 `build` · `test` · `verify:pack` · `version:set`), `tsconfig.base.json`, `vitest.config.ts`(`test.projects`, v2 F-5), `.gitattributes`(`* text=auto eol=lf`, v2 F-25), `.github/workflows/ci.yml`(v2 F-20), `.gitignore`(dist · themes 생성물은 **추적한다** — 래퍼 CSS가 publish 대상이므로 `files`에 포함되고, diff 리뷰가 가능해야 AC-6a 검증이 눈에 보인다), `packages/{tokens,web,native}` 스캐폴드. 스캐폴드의 세 `package.json`은 §5.2의 `exports` · `peerDependencies` · `files`까지 포함한다 — T-W0의 peer 해석 확인이 web `package.json`을 전제하기 때문(v2 F-15). `@<scope>` 확정 여부를 이 태스크 착수 직전에 묻고, 미확정이면 임시 스코프로 진행
+- 할 일: `pnpm-workspace.yaml`, 루트 `package.json`(private, `packageManager`, node 스크립트 `build` · `test` · `verify:pack` · `version:set`), `tsconfig.base.json`, `vitest.config.ts`(`test.projects`, v2 F-5), `.gitattributes`(`* text=auto eol=lf`, v2 F-25), `.github/workflows/ci.yml`(v2 F-20), `.gitignore`(dist · themes 생성물은 **추적한다** — 래퍼 CSS가 publish 대상이므로 `files`에 포함되고, diff 리뷰가 가능해야 AC-6a 검증이 눈에 보인다), `packages/{tokens,web,native}` 스캐폴드. 스캐폴드의 세 `package.json`은 §5.2의 `exports` · `peerDependencies` · `files`까지 포함한다 — T-W0의 peer 해석 확인이 web `package.json`을 전제하기 때문(v2 F-15). 세 `package.json`의 `name`은 `@eeennsu/tokens` · `@eeennsu/web` · `@eeennsu/native`다
 - 완료 조건: `pnpm install` 성공. `pnpm -r build`·`pnpm -r test`가 빈 상태로 통과. 세 `package.json`의 `name`이 같은 스코프이고 §5.2 exports·peer가 들어 있다. CI 워크플로가 같은 명령을 돌린다
 - 닫는 AC: 없음(C-4a 구조 성립)
 
@@ -557,7 +557,7 @@ design-system/
 
 **T-T2 빌드 스크립트**
 - 읽을 파일: C-3 · C-6 · C-20 · C-5b, AC-3 · 4 · 5. 이 문서 §3.7 · §3.9 ~ §3.11
-- 할 일: `scripts/build.ts`가 (1) `themes/{base,bakery}.css`(§3.11 구조), (2) `packages/web/themes/{base,bakery}.css`(`@import "tailwindcss"; @import "@<scope>/tokens/themes/<brand>.css"; @custom-variant dark {…}; @source "../dist";`), (3) `packages/native/themes/{base,bakery}.css`(`@import "tailwindcss"; @import "@<scope>/tokens/themes/<brand>.css"; @source "../dist";` — **`@custom-variant dark`는 넣지 않는다.** 스펙 C-20은 웹 래퍼만 선언하고 RN은 NativeWind `dark:` 기본을 쓴다. v2 F-21. 게이트 (8) 결과로 `@import "tailwindcss"` 유무가 바뀔 수 있음), (4) `dist/brands/{base,bakery}.js`, (5) `dist/index.js`의 `spacing · radius · shadow · text · fontFamily · twMergeConfig · semanticVariables · component`(§3.8 값, v2 F-2)와 `contracts.ts` re-export를 생성. web·native의 `prebuild`가 tokens 빌드를 호출
+- 할 일: `scripts/build.ts`가 (1) `themes/{base,bakery}.css`(§3.11 구조), (2) `packages/web/themes/{base,bakery}.css`(`@import "tailwindcss"; @import "@eeennsu/tokens/themes/<brand>.css"; @custom-variant dark {…}; @source "../dist";`), (3) `packages/native/themes/{base,bakery}.css`(`@import "tailwindcss"; @import "@eeennsu/tokens/themes/<brand>.css"; @source "../dist";` — **`@custom-variant dark`는 넣지 않는다.** 스펙 C-20은 웹 래퍼만 선언하고 RN은 NativeWind `dark:` 기본을 쓴다. v2 F-21. 게이트 (8) 결과로 `@import "tailwindcss"` 유무가 바뀔 수 있음), (4) `dist/brands/{base,bakery}.js`, (5) `dist/index.js`의 `spacing · radius · shadow · text · fontFamily · twMergeConfig · semanticVariables · component`(§3.8 값, v2 F-2)와 `contracts.ts` re-export를 생성. web·native의 `prebuild`가 tokens 빌드를 호출
 - 완료 조건: 빌드가 결정적(두 번 실행해 diff 0). 스냅샷 테스트가 CSS 2개 + JS 3개를 고정. 웹 래퍼·native 래퍼가 같은 토큰 파일 경로를 import. `component` 객체가 §3.8 표와 일치하는 스냅샷
 - 닫는 AC: **AC-3(웹 절)** — 래퍼가 토큰 파일을 import하고 웹 Tailwind가 읽는 것까지는 T-V1에서 최종 확인, **AC-4**, **AC-5**(semantic 한 줄 변경 → CSS 변수 + JS 객체 스냅샷이 함께 바뀌는 테스트)
 
@@ -583,7 +583,7 @@ design-system/
 
 **T-W0 웹 착수 전 확인 (C-3 2건)**
 - 읽을 파일: C-3 래퍼 항목, decisions-r21 "확인할 것"
-- 할 일: `apps/verify-vite`를 먼저 최소 생성해(T-V2와 공유. web `package.json`의 exports·peer는 T-0 스캐폴드에 이미 있다, v2 F-15) (1) `@import "@<scope>/web/themes/base.css"` 한 줄만으로 `tailwindcss`가 web 패키지의 peer로 해석되는지, (2) 소비자 CSS에 `@import "tailwindcss"`가 이미 있을 때 preflight·유틸리티가 중복 출력되는지(출력 CSS에서 `*, ::before` 리셋 블록 개수 세기)
+- 할 일: `apps/verify-vite`를 먼저 최소 생성해(T-V2와 공유. web `package.json`의 exports·peer는 T-0 스캐폴드에 이미 있다, v2 F-15) (1) `@import "@eeennsu/web/themes/base.css"` 한 줄만으로 `tailwindcss`가 web 패키지의 peer로 해석되는지, (2) 소비자 CSS에 `@import "tailwindcss"`가 이미 있을 때 preflight·유틸리티가 중복 출력되는지(출력 CSS에서 `*, ::before` 리셋 블록 개수 세기)
 - 완료 조건: 결과를 `docs/gate-c19.md`의 "웹 선확인" 절에 기록. 중복이 문제면 래퍼에서 `@import "tailwindcss"`를 빼고 규칙을 문서화(스펙이 허용한 대체). T-T2 래퍼 템플릿 갱신
 - 닫는 AC: 없음(AC-16 · 17의 전제)
 
@@ -625,7 +625,7 @@ design-system/
 
 **T-W8 웹 타입 · dist 테스트**
 - 읽을 파일: C-4 (1)(2) · C-17, AC-9 · 10 · 11 · 11a · 12 · 13 · 14 · 15 · 15a · 18
-- 할 일: (1) 맵 동등성 `expectTypeOf`, (2) mapped type 테스트 — 모든 Props 키를 순회해 `number` 타입 값이 없고, `style`·`as`·`render`·`asChild`·`onChange`·`onToggle`·`onPress`(웹) 키가 없고, `variant`·`tone`·`size`가 리터럴 유니온이며, `label`이 인터랙티브 7개에서 필수, `icon`이 `IconName`, (3) `// @ts-expect-error` 케이스 — `tone="#333"`, `icon="nope"`, `icon={<Trash />}`, `onClick={(e) => …}`, 인터랙티브 7개(Button · ButtonGroup · Input · Textarea · Tooltip · Dialog · Drawer) 각각의 `label` 누락(AC-14, 7건), (4) dist 검사 — 인터랙티브 파일 첫 줄 `"use client"`, dist 소스에 백틱 템플릿 클래스 조합 없음(정규식 `` `[^`]*\$\{ `` 검색), (5) 단위: `variant="primary"` + `className="bg-danger"` → 병합 문자열에 `bg-brand` 없음 · `bg-danger` 있음, (6) 컴포넌트 recipe 클래스가 `@<scope>/tokens` component JS 객체 값과 일치
+- 할 일: (1) 맵 동등성 `expectTypeOf`, (2) mapped type 테스트 — 모든 Props 키를 순회해 `number` 타입 값이 없고, `style`·`as`·`render`·`asChild`·`onChange`·`onToggle`·`onPress`(웹) 키가 없고, `variant`·`tone`·`size`가 리터럴 유니온이며, `label`이 인터랙티브 7개에서 필수, `icon`이 `IconName`, (3) `// @ts-expect-error` 케이스 — `tone="#333"`, `icon="nope"`, `icon={<Trash />}`, `onClick={(e) => …}`, 인터랙티브 7개(Button · ButtonGroup · Input · Textarea · Tooltip · Dialog · Drawer) 각각의 `label` 누락(AC-14, 7건), (4) dist 검사 — 인터랙티브 파일 첫 줄 `"use client"`, dist 소스에 백틱 템플릿 클래스 조합 없음(정규식 `` `[^`]*\$\{ `` 검색), (5) 단위: `variant="primary"` + `className="bg-danger"` → 병합 문자열에 `bg-brand` 없음 · `bg-danger` 있음, (6) 컴포넌트 recipe 클래스가 `@eeennsu/tokens` component JS 객체 값과 일치
 - 완료 조건: `vitest --typecheck` 포함 전부 통과
 - 닫는 AC: **AC-9**, **AC-10**, **AC-11(단위 계층)**, **AC-11a**, **AC-12**, **AC-13**, **AC-14**, **AC-15**, **AC-15a**, C-4 산출물 제약
 
@@ -633,7 +633,7 @@ design-system/
 
 **T-V1 `apps/verify-next`**
 - 읽을 파일: AC-16 · AC-19 (b) · AC-24 · AC-26, C-20 · C-21 · C-5b, 알려진 동작 5 · 12
-- 할 일: `create-next-app`(App Router, Tailwind v4)로 생성. 전역 CSS에 `@import "@<scope>/web/themes/base.css"` 한 줄 + AC-26용 `:root`/`.dark`/`@media` 3블록(`--bg-brand`를 X/Y로, `base`·`bakery` 어느 값과도 다르게). `next-themes`로 루트 클래스. 로그인 화면(AC-16 구성 그대로) + AC-24용 버튼 2개(하나만 `className="bg-danger mt-6"`) + AC-26용 `className="bg-brand"` 요소. Playwright: (1) 렌더 + `<form>` 존재 + `autocomplete="current-password"`/`"email"`, (2) 4조합(`emulateMedia colorScheme` × 루트 클래스 `dark`/`light`/없음)에서 primary Button 배경·`bg-brand` 요소 배경이 X/Y, `--bg-danger` 요소가 `brands/base` JS 값, (3) AC-24 버튼 하나만 danger, 다른 버튼 brand — 이 항목이 AC-11 웹 통합 계층(computed style을 `brands/base` JS 값과 비교)을 겸한다(v2 F-24), (4) AC-26 (d) 회귀 가드 — `:root`만 재선언한 별도 CSS 진입점 페이지에서 `.dark` 조합은 X, 클래스 없는 OS 다크는 base 다크 값
+- 할 일: `create-next-app`(App Router, Tailwind v4)로 생성. 전역 CSS에 `@import "@eeennsu/web/themes/base.css"` 한 줄 + AC-26용 `:root`/`.dark`/`@media` 3블록(`--bg-brand`를 X/Y로, `base`·`bakery` 어느 값과도 다르게). `next-themes`로 루트 클래스. 로그인 화면(AC-16 구성 그대로) + AC-24용 버튼 2개(하나만 `className="bg-danger mt-6"`) + AC-26용 `className="bg-brand"` 요소. Playwright: (1) 렌더 + `<form>` 존재 + `autocomplete="current-password"`/`"email"`, (2) 4조합(`emulateMedia colorScheme` × 루트 클래스 `dark`/`light`/없음)에서 primary Button 배경·`bg-brand` 요소 배경이 X/Y, `--bg-danger` 요소가 `brands/base` JS 값, (3) AC-24 버튼 하나만 danger, 다른 버튼 brand — 이 항목이 AC-11 웹 통합 계층(computed style을 `brands/base` JS 값과 비교)을 겸한다(v2 F-24), (4) AC-26 (d) 회귀 가드 — `:root`만 재선언한 별도 CSS 진입점 페이지에서 `.dark` 조합은 X, 클래스 없는 OS 다크는 base 다크 값
 - 완료 조건: Playwright 전부 통과. `tailwind.config` 부재 + `postcss.config.mjs`·`next.config.ts`가 **`create-next-app` 생성 원본과 diff 0**(AC-26 (c). v2 F-3: create-next-app 16.3.4 Tailwind 템플릿이 `postcss.config.mjs`를 스스로 만들므로 "부재"가 아니라 "미편집"을 검사한다. 생성 직후 사본을 테스트 픽스처로 보관). 비밀번호 자동완성 제안 UI는 수동 확인 1회 기록
 - 닫는 AC: **AC-16**, **AC-11 웹 통합 계층**, **AC-19 (b) 웹**, **AC-24**, **AC-26 웹 (a)(b)(c)(d)**, AC-3 웹 절 최종
 
@@ -645,7 +645,7 @@ design-system/
 
 **T-V3 pack 설치 검증**
 - 읽을 파일: AC-16 · AC-18 · AC-6c, 이 문서 §5.6
-- 할 일: **tokens·web만** pack(native는 Phase 3 시점에 빈 스캐폴드라 제외. native 타르볼은 T-R1. v2 F-16) → §5.6 절차대로 `apps/verify-next`·`verify-vite`를 **워크스페이스 밖 임시 디렉터리에 복사**해 `file:` + 앱 자체 `pnpm.overrides`(tokens 타르볼) + `pnpm install --ignore-workspace`로 설치하는 node 스크립트(`pnpm verify:pack`. v2 F-11). 타르볼 내용 검사: `dist/**/*.d.ts` 존재, `themes/*.css` 존재, 폰트 파일(`*.woff2` · `*.ttf` · `*.otf`) 부재, web 타르볼 `package.json`의 `@<scope>/tokens`가 `workspace:`가 아닌 버전 문자열. 설치 후 T-V1 · T-V2 Playwright 재실행
+- 할 일: **tokens·web만** pack(native는 Phase 3 시점에 빈 스캐폴드라 제외. native 타르볼은 T-R1. v2 F-16) → §5.6 절차대로 `apps/verify-next`·`verify-vite`를 **워크스페이스 밖 임시 디렉터리에 복사**해 `file:` + 앱 자체 `pnpm.overrides`(tokens 타르볼) + `pnpm install --ignore-workspace`로 설치하는 node 스크립트(`pnpm verify:pack`. v2 F-11). 타르볼 내용 검사: `dist/**/*.d.ts` 존재, `themes/*.css` 존재, 폰트 파일(`*.woff2` · `*.ttf` · `*.otf`) 부재, web 타르볼 `package.json`의 `@eeennsu/tokens`가 `workspace:`가 아닌 버전 문자열. 설치 후 T-V1 · T-V2 Playwright 재실행
 - 완료 조건: 타르볼 설치 상태에서 전부 통과. `apps/*` 원본의 `workspace:*`와 루트 lockfile이 변하지 않음
 - 닫는 AC: **AC-18** 최종, **AC-6c** 최종, AC-16 · 17의 "설치" 의미 충족
 
@@ -690,15 +690,15 @@ design-system/
 
 **T-R1 `apps/verify-expo` 화면 · 테스트**
 - 읽을 파일: AC-23 · AC-25 · AC-26 RN절 · AC-19 (c) · AC-22 · AC-11 RN절, `docs/gate-c19.md` (9)
-- 할 일: `global.css`에 `@import "@<scope>/native/themes/base.css"` + AC-26 3블록. 화면: Text(제목) + Input × 2 + Text tone danger + Button primary + AC-25용 Button(`className="bg-danger mt-6"`) + Stack/Card. jest-expo: (1) `Appearance` 모킹 2조합에서 primary Button 배경 X/Y, (2) AC-25 className 버튼 — (9) 결과에 따라 `toHaveStyle` 또는 className prop 스냅샷, (3) `accessibilityLabel` 단언(Button · Input), (4) `bg-danger` 병합 결과. 웹과 같은 색·간격은 Android 에뮬레이터 스크린샷과 verify-next 스크린샷을 나란히 두고 수동 확인 1회. 타르볼(`pnpm pack`) 설치로 재실행
+- 할 일: `global.css`에 `@import "@eeennsu/native/themes/base.css"` + AC-26 3블록. 화면: Text(제목) + Input × 2 + Text tone danger + Button primary + AC-25용 Button(`className="bg-danger mt-6"`) + Stack/Card. jest-expo: (1) `Appearance` 모킹 2조합에서 primary Button 배경 X/Y, (2) AC-25 className 버튼 — (9) 결과에 따라 `toHaveStyle` 또는 className prop 스냅샷, (3) `accessibilityLabel` 단언(Button · Input), (4) `bg-danger` 병합 결과. 웹과 같은 색·간격은 Android 에뮬레이터 스크린샷과 verify-next 스크린샷을 나란히 두고 수동 확인 1회. 타르볼(`pnpm pack`) 설치로 재실행
 - 완료 조건: jest 통과 + 수동 확인 기록(`docs/gate-c19.md` 또는 `docs/verify-rn.md`)
 - 닫는 AC: **AC-3 RN절**, **AC-11 RN절**, **AC-19 (c) RN**, **AC-22**, **AC-23**, **AC-25**, **AC-26 RN절**
 
 ### Phase 7 — publish
 
 **T-P1 publish 게이트**
-- 읽을 파일: C-1 · C-4a, 이 문서 §5.3 · 상단 `@<scope>` 확정 시점
-- 할 일: `@<scope>` 임시 스코프 사용 여부 확인 → 치환(`package.json` name·dependencies, 래퍼 생성 상수, web·native·테스트 TS 소스의 import, 검증 앱 CSS·`package.json`) → `pnpm install` 재실행(lockfile 갱신, v2 F-37) → 전체 테스트 · T-V3 · T-R1 타르볼 재실행 → `pnpm -r publish --dry-run` → publish
+- 읽을 파일: C-1 · C-4a, 이 문서 §5.3
+- 할 일: 전체 테스트 · T-V3 · T-R1 타르볼 재실행 → `pnpm -r publish --dry-run` → publish
 - 완료 조건: npm에 세 패키지가 같은 버전으로 존재. 새 빈 프로젝트에서 npm 설치로 AC-16 화면이 뜬다(수동 1회)
 - 닫는 AC: AC-16 · 17 · 18 · 23의 "npm 설치" 의미 최종 충족
 
@@ -778,7 +778,7 @@ design-system/
 | D-18 | 빌드 도구 | tokens `tsx` 스크립트, web · native `tsc`만 | `"use client"` 보존 · 파일별 dist · `.d.ts` 동시 생성 | 하 |
 | D-19 | 테스트 러너 | Vitest + Playwright(레포), `jest-expo`(verify-expo만) | RN 런타임 테스트를 검증 앱으로 몰아 레포 러너 2개 유지 | 하 |
 | D-20 | 검증 앱 위치 | 레포 `apps/*`, `workspace:*` + 타르볼 재검증 | 형제 프로젝트 사용 금지(C-4a). 타르볼이 없으면 exports · `.d.ts` 동봉을 검증하지 못한다 | 하 |
-| D-21 | `@<scope>` 확정 시점 | T-0 착수 직전. 미확정 시 임시 스코프 → T-P1 치환 | `package.json` `name`에 리터럴이 필요 | 하 |
+| D-21 | npm 스코프 이름 | `@eeennsu` 확정(2026-09-05 사용자 결정) | `package.json` `name`에 리터럴이 필요. 보류 항목이 없어졌다 | 하 |
 | D-22 | ESM 단일 출력 | CJS 미출력 | 소비처 3개 전부 ESM | 하 |
 | D-23 | 게이트 실패 시 개정 절차 | 스펙 R24로 기록 후 계획 갱신 | 게이트 실패는 스펙이 예정한 개정 경로 | — |
 | **D-24** (v2) | 토큰 CSS 레이어 | 토큰 파일은 `@layer`를 쓰지 않는다(§3.11) | 소비자 무레이어 `:root` 재선언이 "같은 셀렉터·뒤가 이김"으로 덮여야 한다(C-5b). probe에서 Tailwind가 비-inline `@theme` 변수를 `@layer theme`에 넣어도 무레이어 소비자 선언이 이기는 것을 확인 | 하 |
@@ -800,7 +800,7 @@ design-system/
 |---|---|---|---|---|
 | S-1 | C-8 | `tone`의 danger를 `fg.danger`와 1:1이라 하고, 같은 문단에서 `variant`·`tone`의 danger가 "같은 semantic 색(`color.danger`)"이라 한다. 토큰 이름 표기가 `fg.danger` / `color.danger` / `bg.brand` 세 가지로 갈린다 | 정합 | 없음. D-3 별칭으로 두 문장을 동시에 만족시켰다. 개정 시 §3.3 이름으로 통일하고 별칭 2개를 명시 |
 | S-2 | C-17 children 규칙 | "웹 전용(Dialog · Drawer · Tooltip · Form)만 `ReactNode`"인데 C-12 · B-11은 Tooltip `children`을 앵커로 정의한다. 앵커는 `ReactElement` 1개여야 한다(Base UI `render`) | 정합 | 없음. D-11대로 `ReactElement`. 개정 시 C-17 문장에서 Tooltip 제외 |
-| S-3 | C-3 · B-7 | "토큰 파일 직접 import 경로는 공개하지 않는다"이나 래퍼의 `@import "@<scope>/tokens/themes/<brand>.css"`가 해석되려면 tokens `exports`에 `./themes/*.css`가 있어야 한다. 기술적으로는 소비자도 import 가능 | 정합 | 없음. "공개하지 않는다 = 문서화하지 않는다"로 읽고 §5.2에 주석 |
+| S-3 | C-3 · B-7 | "토큰 파일 직접 import 경로는 공개하지 않는다"이나 래퍼의 `@import "@eeennsu/tokens/themes/<brand>.css"`가 해석되려면 tokens `exports`에 `./themes/*.css`가 있어야 한다. 기술적으로는 소비자도 import 가능 | 정합 | 없음. "공개하지 않는다 = 문서화하지 않는다"로 읽고 §5.2에 주석 |
 | S-4 | C-21 (출처 decisions-r21 B-6, v2 F-30) | "Base UI `Form` / `Field`를 내부 기반으로 쓰되"라고 했으나 v1 범위(submit 없음, 오류 표시는 `Text tone="danger"`)에서 Base UI Form의 기능이 쓰이지 않고, `Field`로 Input을 감싸면 Input 단독 사용과 DOM이 달라진다. D-13은 순수 `<form>`을 택했다 | 정합 | T-W6. B-6은 Form **범위**를 정한 결정이고 Base UI 사용은 구현 세부라 재개방이 아니다. 계약·AC 영향 없음. 개정 시 "Base UI Form은 v1에서 쓰지 않는다"로 |
 | S-5 | C-3 native 항목 ↔ NativeWind v5 문서 | 스펙은 래퍼가 `@import "tailwindcss"`를 먼저 포함한다고 하나, NativeWind v5 문서의 `global.css`는 `tailwindcss/theme.css layer(theme)` · `preflight.css layer(base)` · `utilities.css` 분리 import + `@import "nativewind/theme"`를 요구한다. 래퍼 한 줄로 이 구성을 대신할 수 있는지 미확인 | **보류** | T-N1 래퍼 구성은 게이트 (8) 결과 전에 확정하지 않는다. 스펙 C-3이 대체 규칙("소비자 CSS에서 tailwindcss 다음 줄에 import")을 이미 허용하므로 결과에 따라 C-3 native 문장만 개정 |
 | S-6 | AC-19 (c) | RN 검증이 "`Appearance` 모킹 2조합"인데 NativeWind가 테스트 환경에서 className을 style로 해석하지 못할 때의 격하 규칙이 AC-25 · AC-26 RN절에는 있고 AC-19 (c)에는 없다 | 정합 | T-R1. AC-25 격하 규칙을 준용하고 `docs/gate-c19.md`에 명시. 개정 시 AC-19 (c)에 같은 문장 추가 |

@@ -79,7 +79,7 @@
 | V2-4 | 산출물 ↔ 소비 태스크 | T-T2 산출물·§3.10 export ↔ 이후 태스크 import | 생산되지 않는 소비 0 | B | **실패(B).** component 계층 JS 객체를 T-W8 (6)이 소비하나 §3.10·T-T2 (5)에 없음. `Contracts`·`IconName` re-export도 미기술(F-2) |
 | V2-5 | §8 D 목록 ↔ 본문 | D-1 ~ D-23 본문 위치. D 없는 결정 나열 | D 없는 결정은 N | P | **통과.** 23개 본문 일치. D 없는 본문 결정 14건(F-33) |
 | V2-6 | 단계 그래프 | 실제 의존 재구성. 미명시 앞당김 | 미명시 순환 0 | P | **실패(P 3).** T-W0가 T-W1의 package.json(exports·peer)을 전제(F-15). 게이트 (3)이 Phase 5 산출물 native dist를 전제(F-14). T-V3 `pnpm -r pack`이 빈 native 패키지 포함(F-16) |
-| V2-7 | `@<scope>` 치환 가능성 | 스코프 문자열 위치 전부 | 수기 위치가 `package.json` name + 검증 앱뿐 | N | **통과(N).** 수기 위치가 web·native·테스트 TS 소스 import에도 있음. 치환 뒤 `pnpm install` 재실행 필요(F-37에 병기) |
+| V2-7 | 스코프 문자열 치환 가능성 | 스코프 문자열 위치 전부 | 수기 위치가 `package.json` name + 검증 앱뿐 | N | **통과(N).** 수기 위치가 web·native·테스트 TS 소스 import에도 있음. 치환 뒤 `pnpm install` 재실행 필요(F-37에 병기) — 2026-09-05 스코프 `@eeennsu` 확정으로 치환 절차 자체가 소멸(plan T-P1에서 삭제). |
 | V2-8 | 버전 하한 정합 | §5.2 peer ↔ C-4a ↔ §2.1 | 스펙보다 낮은 하한 0 | N | **통과.** 낮은 하한 0. web `tailwindcss >=4.1` 근거가 NativeWind뿐(F-34) |
 
 ---
@@ -137,7 +137,7 @@ probe 환경: scratchpad `probe/` — tailwindcss 4.3.3 · @tailwindcss/node 4.3
 | 3 | 외부 사실 | X-1~18. 문서·npm은 에이전트 2개 병렬, probe는 scratchpad `probe/` | 표 "결과" 열 | 완료 |
 | 4 | 판정 | 발견을 §7에 번호로 모으고 등급 확정. 설계 선택이 필요한 항목(F-1 · F-7 · F-9 · F-18)은 사용자에게 한 번에 묻는다 | §7 완성 | 완료. 4건 모두 추천안(A) 확정 |
 | 5 | 반영 | plan.md 개정(상단 개정 이력 + 본문 + §9 추가). CLAUDE.md 두 문장 갱신. B·P 항목 재검증 | plan.md v2 | 완료. 재검증: 기계 검사 재실행 — V1-2 실질 불일치 0(T-V1 AC-11 반영 확인), V2-1 통과, V2-4 `component`·contracts export 확인. 의미 항목은 편집 지점에 `(v2 F-n)` 표기로 추적 |
-| 6 | 착수 판정 | 종료 조건 확인 후 T-0 착수 | 착수 기록 | **착수 가능.** B 0 · P 반영 · N 기록 · probe 통과 · 사용자 결정 잔여 0. 남은 보류는 `@<scope>` 이름(T-0 직전 확정)뿐 |
+| 6 | 착수 판정 | 종료 조건 확인 후 T-0 착수 | 착수 기록 | **착수 가능.** B 0 · P 반영 · N 기록 · probe 통과 · 사용자 결정 잔여 0. 남은 보류는 `@eeennsu` 이름(T-0 직전 확정)뿐 |
 
 ### 6.2 종료 조건
 
@@ -170,7 +170,7 @@ probe 환경: scratchpad `probe/` — tailwindcss 4.3.3 · @tailwindcss/node 4.3
 | F-7 | plan §3.8 · D-6 | Input은 `border-default` 1px, Button은 테두리 없음 → 같은 `py + text`에서 Input이 2px 높음(30/42/54 vs 28/40/52). AC-16 로그인 화면에서 나란히 보임 | V2-2 | P | **사용자 결정** — (A) Button·Badge에 `border border-transparent`를 주고 컨트롤 높이를 30/42/54로 통일 / (B) 차이를 알려진 동작으로 기록 | 사용자 확정 (A) · 반영 완료 (plan.md v2) |
 | F-8 | plan §3.8 `icon.size` · §4.5 | 20px는 spacing 열거 밖(키 5 없음)이라 `size-5` 클래스 불가(probe 확인). lucide `size` prop(JS 값)으로 넣어야 하며 계획에 경로 없음 | V2-2 · X-1 probe | P | §4.5에 "크기는 lucide `size` prop, C-4 (2) 정적 클래스 제약과 무관" 명시 | 반영 완료 (plan.md v2) |
 | F-9 | plan §2.1 "Expo SDK 54" · T-G1 | NativeWind 문서는 SDK 54 예시, `create-expo-app@latest`는 SDK 57(RN 0.86). `react-native-css` peer(RN >=0.81, metro-config >=54)는 57을 배제하지 않음 | X-16 (j) | P | **사용자 결정** — (A) 문서 기준 SDK 54 고정(`--template blank@sdk-54`) / (B) 57로 먼저 시도, 게이트 실패 시 54로 재시도하고 기록 | 사용자 확정 (A) · 반영 완료 (plan.md v2) |
-| F-11 | plan T-V3 | web 타르볼의 `@<scope>/tokens: 0.1.0`이 npm에 없어 `file:` 설치 실패. 루트 `pnpm.overrides`로 풀면 워크스페이스 소스 패키지의 `workspace:*`까지 타르볼로 바뀜 | X-12 probe | P | T-V3: 타르볼 설치 검증은 **워크스페이스 밖 임시 디렉터리**에 검증 앱을 복사해 앱 자체 `pnpm.overrides` + `--ignore-workspace`로 수행. `apps/*`는 `workspace:*` 유지 | 반영 완료 (plan.md v2) |
+| F-11 | plan T-V3 | web 타르볼의 `@eeennsu/tokens: 0.1.0`이 npm에 없어 `file:` 설치 실패. 루트 `pnpm.overrides`로 풀면 워크스페이스 소스 패키지의 `workspace:*`까지 타르볼로 바뀜 | X-12 probe | P | T-V3: 타르볼 설치 검증은 **워크스페이스 밖 임시 디렉터리**에 검증 앱을 복사해 앱 자체 `pnpm.overrides` + `--ignore-workspace`로 수행. `apps/*`는 `workspace:*` 유지 | 반영 완료 (plan.md v2) |
 | F-12 | CLAUDE.md | "구현 착수 전 C-19 게이트"(실제는 native 착수 전), "+ pnpm peer"(T-W0 이동), 게이트 9건, "계획·구현 문서는 아직 없다" | V1-12 | P | CLAUDE.md 문서 절 갱신(plan.md·plan-verification.md 링크, 게이트 문장 정정) | 반영 완료 (plan.md v2) |
 | F-13 | plan §4.2 Box 행 · §4.4 | Box가 "web · native"인데 `nativeComponents`·AC-20·T-N2에 없음. native가 Box를 export하면 맵 테스트 실패 | V2-3 | P | §4.2 Box를 web으로, §4.4 "RN `View`"를 v2 표기로 | 반영 완료 (plan.md v2) |
 | F-14 | plan §2.2 (3) · §1 · §2.1 | 게이트 (3)이 `packages/native/dist` 컴포넌트를 전제하나 native dist는 Phase 5 산출물. §1 "토큰 파일만 있으면 돌릴 수 있다"와 모순 | V2-6 | P | T-G1이 `bg-brand`를 쓰는 **스텁 dist 파일 1개**를 만들어 (3)·(8)에 쓰고 T-N1이 대체한다고 명시 | 반영 완료 (plan.md v2) |
@@ -197,7 +197,7 @@ probe 환경: scratchpad `probe/` — tailwindcss 4.3.3 · @tailwindcss/node 4.3
 | F-34 | plan §5.7 · §5.2 web | web `tailwindcss >=4.1` 근거가 NativeWind뿐 | V2-8 | N | "web·native 하한을 하나로 유지하기 위해"로 근거 보강 | 반영 완료 (plan.md v2) |
 | F-35 | plan §4.5 · C-7c | 스펙 "색·크기는 토큰으로" ↔ 계획 "색은 currentColor". 토큰 간접 상속 | V1-8 | N | §9 S-16 | 반영 완료 (plan.md v2) |
 | F-36 | plan §1 | C-19 손절 시작일 기록 위치 미정 | V4-6 | N | `docs/gate-c19.md`에 "Phase 5 착수일" 항목 | 반영 완료 (plan.md v2) |
-| F-37 | plan §5.3 · T-V3 · 서두 | `version:set`·`verify:pack` 구현 언어 미지정(Windows). `@<scope>` 치환 뒤 `pnpm install` 재실행 필요 | V4-5 · V2-7 | N | node 스크립트로 명시, 치환 절차에 재설치 추가 | 반영 완료 (plan.md v2) |
+| F-37 | plan §5.3 · T-V3 · 서두 | `version:set`·`verify:pack` 구현 언어 미지정(Windows). 스코프 치환 뒤 `pnpm install` 재실행 필요 | V4-5 · V2-7 | N | node 스크립트로 명시, 치환 절차에 재설치 추가 | 반영 완료 (plan.md v2) — 2026-09-05 스코프 `@eeennsu` 확정으로 치환 절차 자체가 소멸(plan T-P1에서 삭제). |
 | F-10 | plan §4.3 `@base-ui/react` | 개명 주장 | X-8 | — | **기각.** 사실로 확인(1.8.0, 2025-12-11 개명) | 종결 |
 
 ---

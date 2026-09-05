@@ -8,7 +8,7 @@
 - 2026-09-05 R22 개정. 소비 프로젝트 로컬 semantic 오버라이드 통로 신설(C-5b). C-19 게이트 (6) 추가, AC-26 신설, 알려진 동작 11~13 추가. 결정 근거는 [decisions-r22.md](decisions-r22.md)
 - 2026-09-05 R23 개정. 오버라이드 대상 확대(C-5c)를 트리거 조건부로 연기. C-5b에 트리거 기록, 알려진 동작 14 추가, Non-Goal 문구 구분. 계약·동작 변경 없음. 결정 근거는 [decisions-r23.md](decisions-r23.md)
 - 본문의 `R{n}`은 인터뷰 라운드 번호. 결정 근거는 문서 끝 트랜스크립트에서 추적
-- 패키지명의 `@<scope>`는 npm 스코프 변수. 스코프 이름은 R21 보류 항목이며 확정 후 문자열 치환한다
+- 패키지명의 npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05). R21 보류 항목이었고 문자열 치환을 마쳤다
 
 ### R20 개정 요약 (2026-09-05)
 
@@ -22,14 +22,14 @@
 
 R20 미결 (R21에서 처리):
 1. DS 컴포넌트 기본 스타일과 소비자 `className` 병합 규칙 — `tailwind-merge` 사용 여부, RN에서의 대응물. **종결(R21)**: 웹·RN 양쪽 `tailwind-merge`, 설정은 토큰 빌드가 DS 키 목록으로 생성. C-15 참조
-2. `@<scope>/web` 스타일 배포 형태 — 컴파일된 CSS + `@theme` 파일 vs 소비 프로젝트가 `@source`로 DS 패키지 스캔. **종결(R21)**: web 래퍼의 `@source "../dist"`. 컴파일된 CSS는 동봉하지 않는다. C-3 참조
+2. `@eeennsu/web` 스타일 배포 형태 — 컴파일된 CSS + `@theme` 파일 vs 소비 프로젝트가 `@source`로 DS 패키지 스캔. **종결(R21)**: web 래퍼의 `@source "../dist"`. 컴파일된 CSS는 동봉하지 않는다. C-3 참조
 3. `spot`의 Expo SDK 버전이 NativeWind v5 preview 요구 사양과 맞는지 확인. 안 맞으면 C-19 손절 기준과 무관하게 대체안 검토. **C-19 착수 게이트로 유지(R21)**. R21 후속: `spot`은 개발 중단. 검증 대상을 빈 Expo 프로젝트로 바꿔, 게이트는 "NativeWind v5가 요구하는 Expo SDK를 확인해 검증 프로젝트를 그 SDK로 만든다"로 단순화
 
 ### R21 개정 요약 (2026-09-05)
 
 R20 개정 스펙을 구현 전에 검증한 결과 모순·검증 불가·누락이 나와, 기술 확정안 5건(A-1~A-5)과 사람 결정 11건(B-1~B-11)을 확정함. 결정 근거·대안 비교·조합 검증 전문은 [decisions-r21.md](decisions-r21.md)에 있고 본문은 결과만 싣는다. 이에 따라:
 
-- **C-3 종결**: 소비자 import 경로는 플랫폼 래퍼 `@<scope>/web/themes/<brand>.css`(웹) / `@<scope>/native/themes/<brand>.css`(RN). 래퍼가 내부 산출물 `@<scope>/tokens/themes/<brand>.css`를 import하고, web 래퍼는 `@source "../dist"`로 컴포넌트 클래스를 스캔. 컴파일된 CSS는 동봉하지 않음
+- **C-3 종결**: 소비자 import 경로는 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`(웹) / `@eeennsu/native/themes/<brand>.css`(RN). 래퍼가 내부 산출물 `@eeennsu/tokens/themes/<brand>.css`를 import하고, web 래퍼는 `@source "../dist"`로 컴포넌트 클래스를 스캔. 컴파일된 CSS는 동봉하지 않음
 - **C-15 병합 규칙 확정**: `tailwind-merge`를 웹·RN 양쪽에서 사용, 설정은 토큰 빌드가 DS 키 목록으로 생성. 승리 범위는 같은 유틸리티 그룹·같은 변형
 - **어휘 봉쇄**: primitive는 `:root` 변수로만 존재하고 `@theme`에 넣지 않음. Tailwind 기본 팔레트·동적 spacing은 리셋. spacing은 희소 열거 `1,2,3,4,6,8,12,16,20,24` + `0`. 열거 외 키는 에러가 아닌 무효 — "알려진 동작(v1)" 소절 신설
 - **계약 강제 수단 확정(C-17)**: export 맵 타입 동등성 테스트. `ref`는 `{ focus(); blur() }` 핸들. 플랫폼 전용 prop 0개, 콜백은 플랫폼 이벤트 인자 없음
@@ -42,7 +42,7 @@ R20 개정 스펙을 구현 전에 검증한 결과 모순·검증 불가·누�
 - R20 미결 1·2 종결, 3은 C-19 착수 게이트
 - **R21 후속(같은 날, decisions-r21.md 밖)**: 계획 착수 전 누락 점검으로 닫은 것 — B-9 재개정(웹 `onClick` / RN `onPress`, `Contracts<P>`), Label ↔ Input `id` / `htmlFor`, 컨테이너 `children` 문자열 제외, Button 아이콘 전용 모드 v1 제외, Text `heading` enum, Textarea `size` → 행수, 리셋 범위에 `--font-weight-*` 추가, native 래퍼 `@source`, `"use client"` 보존 + 정적 클래스 제약, peer `react >= 19`, 검증 대상은 전부 새 빈 프로젝트(`spot` 개발 중단). 전문은 트랜스크립트 Round 21 "후속 확정"
 
-R21 보류: npm 스코프 이름 1건(`@<scope>` 변수 유지). 착수 전 기술 확인(결정 아님): NativeWind v5 확인 항목 5건과 R20 미결 3은 C-19 게이트, web 래퍼 `@import "tailwindcss"`의 pnpm peer 해석은 C-3 참조
+R21 보류: 없음. npm 스코프 이름 1건은 2026-09-05 `@eeennsu`로 확정됐다. 착수 전 기술 확인(결정 아님): NativeWind v5 확인 항목 5건과 R20 미결 3은 C-19 게이트, web 래퍼 `@import "tailwindcss"`의 pnpm peer 해석은 C-3 참조
 
 ### R22 개정 요약 (2026-09-05)
 
@@ -56,7 +56,7 @@ R21 보류: npm 스코프 이름 1건(`@<scope>` 변수 유지). 착수 전 기�
 - **AC-26 신설**(distribution): 로컬 오버라이드 검증. AC-19 4조합 매트릭스 재사용, RN은 AC-23 화면
 - Ontology `Brand` 수정, `SemanticVariable` 추가. 번호 유지, 삭제·재번호 없음
 
-R22 보류: 없음(npm 스코프 이름은 R21 보류 유지). semantic 변수 실제 이름은 계획 태스크 "토큰 인벤토리"가 정하며, 정해지는 순간 공개 계약이 된다(C-5b)
+R22 보류: 없음. semantic 변수 실제 이름은 계획 태스크 "토큰 인벤토리"가 정하며, 정해지는 순간 공개 계약이 된다(C-5b)
 
 ### R23 개정 요약 (2026-09-05)
 
@@ -100,7 +100,7 @@ pnpm workspace 단일 레포. 공개 npm으로 publish.
 ```
 design-system/                        pnpm workspace
 └─ packages/
-   ├─ tokens/    @<scope>/tokens
+   ├─ tokens/    @eeennsu/tokens
    │             ① JSON/DTCG 토큰 소스 (플랫폼 무관, 3계층)
    │             ② 컴포넌트 계약 타입 — `Contracts` 타입 맵 + `webComponents` / `nativeComponents` 키 목록
    │             ③ 빌드 산출물
@@ -108,13 +108,13 @@ design-system/                        pnpm workspace
    │               │                       소비자가 직접 import하지 않는다
    │               ├─ JS 객체              RN 런타임 값 (Reanimated 등 className 밖에서 쓸 때)
    │               └─ twMergeConfig        DS 키 목록. 웹·RN 양쪽 `cn()` 설정
-   ├─ web/       @<scope>/web     Base UI + Tailwind v4. 소비 프로젝트에 Tailwind v4 필수
+   ├─ web/       @eeennsu/web     Base UI + Tailwind v4. 소비 프로젝트에 Tailwind v4 필수
    │             themes/<brand>.css   공개 경로. 토큰 파일 import + `@custom-variant dark` + `@source "../dist"`
-   └─ native/    @<scope>/native  React Native + NativeWind v5. 소비 프로젝트에 NativeWind v5 필수
+   └─ native/    @eeennsu/native  React Native + NativeWind v5. 소비 프로젝트에 NativeWind v5 필수
                  themes/<brand>.css   공개 경로. 토큰 파일 import + `@source "../dist"` (C-19 게이트 (3) 조건부)
 ```
 
-`@<scope>/tokens`는 이름보다 넓은 책임을 갖는다 — 토큰 **및** 계약 타입. 별도 `@<scope>/core`를 만들지 않은 이유는 양쪽이 이미 tokens에 의존하므로 패키지를 늘릴 이유가 없기 때문. 웹·RN 중 한쪽이 계약을 어기면 export 맵 타입 동등성 테스트가 깨진다(C-17).
+`@eeennsu/tokens`는 이름보다 넓은 책임을 갖는다 — 토큰 **및** 계약 타입. 별도 `@eeennsu/core`를 만들지 않은 이유는 양쪽이 이미 tokens에 의존하므로 패키지를 늘릴 이유가 없기 때문. 웹·RN 중 한쪽이 계약을 어기면 export 맵 타입 동등성 테스트가 깨진다(C-17).
 
 Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식을 따르므로, 토큰 빌드 산출물 하나가 두 플랫폼의 클래스 어휘를 동시에 정의한다. `bg-brand` 같은 클래스가 웹과 RN에서 같은 semantic 토큰을 가리킨다. 소비자는 토큰 파일이 아니라 플랫폼 래퍼(`web/themes/`, `native/themes/`)를 import한다 — `@source`가 선언한 CSS 파일 기준 상대경로라 web 패키지 안에서만 web dist를 가리킬 수 있기 때문(C-3).
 
@@ -123,17 +123,17 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
 ## Constraints
 
 ### 배포·소비
-- C-1. 배포 형태는 **npm 패키지 3개**(`@<scope>/tokens`, `@<scope>/web`, `@<scope>/native`). shadcn식 코드 복사(CLI/레지스트리) 아님. 스코프 이름은 R21 보류 항목 — 확인 후 `@<scope>`를 문자열 치환
+- C-1. 배포 형태는 **npm 패키지 3개**(`@eeennsu/tokens`, `@eeennsu/web`, `@eeennsu/native`). shadcn식 코드 복사(CLI/레지스트리) 아님. 스코프 이름은 `@eeennsu`로 확정(2026-09-05)
 - C-2. 소비 프로젝트는 컴포넌트 소스를 수정하지 않는다. 수정은 DS 레포에서만
 - C-3. **(R20 재작성, R21 종결)** 소비 프로젝트는 **Tailwind v4**(웹) / **NativeWind v5**(RN)를 갖춘다. DS는 토큰을 Tailwind `@theme` CSS로 배포하고, 소비 프로젝트는 이를 전역 CSS에서 import한다. 소비 프로젝트 측 설정은 이 import 한 줄까지로 제한한다 — `tailwind.config`나 PostCSS 설정 편집을 요구하지 않는다
-  - import 대상은 플랫폼 래퍼다 — 웹 `@<scope>/web/themes/<brand>.css`, RN `@<scope>/native/themes/<brand>.css`. 래퍼가 `@<scope>/tokens/themes/<brand>.css`를 import한다. 토큰 파일 직접 import 경로는 공개하지 않는다(R21 B-7)
+  - import 대상은 플랫폼 래퍼다 — 웹 `@eeennsu/web/themes/<brand>.css`, RN `@eeennsu/native/themes/<brand>.css`. 래퍼가 `@eeennsu/tokens/themes/<brand>.css`를 import한다. 토큰 파일 직접 import 경로는 공개하지 않는다(R21 B-7)
   - 컴포넌트 스타일 배포 형태(R20 미결 2, 종결): web 래퍼가 `@source "../dist"`로 web 패키지 자신의 컴포넌트를 스캔한다. 컴파일된 컴포넌트 CSS는 동봉하지 않는다. 근거 — `@source`는 선언한 CSS 파일 기준 상대경로이고 pnpm은 realpath로 해석하므로, 토큰 패키지 안의 파일에서는 web dist를 찾을 수 없다
-  - native 래퍼도 같은 이유로 `@source "../dist"`를 갖는다(R21 후속). Tailwind v4는 `node_modules`를 자동 스캔하지 않으므로 없으면 `@<scope>/native` 컴포넌트의 클래스가 생성되지 않는다. NativeWind v5의 `@source` 지원은 C-19 게이트 (3)
+  - native 래퍼도 같은 이유로 `@source "../dist"`를 갖는다(R21 후속). Tailwind v4는 `node_modules`를 자동 스캔하지 않으므로 없으면 `@eeennsu/native` 컴포넌트의 클래스가 생성되지 않는다. NativeWind v5의 `@source` 지원은 C-19 게이트 (3)
   - 래퍼는 `@import "tailwindcss"`를 먼저 포함해 리셋 순서 실수를 원천 차단한다. 착수 전 기술 확인 2건(조건부): 이 import가 pnpm에서 peer로 해석되는지, 소비자 전역 CSS에 이미 있는 `@import "tailwindcss"`와 중복될 때 preflight·유틸리티가 중복 출력되지 않는지. 중복이 문제면 래퍼에서 `@import "tailwindcss"`를 빼고 "소비자 CSS에서 tailwindcss 다음 줄에 import"를 규칙으로 문서화한다
   - 이전(R12): "컴파일된 CSS 배포, 소비 프로젝트 Tailwind 불필요". `className` 허용으로 성립 불가해져 폐기
 - C-4. **RSC 대응**: 인터랙티브 컴포넌트는 `"use client"` 지시어를 붙여 배포한다. Next.js App Router에서 동작해야 하며, Vite 환경에서는 무해. Form도 대상이다 — `<form>`의 `onSubmit` 핸들러(`preventDefault`)를 갖는 인터랙티브 컴포넌트(R21, C-21)
   - **(R21 후속) 산출물 제약 2건**: (1) 번들러가 파일별 `"use client"` 지시어를 dist에 보존해야 한다 — 번들러 다수가 기본 설정에서 지시어를 삭제하므로 빌드 설정과 dist 검사 테스트가 필요. (2) 컴포넌트의 클래스는 **정적 문자열 리터럴**로만 쓴다. `` `bg-${variant}` `` 같은 동적 조합은 `@source "../dist"` 스캔이 찾지 못해 CSS가 생성되지 않는다. variant별 클래스는 객체 맵으로 둔다
-- C-4a. 레포는 **pnpm workspace** 단일 레포(`packages/{tokens,web,native}`, 패키지명 `@<scope>/{tokens,web,native}`). 배포는 **공개 npm** — 비공개 레지스트리는 소비 프로젝트에 `.npmrc` 토큰 설정을 요구해 AC-16을 깨뜨리므로 채택하지 않는다. 스코프 이름은 미확정이며 `@<scope>` 변수로 표기한다
+- C-4a. 레포는 **pnpm workspace** 단일 레포(`packages/{tokens,web,native}`, 패키지명 `@eeennsu/{tokens,web,native}`). 배포는 **공개 npm** — 비공개 레지스트리는 소비 프로젝트에 `.npmrc` 토큰 설정을 요구해 AC-16을 깨뜨리므로 채택하지 않는다. 스코프 이름은 `@eeennsu`로 확정됐다(2026-09-05)
   - **(R21 후속) 최소 버전**: peer `react >= 19` — 계약의 `ref`가 일반 prop이라 `forwardRef` 없이 성립하는 조건. `tailwindcss >= 4`. `react-native` · `nativewind` 버전은 C-19 고정 정책. 검증 프로젝트는 전부 새로 만든 빈 프로젝트이며 형제 프로젝트를 검증 대상으로 쓰지 않는다
 
 ### 토큰
@@ -143,7 +143,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - **(R22) 주입 위치 2곳.** DS 레포 브랜드 파일은 "이름 있는 프리셋"이고, 소비 프로젝트 로컬 오버라이드(C-5b)는 "앱 전용 브랜드"다. 둘 다 semantic 계층에만 주입하며 불변 계층(primitive·component·간격·타이포)은 같다. 앱 하나의 색을 바꾸기 위해 DS 레포에 브랜드 파일을 추가·배포할 필요가 없어진다. `bakery`는 AC-6a 검증용으로 유지
 - C-5b. **(R22 신설) 소비 프로젝트 로컬 semantic 오버라이드.** 소비 프로젝트가 전역 CSS에서 DS 래퍼 import **다음 줄**, **레이어 밖**에 `:root` semantic 변수를 재선언하면 캐스케이드(같은 셀렉터·같은 특이성이면 뒤가 이김. DS 토큰 파일이 레이어를 쓰면 무레이어 선언이 무조건 이김)로 덮인다. `@theme inline`이 그 변수를 `var()`로 참조하므로 클래스(`bg-brand`)와 컴포넌트(`variant="primary"`)가 함께 따라간다 — AC-5가 보장하는 구조 그대로이며 DS 코드 변경은 0이다. 구조상 이미 되는 것을 **공개 계약으로 승격**한다는 것이 이 항목의 실체다
   ```css
-  @import "@<scope>/web/themes/base.css";
+  @import "@eeennsu/web/themes/base.css";
 
   :root { --bg-brand: oklch(…); }
   .dark { --bg-brand: oklch(…); }
@@ -161,9 +161,9 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
     - **트리거가 충족돼도 열지 않는 것**: 간격·타이포 스케일 **구조**의 브랜드별 분리(R22 후보 C). 그건 `size` 5단 계약·C-7a 열거 재설계라 별개 사안이며 Non-Goal 유지. C-5c는 스케일 열거를 그대로 두고 값만 앱별로 다르게 한다
     - **선행 확인**: `--radius-*`·폰트 패밀리 변수가 소비자 `:root` 재선언으로 덮이는지는 토큰 빌드가 `@theme inline`을 쓰는 범위에 달렸고 아직 안 정해졌다. 계획 태스크 "토큰 인벤토리"의 확인 항목이며, 같은 태스크에서 두 변수군 이름을 나중에 공개 계약이 돼도 되는 이름으로 짓는다. RN은 게이트 (6)이 같은 질문을 담고 있다. 근거는 [decisions-r23.md](decisions-r23.md)
 - C-6. **(R21 확장)** 토큰 소스는 플랫폼 무관 포맷(JSON / DTCG) **1본**. 빌드 산출물:
-  - `@<scope>/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
+  - `@eeennsu/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
   - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
-  - 플랫폼 래퍼 `@<scope>/web/themes/<brand>.css`, `@<scope>/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
+  - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
   - RN 런타임용 JS 객체
   - `twMergeConfig` — 색 키, spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
   - `Contracts` 타입 맵(`Size` / `TypographyStep` / `ControlSize` / `Tone` / `Variant` 포함)과 `webComponents` / `nativeComponents` 키 목록(C-17)
@@ -177,7 +177,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
 ### 컴포넌트 API 계약 (8개 강제 규칙)
 - C-8. **(R21 확장) variant / size / tone 어휘 전역 통일.** 전역 축은 3개 — `variant = primary | secondary | ghost | danger`(4개 고정), `size = sm | md | lg | xl | 2xl`, `tone = default | muted | danger`(3개 확정, R21 후속. Text의 강조 위계 축이자 전역 어휘. semantic 전경색 토큰 `fg.default` / `fg.muted` / `fg.danger`와 1:1라 매핑표가 필요 없다. `subtle` · `success` · `brand`는 넣지 않는다 — 추가는 추가적이고, 지금 넣으면 semantic 토큰이 늘어 `bakery`에서 값을 전부 정해야 한다). 모든 컴포넌트가 동일한 집합에서만 고름. 안 쓰는 값은 빼되 이름은 절대 다르게 짓지 않는다 — 부분집합은 `Extract`로 타입 고정한다(`ControlSize = Extract<Size, 'sm' | 'md' | 'lg'>`, `TypographyStep = Size`). 반대로 **다른 개념에 같은 이름을 강요하지 않는다**. `variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)을 가리키는 같은 개념이라 의도적으로 이름을 공유한다. 비활성 텍스트는 `tone`이 아니라 상태(`disabled`)다. 단 간격(spacing)은 C-7a에 따라 별도 숫자 어휘를 쓴다 — 통일 대상이 아니다
 - C-9. **semantic 토큰만 참조** (C-7과 동일 규칙의 컴포넌트 측 표현)
-- C-10. **다형성 prop 금지.** `as` / `render` / `asChild`를 core 계약에 노출하지 않는다. RN에 대응물이 없다. Base UI의 `render`는 `@<scope>/web` 내부 구현 디테일로만 사용
+- C-10. **다형성 prop 금지.** `as` / `render` / `asChild`를 core 계약에 노출하지 않는다. RN에 대응물이 없다. Base UI의 `render`는 `@eeennsu/web` 내부 구현 디테일로만 사용
 - C-11. **불리언 prop 대신 열거형.** `isPrimary`, `isDanger` 금지 → `variant`. 불리언은 조합 폭발을 만들고 두 플랫폼에서 우선순위가 갈린다. **(R21)** 예외는 `disabled` / `loading` 같은 기능 불리언뿐. 웹·RN 교차 어휘는 열거형으로 은닉하며, 열거형이라 예외가 아니다 — Input `kind = text | password | email | number`. 계약은 이 열거형 4값뿐이고 아래 매핑은 어댑터 구현 세부다. 스펙에 두는 이유(R21 후속) — AC-16 자동완성 확인 항목과 알려진 동작 8이 이 파생 규칙을 참조하므로 계획 문서로 내리면 AC 근거가 사라진다:
   - `text` → 웹 `type="text"` / RN 기본
   - `password` → 웹 `type="password"` / RN `secureTextEntry`
@@ -196,7 +196,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - 이전: "웹은 `aria-label`, RN은 `accessibilityLabel`로 변환". Button 가시 텍스트를 `label`로 통합하며 "변환"에서 "보장"으로(R21 A-4)
 - C-14. **(R21 재작성) 토큰 값을 받는 prop이 없다.** 계약 전체에 `number` 타입 prop이 없고(`padding={16}` 같은 prop 자체가 존재하지 않는다), 색 의도를 받는 prop(`variant`, `tone`)은 enum 키만 받는다(`tone="#333"`은 타입 에러). 간격은 `className` 전용(C-7a) — Stack / Box에 `gap` · `padding` prop 없음. `className` 안의 임의값(`bg-[#333]`, `mt-[13px]`)은 타입·구조 어느 쪽으로도 막지 못한다 — 이는 C-15의 의도된 탈출구
   - 이전: "`padding={16}`, `color="#333"`을 타입으로 차단하고 토큰 키만 받는다". 숫자 키 prop은 `padding={16}`이 64px가 되는 혼동을 낳고, 문자열 리터럴 키 `gap="4"`는 채널이 2개가 되어 나중에 제거하면 소비자 파괴. prop 자체를 두지 않는 쪽으로 재작성(R21 A-5)
-- C-15. **(R20 반전, R21 확정) `className` 허용.** 전 컴포넌트가 `className?: string`을 받는다. 웹은 Tailwind v4, RN은 NativeWind v5로 해석하며 어휘는 `@<scope>/tokens`가 빌드한 `@theme`에서 나온다. 규칙:
+- C-15. **(R20 반전, R21 확정) `className` 허용.** 전 컴포넌트가 `className?: string`을 받는다. 웹은 Tailwind v4, RN은 NativeWind v5로 해석하며 어휘는 `@eeennsu/tokens`가 빌드한 `@theme`에서 나온다. 규칙:
   - `className`이 **유일한** 커스텀 채널. 웹 `style`, RN `style` prop은 열지 않는다 — 두 플랫폼 어휘를 하나로 유지하기 위해. **어휘 봉쇄**로 "유일"이 문자 그대로 성립한다: Tailwind 기본 팔레트(`--color-*: initial`)와 동적 spacing(`--spacing-*: initial`)을 리셋하고 primitive는 `@theme`에 넣지 않으므로(C-7), `className`에 쓸 수 있는 클래스는 DS 토큰 어휘뿐이다(임의값 제외, C-14)
   - 소비자 `className`은 DS 기본 스타일과 **병합**되며 충돌 시 소비자가 이긴다. 병합은 웹·RN 양쪽 `tailwind-merge`이며 설정은 토큰 빌드가 DS 키 목록으로 생성한다(C-6 `twMergeConfig`). 양쪽이 `extendTailwindMerge(twMergeConfig)`로 `cn(base, className)` 한다. spacing 검증자를 DS 키 목록으로 두는 이유 — 기본 `isNumber`면 `cn('mt-4', 'mt-5')`에서 존재하지 않는 `mt-5`가 `mt-4`를 밀어내 DS 기본 여백까지 사라진다. 키 목록이면 `mt-5`는 spacing 그룹으로 인식되지 않아 둘 다 남고 `mt-4`가 적용된다. `text-*`의 크기/색 모호성은 크기 키 목록으로 해소된다
   - 승리 범위는 **같은 유틸리티 그룹·같은 변형**에 한정한다. `hover:bg-*`는 `bg-danger`로 덮이지 않는다. RN에는 hover가 없으므로 "웹·RN 동일 동작"은 정지 상태에 한정한다
@@ -206,8 +206,8 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - 이전(R10): "완전 차단, 배치는 Stack/Box로만". 사용자가 "버튼 하나만 배경색·크기·여백 다르게"가 불가능한 것을 확인하고 철회
 
 ### 기반
-- C-16. 헤드리스 프리미티브는 **Base UI** (Radix 아님). DOM 전용이므로 `@<scope>/web`에만 적용. shadcn 코드는 참고 자료로만 쓰고 API는 따르지 않는다
-- C-17. **(R21 강제 수단 확정)** `@<scope>/web`과 `@<scope>/native`는 **동일한 prop 시그니처**를 갖되 구현을 공유하지 않는다. 계약 타입은 `@<scope>/tokens`에 단일 정의(`Contracts<P>` 타입 맵 + `webComponents` / `nativeComponents` 키 목록)로 두고 양쪽이 그것을 구현한다. 사람 규율에 맡기지 않는다. 강제 수단:
+- C-16. 헤드리스 프리미티브는 **Base UI** (Radix 아님). DOM 전용이므로 `@eeennsu/web`에만 적용. shadcn 코드는 참고 자료로만 쓰고 API는 따르지 않는다
+- C-17. **(R21 강제 수단 확정)** `@eeennsu/web`과 `@eeennsu/native`는 **동일한 prop 시그니처**를 갖되 구현을 공유하지 않는다. 계약 타입은 `@eeennsu/tokens`에 단일 정의(`Contracts<P>` 타입 맵 + `webComponents` / `nativeComponents` 키 목록)로 두고 양쪽이 그것을 구현한다. 사람 규율에 맡기지 않는다. 강제 수단:
   - 각 패키지가 export 맵 전체를 타입 동등성 테스트 1개로 검사한다 — web은 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in WebKeys]: FC<Contracts<'web'>[K]> }>()`, native는 `Contracts<'native'>`와 `NativeKeys`. 추가·제거·누락 컴포넌트가 전부 걸린다. CI에 `vitest --typecheck`
   - **플랫폼 매개변수(R21 후속)**: `Contracts<P extends 'web' | 'native'>`. 대부분의 prop은 `P`와 무관하게 동일하고, 플랫폼 관용 이름이 갈리는 prop만 `P`로 분기한다 — v1에서는 Button 누름 이벤트 하나(`P extends 'web' ? { onClick?: () => void } : { onPress?: () => void }`, C-12). 이름 매핑은 계약 파일 이 한 곳에만 존재하고 어댑터가 자체 별칭을 두지 않는다. "동일한 prop 시그니처"는 "계약이 정의한 매핑 제외 동일"로 읽는다
   - `ref`는 플랫폼별 엘리먼트 대신 `Ref<{ focus(): void; blur(): void }>` 핸들로 계약에 포함한다. 핸들에서 DOM 노출로 넓히는 변경은 소비자 무영향(추가적)이고 반대는 파괴적이다. 대상은 포커스 가능한 Button · Input · Textarea뿐(R21 후속). Card · Stack · Box · Text · Badge · Label엔 `ref` 없음
@@ -217,14 +217,14 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - 계약은 tokens에 놓이고 웹 전용 컴포넌트(오버레이 · Form)의 v1 구현자는 web뿐. RN v2가 같은 계약을 구현하면 맵 테스트가 그대로 대칭을 검사한다
   - 탈락: `implement<Contract>()` 래퍼 — 감지가 아니라 은닉이고 우회를 막으려면 custom lint가 추가된다. `satisfies` + 생성 `.d.ts` — 레포 안에서는 안 걸리고 codegen 단계가 늘어난다
 - C-18. 기존 5개 Next 프로젝트 마이그레이션은 성공 기준이 아니다. 부수 효과로만 취급
-- C-19. **(R20 신설) RN 스타일 엔진은 NativeWind v5.** 2026-09-05 기준 preview이며 latest 승격 진행 중. 승격 전까지는 검증된 preview 버전을 `@<scope>/native`와 검증 Expo 프로젝트에 동일하게 정확한 버전으로 고정(`^` 없이)하고, 승격 후 한 번만 올린다(R21 후속: `spot`은 개발 중단, 검증 대상은 빈 Expo 프로젝트). StyleSheet 직접 사용은 NativeWind로 표현 불가한 경우(Reanimated 값 등)에 한정하며, 그때도 색·간격은 `@<scope>/tokens`의 JS 객체에서 읽는다
+- C-19. **(R20 신설) RN 스타일 엔진은 NativeWind v5.** 2026-09-05 기준 preview이며 latest 승격 진행 중. 승격 전까지는 검증된 preview 버전을 `@eeennsu/native`와 검증 Expo 프로젝트에 동일하게 정확한 버전으로 고정(`^` 없이)하고, 승격 후 한 번만 올린다(R21 후속: `spot`은 개발 중단, 검증 대상은 빈 Expo 프로젝트). StyleSheet 직접 사용은 NativeWind로 표현 불가한 경우(Reanimated 값 등)에 한정하며, 그때도 색·간격은 `@eeennsu/tokens`의 JS 객체에서 읽는다
   - **선택 근거**: 웹 소비처가 전부 Tailwind v4이고, v4·NativeWind v5가 같은 `@theme` CSS를 읽으므로 토큰 빌드 산출물이 1본이 된다. NativeWind v4(Tailwind v3)를 쓰면 지금은 안전하나 승격 시점에 RN 재작성이 확정 비용으로 남는다
-  - **손절 기준**: `@<scope>/native` 구현 착수 후 2주 안에 preview 버그로 AC-20의 5개 컴포넌트 중 하나라도 완성 불가하면 대체안으로 전환한다. 대체안 — 웹은 Tailwind v4 유지, RN만 Tailwind v3 + NativeWind v4. 토큰 빌드를 `@theme` CSS와 `tailwind.config.js` 두 갈래로 내고, 내장 유틸리티 차이(shadow·ring·border 기본값 등)를 문서화한다. 전환 시 C-3·AC-3·AC-25 수정 필요
-  - **(R21) 착수 게이트**: `@<scope>/native` 구현 착수 전에 NativeWind v5에서 다음 5건을 확인한다 — (1) `@theme inline`, (2) `.dark` 루트 셀렉터, (3) `@source`, (4) `:root:not(.light)`, (5) `--text-*--line-height` / `--text-*--font-weight` 복합 폰트 변수. R20 미결 3도 이 게이트에 편입한다 — R21 후속으로 단순화: NativeWind v5 preview가 요구하는 Expo SDK · RN 버전을 확인하고 검증 Expo 프로젝트를 그 버전으로 만든다(`spot` 호환 확인은 소멸). 요구 사양이 현행 Expo SDK와 안 맞으면 손절 기준과 무관하게 대체안 검토. (3) `@source`는 native 래퍼의 `@source "../dist"`(C-3)가 걸려 있어 미지원이면 RN 컴포넌트 클래스 생성 경로를 다시 정해야 한다
-  - (5) 복합 폰트 변수 미지원 시 RN Text 어댑터가 `@<scope>/tokens` JS 객체에서 fontSize · lineHeight · fontWeight 세 값을 읽어 `style`로 넣는다 — 위 "NativeWind로 표현 불가한 경우" 예외에 해당
+  - **손절 기준**: `@eeennsu/native` 구현 착수 후 2주 안에 preview 버그로 AC-20의 5개 컴포넌트 중 하나라도 완성 불가하면 대체안으로 전환한다. 대체안 — 웹은 Tailwind v4 유지, RN만 Tailwind v3 + NativeWind v4. 토큰 빌드를 `@theme` CSS와 `tailwind.config.js` 두 갈래로 내고, 내장 유틸리티 차이(shadow·ring·border 기본값 등)를 문서화한다. 전환 시 C-3·AC-3·AC-25 수정 필요
+  - **(R21) 착수 게이트**: `@eeennsu/native` 구현 착수 전에 NativeWind v5에서 다음 5건을 확인한다 — (1) `@theme inline`, (2) `.dark` 루트 셀렉터, (3) `@source`, (4) `:root:not(.light)`, (5) `--text-*--line-height` / `--text-*--font-weight` 복합 폰트 변수. R20 미결 3도 이 게이트에 편입한다 — R21 후속으로 단순화: NativeWind v5 preview가 요구하는 Expo SDK · RN 버전을 확인하고 검증 Expo 프로젝트를 그 버전으로 만든다(`spot` 호환 확인은 소멸). 요구 사양이 현행 Expo SDK와 안 맞으면 손절 기준과 무관하게 대체안 검토. (3) `@source`는 native 래퍼의 `@source "../dist"`(C-3)가 걸려 있어 미지원이면 RN 컴포넌트 클래스 생성 경로를 다시 정해야 한다
+  - (5) 복합 폰트 변수 미지원 시 RN Text 어댑터가 `@eeennsu/tokens` JS 객체에서 fontSize · lineHeight · fontWeight 세 값을 읽어 `style`로 넣는다 — 위 "NativeWind로 표현 불가한 경우" 예외에 해당
   - **(R22) (6) 소비자 `:root` 재선언 캐스케이드** — 소비자 `global.css`에서 native 래퍼 import 뒤에 쓴 `:root { --bg-brand: … }`(및 `.dark` / `@media` 블록)가 DS 토큰 파일의 같은 변수를 last-wins로 덮는지. C-5b의 RN 성립 조건. v5 테마 가이드는 `:root`를 런타임 기본값으로 읽는다고만 하고 import 순서 캐스케이드는 명시하지 않는다. 미지원이면 RN 로컬 오버라이드 채널을 `VariableContextProvider` 루트 래핑으로 재설계하고 C-5b RN 항목·AC-26 RN 절을 수정한다(웹 채널은 무영향)
 - C-20. **(R21 신설) 다크모드 전략 hybrid.** 루트 엘리먼트에 `.dark` / `.light` 클래스가 있으면 클래스가 OS 설정보다 우선하고, 없으면 OS `prefers-color-scheme`을 따른다
-  - 웹 래퍼(`@<scope>/web/themes/<brand>.css`)가 `@custom-variant dark`를 선언한다:
+  - 웹 래퍼(`@eeennsu/web/themes/<brand>.css`)가 `@custom-variant dark`를 선언한다:
     ```css
     @custom-variant dark {
       &:where(.dark, .dark *) { @slot; }
@@ -259,7 +259,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 8. Input의 자동완성 힌트는 `kind`에서 파생된다(`password` → `current-password`). 가입 화면의 `new-password`는 v1에서 구분하지 않는다.
 9. Button 아이콘 전용 모드는 v1에 없다. `label`은 항상 렌더된다. Dialog 닫기 버튼 같은 내부 아이콘 버튼은 구현 세부이며 공개 계약이 아니다.
 10. Textarea에 `rows` · `maxLength` prop이 없다(AC-15). 높이는 `size`(sm / md / lg → 행수 매핑)로 정하고, 더 큰 높이는 `min-h-[…]` 임의값을 쓴다. 글자 수 제한은 소비자 코드가 `onValueChange`에서 처리한다.
-11. 소비자 로컬 semantic 오버라이드(C-5b)는 `@<scope>/tokens`의 RN JS 토큰 객체에 닿지 않는다. JS 객체는 항상 import한 브랜드 파일의 값이다. v1 DS 코드가 JS 객체를 읽는 곳은 RN Text 폰트 폴백(C-19 (5))뿐이고 타이포는 오버라이드 대상이 아니므로 DS 컴포넌트는 영향이 없다. 소비자 자기 코드(Reanimated 등)가 JS 객체에서 색을 읽으면 오버라이드 전 값이 나온다. 런타임 해석값이 필요하면 소비자가 NativeWind `useUnstableNativeVariable`을 직접 쓴다 — DS 공개 계약이 아니며 DS는 래핑 훅을 제공하지 않는다.
+11. 소비자 로컬 semantic 오버라이드(C-5b)는 `@eeennsu/tokens`의 RN JS 토큰 객체에 닿지 않는다. JS 객체는 항상 import한 브랜드 파일의 값이다. v1 DS 코드가 JS 객체를 읽는 곳은 RN Text 폰트 폴백(C-19 (5))뿐이고 타이포는 오버라이드 대상이 아니므로 DS 컴포넌트는 영향이 없다. 소비자 자기 코드(Reanimated 등)가 JS 객체에서 색을 읽으면 오버라이드 전 값이 나온다. 런타임 해석값이 필요하면 소비자가 NativeWind `useUnstableNativeVariable`을 직접 쓴다 — DS 공개 계약이 아니며 DS는 래핑 훅을 제공하지 않는다.
 12. 로컬 오버라이드에서 다크 3블록(`:root` / `.dark` / `@media … :root:not(.light)`) 중 일부만 재선언하면 hybrid 4조합(AC-19)이 갈린다. 예: `:root`만 재선언하면 `.dark` 클래스가 있을 때는 소비자 라이트 값이 DS 다크 값을 덮고(같은 특이성, 뒤가 이김), 클래스 없이 OS 다크일 때는 DS 다크 값이 남는다(`:root:not(.light)`이 더 특이함). 버그가 아니라 CSS 특이성이며, 3블록 전부 쓰는 것이 계약이다.
 13. primitive 변수(`--blue-500` 등)도 `:root`에 있어 재선언하면 기술적으로 덮이지만 계약 밖이다. 이름 안정성을 보장하지 않으며 minor 버전에서 바뀔 수 있다. 오버라이드 대상은 semantic 색 변수뿐이다.
 14. **(R23)** 컴포넌트 내부 형태(Button 높이·패딩, Card radius, Input 테두리)와 폰트 패밀리는 앱 단위 통로가 없다. 앱 전체에서 바꾸려면 `className` 임의값(`rounded-[2px]`, 알려진 동작 3)을 호출 지점마다 반복해야 하고, 빠뜨린 곳을 잡는 테스트가 없다. v1에서 앱마다 갈리는 축은 색(C-5b) · 간격 리듬(C-7a 열거 중 무엇을 고르는가) · 화면 구조 셋이다. 이 제약이 실제로 문제가 되는지는 소비 프로젝트 2개를 만들어 본 뒤 판단하며, 그때의 확대안이 C-5b (R23) 트리거다.
@@ -288,7 +288,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 ### tokens
 - [ ] AC-1. 토큰 소스가 단일 플랫폼 무관 파일(JSON/DTCG)로 존재한다
 - [ ] AC-2. primitive / semantic / component 3계층이 파일 구조와 네이밍으로 구분된다
-- [ ] AC-3. **(R21 수정)** 빌드 스크립트가 소스에서 Tailwind v4 `@theme` CSS(`@<scope>/tokens/themes/<brand>.css`)를 생성하고, web 래퍼(`@<scope>/web/themes/<brand>.css`)와 native 래퍼(`@<scope>/native/themes/<brand>.css`)가 같은 토큰 파일을 import한다. 웹 Tailwind와 NativeWind v5는 각자의 래퍼를 통해 같은 어휘를 읽는다
+- [ ] AC-3. **(R21 수정)** 빌드 스크립트가 소스에서 Tailwind v4 `@theme` CSS(`@eeennsu/tokens/themes/<brand>.css`)를 생성하고, web 래퍼(`@eeennsu/web/themes/<brand>.css`)와 native 래퍼(`@eeennsu/native/themes/<brand>.css`)가 같은 토큰 파일을 import한다. 웹 Tailwind와 NativeWind v5는 각자의 래퍼를 통해 같은 어휘를 읽는다
 - [ ] AC-4. 빌드 스크립트가 같은 소스에서 RN 런타임용 JS 객체를 생성한다
 - [ ] AC-5. **(R21 수정)** semantic 토큰 한 줄을 바꾸면 웹·RN 양쪽에 동시에 전파된다. 검증 = 빌드 스냅샷(CSS 변수 + JS 객체). `className`으로 쓴 커스텀 클래스에도 전파된다 — `@theme inline`이 `var()`를 참조하므로 구조로 보장되며 별도 테스트 대상이 아니다
 - [ ] AC-6. **(R21 수정)** 컴포넌트 소스 어디에도 primitive 토큰 직접 참조가 없다. 강제 = primitive가 `@theme`에 없어 `bg-blue-500` 같은 클래스가 생성되지 않는 구조(C-7) + probe 컴파일 테스트(`bg-red-500` 등 primitive 클래스를 DS 테마로 컴파일해 출력이 비어 있음을 확인)
@@ -297,7 +297,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-6b. **(R21 수정)** 간격 토큰이 4px 배수 숫자 키의 열거 `1,2,3,4,6,8,12,16,20,24` + 영점 `0`으로 정의된다. 열거 외 키는 클래스가 생성되지 않는다(probe 테스트: `mt-5`, `mt-17`, `w-64`, `font-bold`가 출력 없음. Tailwind v4의 동적 spacing은 단독 `--spacing` 변수가 구동하므로 `--spacing-*: initial`이 그것까지 지우는지 이 probe가 확인한다). 이는 에러가 아닌 무효이며 v1 알려진 동작이다. 컴포넌트 `size`는 전역 `sm|md|lg|xl|2xl`, 컨트롤은 `sm|md|lg` 부분집합으로 정의된다
 - [ ] AC-6c. `fontFamily` 토큰이 존재하고, 패키지에 폰트 파일이 동봉되지 않는다
 
-### components (`@<scope>/web`)
+### components (`@eeennsu/web`)
 - [ ] AC-7. **(R21 수정)** 다음 12개가 구현된다: `Button` `Input` `Textarea` `Label` `Card` `Badge` `Tooltip` `Dialog` `Drawer` `Form` `ButtonGroup` `Text`
   - `Text` 계약: `children: string | string[]`(string 전용, RN 안전. `string[]`은 `<Text>Hi {name}</Text>` 허용용, R21 후속), `tone?: Tone`, `size?: TypographyStep`, `heading?: '1' | '2' | '3'`(R21 후속), `className?`. 비인터랙티브라 `label` 없음. `children: ReactNode`는 계약이 같아도 런타임이 갈려(`<span>`이 RN에서 크래시) 타입으로 못 막으므로 불채택. string에서 node로 넓히는 변경은 추가적
   - `heading`: 웹은 `<h1>` ~ `<h3>`, 없으면 `<span>`. RN은 `accessibilityRole="header"`. 문자열 enum인 이유 — `as`는 C-10 금지이고 숫자 리터럴은 AC-15 mapped type 테스트에 걸린다. `heading`은 시맨틱 레벨이며 시각 크기는 여전히 `size`가 정한다(두 축 독립)
@@ -315,11 +315,11 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-15a. 아이콘을 받는 컴포넌트가 `icon="이름"` 문자열만 받고, 잘못된 이름은 타입 에러가 난다. 아이콘 노드(`icon={<Trash />}`)는 타입에서 거부된다
 
 ### distribution
-- [ ] AC-16. **(R20 수정, R21 구체화) 부트스트랩 검증**: Tailwind v4가 설치된 빈 Next.js 프로젝트에 `@<scope>/web`을 설치하고, 전역 CSS에 `@import "@<scope>/web/themes/base.css"` 한 줄을 추가한 뒤, 로그인 화면 하나를 DS 컴포넌트만으로 작성해 정상 렌더된다. `tailwind.config`·PostCSS 설정 편집은 없어야 한다
+- [ ] AC-16. **(R20 수정, R21 구체화) 부트스트랩 검증**: Tailwind v4가 설치된 빈 Next.js 프로젝트에 `@eeennsu/web`을 설치하고, 전역 CSS에 `@import "@eeennsu/web/themes/base.css"` 한 줄을 추가한 뒤, 로그인 화면 하나를 DS 컴포넌트만으로 작성해 정상 렌더된다. `tailwind.config`·PostCSS 설정 편집은 없어야 한다
   - 화면 구성: `Form` > (`Label` + `Input kind="email"`), (`Label` + `Input kind="password"`), `Text tone="danger"`(오류), `Button variant="primary"`. 제출은 Button `onClick`에서 소비자 코드가 처리. Enter는 무동작(알려진 동작 5)
   - 확인 항목: 렌더(자동) + 비밀번호 필드에 브라우저 자동완성 제안이 뜬다(`<form>` + `kind` 파생 힌트, C-21). 자동완성 제안 UI는 브라우저 크롬이라 Playwright로 단언할 수 없다 — 자동 검증은 DOM의 `<form>` 존재와 `autocomplete="current-password"` / `"email"` 속성으로, 제안 UI 자체는 수동 확인(R21 후속)
   - 이전: "설정 파일 편집 없이". Tailwind v4 필수화로 import 한 줄까지 허용
-- [ ] AC-17. **(R21 수정)** 새로 만든 빈 Vite + React 19 + Tailwind v4 프로젝트에서도 AC-16과 같은 경로·브랜드(`@<scope>/web/themes/base.css`)로 동일 화면이 렌더된다 (프레임워크 비종속 검증). 다크는 코드 0줄로 OS 추종을 확인(AC-19 a)
+- [ ] AC-17. **(R21 수정)** 새로 만든 빈 Vite + React 19 + Tailwind v4 프로젝트에서도 AC-16과 같은 경로·브랜드(`@eeennsu/web/themes/base.css`)로 동일 화면이 렌더된다 (프레임워크 비종속 검증). 다크는 코드 0줄로 OS 추종을 확인(AC-19 a)
 - [ ] AC-18. 타입 정의(`.d.ts`)가 함께 배포되어 IDE·클로드코드가 prop 시그니처를 읽을 수 있다
 - [ ] AC-19. **(R21 재작성)** 다크모드가 AC-16의 import 한 줄 외 추가 설정 없이 hybrid로 동작한다.
   - (a) 루트 엘리먼트에 `.dark` / `.light` 클래스가 없으면 OS `prefers-color-scheme`을 따른다. Vite 검증 프로젝트에서 코드 0줄로 확인.
@@ -327,7 +327,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
   - (c) RN은 시스템 색 구성표를 따르며 NativeWind의 수동 전환 API로 덮을 수 있다.
   - 검증: 웹은 Playwright `emulateMedia({ colorScheme })` × 루트 클래스 유무 4조합에서 semantic 배경색 computed style을 토큰 값과 비교. RN은 `Appearance` 모킹 2조합. 브랜드는 `base`.
 - [ ] AC-24. **(R20 신설, R21 수정) 커스텀 검증**: AC-16 화면에서 버튼 하나에 `className`으로 배경색·여백을 바꾸면 그 버튼만 바뀌고 다른 버튼은 그대로다. 사용한 클래스는 DS `@theme` 어휘(`bg-danger`, `mt-6` 등 — `mt-6`은 열거 안의 키)여야 한다. 전제: 어휘 봉쇄(C-15)로 `@theme` 밖의 클래스는 애초에 생성되지 않는다
-- [ ] AC-26. **(R22 신설) 로컬 오버라이드 검증**: AC-16 화면의 전역 CSS에서 `@import "@<scope>/web/themes/base.css"` 다음 줄에 semantic 색 변수 하나(예: `--bg-brand`)를 3블록(`:root` / `.dark` / `@media … :root:not(.light)`)으로 재선언한다. 라이트 값 X·다크 값 Y는 `base`·`bakery` 어느 값과도 다르게 잡는다
+- [ ] AC-26. **(R22 신설) 로컬 오버라이드 검증**: AC-16 화면의 전역 CSS에서 `@import "@eeennsu/web/themes/base.css"` 다음 줄에 semantic 색 변수 하나(예: `--bg-brand`)를 3블록(`:root` / `.dark` / `@media … :root:not(.light)`)으로 재선언한다. 라이트 값 X·다크 값 Y는 `base`·`bakery` 어느 값과도 다르게 잡는다
   - (a) `Button variant="primary"` 배경과 `className="bg-brand"`를 준 요소의 computed style이 AC-19 4조합(`emulateMedia` × 루트 클래스 유무)에서 각각 X 또는 Y다 — 컴포넌트 기본 스타일과 소비자 클래스가 같은 변수를 따라감
   - (b) 재선언하지 않은 semantic 변수(예: `--bg-danger`)는 `base` 값 그대로다 — 오버라이드가 변수 단위로 격리됨
   - (c) 소비자 CSS에 `tailwind.config`·PostCSS·`@theme` 편집이 없다 — C-3 "import 한 줄" 유지, 추가된 건 CSS 선언뿐
@@ -335,11 +335,11 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
   - RN: AC-23 화면에서 같은 3블록을 `global.css`에 쓰고 `Button variant="primary"` 배경이 `Appearance` 모킹 2조합에서 X / Y다. AC-25 격하 규칙 적용(NativeWind가 테스트 환경에서 해석 못 하면 수동 확인 명시). 전제는 C-19 게이트 (6) 통과
   - Vite(AC-17)에서는 반복하지 않는다 — 캐스케이드는 번들러 무관이고 AC-17의 목적은 프레임워크 비종속 렌더 확인
 
-### platform-adapter (`@<scope>/native`)
+### platform-adapter (`@eeennsu/native`)
 - [ ] AC-20. **(R21 수정)** `Button` `Input` `Card` `Stack` `Text` 5개가 RN + NativeWind v5로 구현된다
-- [ ] AC-21. **(R21 수정)** 이 5개의 prop 시그니처가 `@<scope>/web`과 일치한다 — 단 계약이 플랫폼 매개변수로 정의한 이름 매핑(Button 웹 `onClick` ↔ RN `onPress`)은 제외하며, 그 외 차이는 0. `@<scope>/tokens`의 계약 타입 `Contracts<'web'>` / `Contracts<'native'>`를 양쪽이 구현하며, Button · Input의 `ref` 핸들(`{ focus(); blur() }`)도 계약에 포함된다. 검증 = export 맵 타입 동등성 테스트(C-17). 한쪽에만 prop을 추가하거나 컴포넌트를 빠뜨리면 테스트가 깨진다 (실제로 깨지는지 확인)
+- [ ] AC-21. **(R21 수정)** 이 5개의 prop 시그니처가 `@eeennsu/web`과 일치한다 — 단 계약이 플랫폼 매개변수로 정의한 이름 매핑(Button 웹 `onClick` ↔ RN `onPress`)은 제외하며, 그 외 차이는 0. `@eeennsu/tokens`의 계약 타입 `Contracts<'web'>` / `Contracts<'native'>`를 양쪽이 구현하며, Button · Input의 `ref` 핸들(`{ focus(); blur() }`)도 계약에 포함된다. 검증 = export 맵 타입 동등성 테스트(C-17). 한쪽에만 prop을 추가하거나 컴포넌트를 빠뜨리면 테스트가 깨진다 (실제로 깨지는지 확인)
 - [ ] AC-22. **(R21 수정)** `label`이 RN에서 접근성 이름이 된다 — Button은 `label`이 가시 텍스트이자 `accessibilityLabel`, Input은 `accessibilityLabel`만(가시 라벨은 `Label` 조합)
-- [ ] AC-23. **(R20 수정, R21 수정) 크로스플랫폼 검증**: 새로 만든 빈 Expo 프로젝트(SDK는 C-19 게이트가 정함. `spot`은 개발 중단)에 NativeWind v5와 `@<scope>/native`를 설치하고 `@<scope>/native/themes/base.css`를 import해 화면 하나를 DS 컴포넌트만으로 작성한다(제목·오류 텍스트는 `Text`). 웹 프로젝트와 같은 색·간격이 나온다
+- [ ] AC-23. **(R20 수정, R21 수정) 크로스플랫폼 검증**: 새로 만든 빈 Expo 프로젝트(SDK는 C-19 게이트가 정함. `spot`은 개발 중단)에 NativeWind v5와 `@eeennsu/native`를 설치하고 `@eeennsu/native/themes/base.css`를 import해 화면 하나를 DS 컴포넌트만으로 작성한다(제목·오류 텍스트는 `Text`). 웹 프로젝트와 같은 색·간격이 나온다
 - [ ] AC-25. **(R20 신설, R21 수정)** AC-24와 같은 `className` 문자열을 RN 버튼에 주면 같은 시각 결과가 나온다. 웹·RN 클래스 어휘 일치 검증. NativeWind가 테스트 환경에서 className을 style로 해석하지 못하면 className prop 스냅샷으로 격하하고, 시각 결과는 수동 확인으로 명시한다
 
 ## Assumptions Exposed & Resolved
@@ -360,7 +360,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 | RN은 v2로 미뤄도 된다 | 사용자가 v1 요구사항으로 명시 | platform-adapter 활성 복귀. 단 오버레이 4개는 v2로 분리 |
 | 3계층 토큰 구조를 정했으니 tokens는 명확하다 | 구조만 있고 실제 값이 한 줄도 없다. 그리고 소비 프로젝트 도메인이 전부 다른데(빵집/운세/사진/블로그/이력서) `Theme` 엔티티에 브랜드 축이 없다 | 브랜드 축 추가 — `Theme = brand × (light\|dark)`. semantic 계층이 주입점 |
 | 어휘를 하나로 통일하는 게 좋다 | 간격을 t-shirt 6단계로 두면 "8과 16 사이 12" 상황에서 `md-plus` 같은 이름이 생겨 무너진다. 레퍼런스 DS들도 spacing과 size 어휘를 분리해 운영한다 | 간격=숫자(4px 배수), size=t-shirt로 의도적 분리. C-8에 예외 명시 |
-| 계약 일치는 규율로 지킬 수 있다 | 웹에만 prop 하나 추가하면 계약이 깨지고 아무도 모른다. AC-21이 검증 불가능한 AC였다 | 계약 타입을 `@<scope>/tokens`에 단일 정의. 어기면 컴파일 에러. R21: 강제 수단을 export 맵 타입 동등성 테스트로 확정(C-17) |
+| 계약 일치는 규율로 지킬 수 있다 | 웹에만 prop 하나 추가하면 계약이 깨지고 아무도 모른다. AC-21이 검증 불가능한 AC였다 | 계약 타입을 `@eeennsu/tokens`에 단일 정의. 어기면 컴파일 에러. R21: 강제 수단을 export 맵 타입 동등성 테스트로 확정(C-17) |
 | 아이콘은 노드로 받으면 된다 | `icon={<Trash />}`는 아무 노드나 통과시켜 C-15로 막은 드리프트 경로를 다시 연다. 게다가 lucide는 웹/RN 패키지가 갈린다 | 이름 문자열로만 받고 DS가 내부에서 플랫폼 분기 |
 
 ## Technical Context
@@ -429,7 +429,7 @@ Inter가 양쪽 공통이지만 **한글 글리프가 없어** 현재 웹 프로
 | ComponentContract | core domain | variant 어휘, size 스케일(전역 5단 + 컨트롤 부분집합), `tone` 축 (R21), 제어 네이밍(`value` 3종 / `open` 3종 / 누름은 플랫폼 관용 `onClick`·`onPress`), 교차 어휘 열거형 `kind` (R21), 플랫폼 매개변수 `Contracts<P>` (R21 후속), a11y 필수, 금지 prop 목록, `className` 허용 (R20), `ref` 핸들 | governs all Components across both Platforms; enforced by export-map type equality test (C-17) |
 | Platform | supporting | web \| native | consumes DesignToken via platform build; hosts its own Component impl; both resolve className against shared ClassVocabulary |
 | ClassVocabulary | supporting (R20) | `@theme` 산출물 — 토큰에서 파생된 Tailwind 클래스 집합. **봉쇄** (R21): Tailwind 기본 팔레트·동적 spacing 리셋, primitive 미노출. 열거 외 키는 무효 | built from DesignToken; consumed by web Tailwind and NativeWind identically via platform wrapper; the only customization channel; merged by tailwind-merge with DS key config |
-| Package | supporting | name, version, exports, types | `@<scope>/tokens` → `@<scope>/web`, `@<scope>/native`. 스코프 이름 미확정(R21 보류). 공개 경로는 `web/themes/<brand>.css`, `native/themes/<brand>.css` |
+| Package | supporting | name, version, exports, types | `@eeennsu/tokens` → `@eeennsu/web`, `@eeennsu/native`. 스코프 이름 `@eeennsu` 확정(2026-09-05). 공개 경로는 `web/themes/<brand>.css`, `native/themes/<brand>.css` |
 | Theme | supporting | brand × (light \| dark) | rebinds semantic DesignToken; composed of Brand and color scheme; dark resolved by hybrid rule (C-20) |
 | Brand | core domain | name, semantic 색 오버라이드. v1: `base`, `bakery` (R21). 주입 위치 2곳 (R22): DS 브랜드 파일(이름 있는 프리셋) / 소비자 로컬 오버라이드(앱 전용, C-5b) | injects into semantic tier only; 간격·타이포·component 계층은 불변; preset selected at build time by import path, one per app; local override cascades over the preset in consumer global CSS |
 | SemanticVariable | supporting (R22) | `:root` semantic 색 변수 이름(예: `--bg-brand`. 실제 이름은 토큰 인벤토리), 3블록(light / `.dark` / `@media`) | public override contract (C-5b); referenced by ClassVocabulary via `@theme inline` `var()`; 1:1 with `twMergeConfig` 색 키; renaming or removal is breaking(major), addition is additive; not mirrored into RN JS token object (알려진 동작 11); (R23) 확대 후보 변수군 `--radius-*`·폰트 패밀리는 계약 밖이나 토큰 인벤토리에서 계약 후보로 명명한다 |
@@ -530,7 +530,7 @@ Inter가 양쪽 공통이지만 **한글 글리프가 없어** 현재 웹 프로
 
 ### Round 16 — platform-adapter / Constraints
 **Q:** C-17이 "동일 prop 시그니처"를 요구하는데 강제 수단이 없다. AC-21도 검증 불가능한 상태. 어떻게 강제하나?
-**A:** **`@<scope>/tokens`에 계약 타입 동거**
+**A:** **`@eeennsu/tokens`에 계약 타입 동거**
 
 ### Round 17 — distribution / Goal
 **Q:** 레포 구조와 배포 인프라는? (비공개 레지스트리는 `.npmrc` 토큰 설정을 요구해 AC-16을 깨뜨림을 제시)

@@ -33,7 +33,7 @@ R20 개정 스펙([design-system-spec.md](design-system-spec.md))을 구현 전�
 
 **택: 타입 동등성 테스트, export 맵 통째 비교.**
 
-- `@<scope>/tokens`가 `Contracts` 타입 맵과 `webComponents` / `nativeComponents` 키 목록을 제공한다. 각 패키지는 테스트 1개로 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in NativeKeys]: FC<Contracts[K]> }>()`를 검사한다. 추가·제거·누락 컴포넌트가 전부 걸린다. CI에 `vitest --typecheck`.
+- `@eeennsu/tokens`가 `Contracts` 타입 맵과 `webComponents` / `nativeComponents` 키 목록을 제공한다. 각 패키지는 테스트 1개로 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in NativeKeys]: FC<Contracts[K]> }>()`를 검사한다. 추가·제거·누락 컴포넌트가 전부 걸린다. CI에 `vitest --typecheck`.
 - `ref`는 플랫폼별 엘리먼트 대신 `Ref<{ focus(): void; blur(): void }>` 핸들로 계약에 포함한다. 핸들에서 DOM 노출로 넓히는 변경은 소비자 무영향(추가적)이고 반대는 파괴적이다.
 - 플랫폼 전용 prop은 0개. 웹·RN 차이는 계약의 열거형 교차 어휘로 흡수한다(B-6 `kind`).
 - 탈락: `implement<Contract>()` 래퍼 — 감지가 아니라 은닉이고, 우회를 막으려면 custom lint가 추가된다. `satisfies` + 생성 `.d.ts` — 레포 안에서는 안 걸리고 codegen 단계가 늘어난다.
@@ -43,8 +43,8 @@ R20 개정 스펙([design-system-spec.md](design-system-spec.md))을 구현 전�
 
 **택: 전면 봉쇄 + 파일 분리 + 브랜드 빌드타임 파일.** (다크 전략은 B-5 hybrid)
 
-- 토큰 빌드가 브랜드마다 `@<scope>/tokens/themes/<brand>.css`를 낸다. 내용: `:root` 변수(primitive 포함) + 다크 오버라이드 블록 2셀렉터 + `@theme inline` 매핑 + `--color-*: initial`, `--spacing-*: initial`, radius·shadow·text 네임스페이스 리셋. 이 파일은 **내부 산출물**이며 소비자가 직접 import하지 않는다.
-- 소비자 공개 경로는 플랫폼 래퍼다(B-7). `@<scope>/web/themes/<brand>.css`가 토큰 파일을 import하고 `@custom-variant dark`(hybrid), `@source "../dist"`를 덧붙인다. RN은 `@<scope>/native/themes/<brand>.css`. 근거: `@source`는 선언한 CSS 파일 기준 상대경로이고 pnpm은 realpath로 해석하므로, 토큰 패키지 안의 파일에서는 web dist를 찾을 수 없다.
+- 토큰 빌드가 브랜드마다 `@eeennsu/tokens/themes/<brand>.css`를 낸다. 내용: `:root` 변수(primitive 포함) + 다크 오버라이드 블록 2셀렉터 + `@theme inline` 매핑 + `--color-*: initial`, `--spacing-*: initial`, radius·shadow·text 네임스페이스 리셋. 이 파일은 **내부 산출물**이며 소비자가 직접 import하지 않는다.
+- 소비자 공개 경로는 플랫폼 래퍼다(B-7). `@eeennsu/web/themes/<brand>.css`가 토큰 파일을 import하고 `@custom-variant dark`(hybrid), `@source "../dist"`를 덧붙인다. RN은 `@eeennsu/native/themes/<brand>.css`. 근거: `@source`는 선언한 CSS 파일 기준 상대경로이고 pnpm은 realpath로 해석하므로, 토큰 패키지 안의 파일에서는 web dist를 찾을 수 없다.
 - primitive는 `:root` 변수로만 존재하고 `@theme`에 넣지 않는다. `bg-blue-500` 같은 클래스가 생성되지 않으므로 C-7 / AC-6이 lint 없이 구조로 강제된다.
 - spacing은 희소 열거형(B-2). 열거 밖 키는 클래스가 생성되지 않는다. 이 no-op은 v1 알려진 동작이다(D, G).
 - 브랜드는 앱당 1개, import 파일로 선택한다(B-3). 런타임 브랜드 전환은 요구사항에 없다.
@@ -95,7 +95,7 @@ R20 개정 스펙([design-system-spec.md](design-system-spec.md))을 구현 전�
 | B-4 | RN v1에 Text 포함 | 확정 | 포함. AC-7 웹 11개 → 12개, AC-20 RN 4개 → 5개 |
 | B-5 | 다크모드 전략 | 확정 | hybrid. 루트 클래스가 있으면 클래스 우선, 없으면 OS 추종 |
 | B-6 | Input 교차 어휘, Form 범위 | 확정 | `kind = "text" \| "password" \| "email" \| "number"` 열거형 1개로 은닉. Form v1은 레이아웃 + label + error 표시. submit 개념 제외, react-hook-form 미도입 |
-| B-7 | npm 스코프, 경로 | 경로 확정 / 스코프 보류 | 소비자 공개 경로 `@<scope>/web/themes/<brand>.css`, `@<scope>/native/themes/<brand>.css`. 래퍼가 `@<scope>/tokens/themes/<brand>.css`를 import. 토큰 직접 경로는 폐기. 스코프 이름은 미확인, `@<scope>` 변수 유지 |
+| B-7 | npm 스코프, 경로 | 경로 확정 / 스코프는 2026-09-05 `@eeennsu` 확정 | 소비자 공개 경로 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css`. 래퍼가 `@eeennsu/tokens/themes/<brand>.css`를 import. 토큰 직접 경로는 폐기. 스코프 이름은 미확인, `@eeennsu` 변수 유지 |
 | B-8 | Text `size` | 확정 (3차) | 전역 `size = sm \| md \| lg \| xl \| 2xl`. Button·Input 등은 `sm \| md \| lg` 부분집합. Text의 `size`는 글자 크기·행간·무게를 묶어 바꾸는 타이포 스텝이며 계약 타입에 명시 |
 | B-9 | Button 누름 이벤트 | 확정 (3차) | `onPress`. 웹 어댑터가 `onClick`으로 매핑 |
 | B-10 | Form 렌더 | 확정 (3차) | `<form>`을 렌더하고 `onSubmit`은 항상 `preventDefault`. `div` + `role="form"` 불채택 — 브라우저 비밀번호 자동완성이 `<form>` 기준이고 AC-16 검증 화면이 로그인이다. v1에서 Enter는 아무 동작도 하지 않는다 |
@@ -125,7 +125,7 @@ R20 개정 스펙([design-system-spec.md](design-system-spec.md))을 구현 전�
 
 ### B-5. hybrid 다크모드 상세
 
-웹 래퍼(`@<scope>/web/themes/<brand>.css`):
+웹 래퍼(`@eeennsu/web/themes/<brand>.css`):
 
 ```css
 @custom-variant dark {
@@ -319,8 +319,8 @@ v1 수용 사항(사용자 확정): 열거 외 키는 에러가 아니라 조용
 
 | 번호 | 변경 | 출처 |
 |---|---|---|
-| C-1 | 패키지명을 `@<scope>/tokens` `@<scope>/web` `@<scope>/native`로. 스코프는 확인 후 치환 | B-7 |
-| C-3 | 소비자 import 대상 = `@<scope>/web/themes/<brand>.css`(웹) / `@<scope>/native/themes/<brand>.css`(RN). 래퍼가 `tokens/themes/<brand>.css`를 import. R20 미결 2를 `@source`로 종결. 래퍼가 `@import "tailwindcss"` 포함(pnpm peer 확인 조건부) | A-2, A-3, B-7 |
+| C-1 | 패키지명을 `@eeennsu/tokens` `@eeennsu/web` `@eeennsu/native`로. 스코프는 2026-09-05 `@eeennsu`로 확정 | B-7 |
+| C-3 | 소비자 import 대상 = `@eeennsu/web/themes/<brand>.css`(웹) / `@eeennsu/native/themes/<brand>.css`(RN). 래퍼가 `tokens/themes/<brand>.css`를 import. R20 미결 2를 `@source`로 종결. 래퍼가 `@import "tailwindcss"` 포함(pnpm peer 확인 조건부) | A-2, A-3, B-7 |
 | C-4 | `"use client"` 대상에 Form 추가(submit 핸들러 보유) | B-10 |
 | C-4a | 스코프 표기 | B-7 |
 | C-5a | 브랜드는 앱당 1개, 빌드타임 파일 선택. v1 `base` + `bakery`. 런타임 전환은 범위 밖 | A-2, B-3 |
@@ -356,13 +356,13 @@ v1 수용 사항(사용자 확정): 열거 외 키는 에러가 아니라 조용
 | AC-11a | `{...rest}` 스프레드 금지 추가 | A-3 |
 | AC-13 | 두 갈래로 재작성: 값 입력 컴포넌트는 `value` 3종만, 오버레이는 `open` 3종만. Button·ButtonGroup은 `onPress`만, `onClick` 없음. Form 제외 명시(값 없음) | B-6, B-9, B-11 |
 | AC-15 | 재정의: 계약 전체에 `number` prop 없음 + 색 의도 prop은 enum. 예시 `tone="#333"` 타입 에러 | A-5, B-1 |
-| AC-16 | import `@<scope>/web/themes/base.css`. 화면 구성: Form + Label + Input(`kind`) + Text(`tone="danger"`) + Button. 제출은 Button `onPress`. Enter는 무동작(G-5). 비밀번호 자동완성 제안이 뜨는지 확인 항목에 추가 | A-2, B-3, B-4, B-6, B-7, B-9, B-10 |
+| AC-16 | import `@eeennsu/web/themes/base.css`. 화면 구성: Form + Label + Input(`kind`) + Text(`tone="danger"`) + Button. 제출은 Button `onPress`. Enter는 무동작(G-5). 비밀번호 자동완성 제안이 뜨는지 확인 항목에 추가 | A-2, B-3, B-4, B-6, B-7, B-9, B-10 |
 | AC-17 | AC-16과 동일 경로·브랜드. 다크는 OS 추종으로 확인 | B-3, B-5, B-7 |
 | AC-19 | E의 재작성안으로 교체 | B-5 |
 | AC-20 | 5개: Button Input Card Stack **Text** | B-4 |
 | AC-21 | "이 5개". 검증 = 맵 동등성 테스트. ref 핸들 포함 | A-1, B-4 |
 | AC-22 | Button은 label이 가시 텍스트이자 `accessibilityLabel`. Input은 `accessibilityLabel`만 | A-4 |
-| AC-23 | `@<scope>/native/themes/base.css`. Text 사용 | B-3, B-4, B-7 |
+| AC-23 | `@eeennsu/native/themes/base.css`. Text 사용 | B-3, B-4, B-7 |
 | AC-24 | 어휘 봉쇄 전제 명시. 예시 클래스는 열거 안의 키(`mt-6`은 유효) | A-2, B-2 |
 | AC-25 | RN 검증 격하 조건(NativeWind 테스트 해석 불가 시 수동) | A-3 |
 
@@ -396,7 +396,7 @@ v1 수용 사항(사용자 확정): 열거 외 키는 에러가 아니라 조용
 
 결정 대기 항목 없음.
 
-1. **npm 스코프 이름.** 미확인. `@<scope>` 변수 유지. 참고: `npm org create`는 CLI 명령이 아니며 조직 생성은 npmjs.com/org/create에서 한다. 확인 후 문자열 치환.
+1. **npm 스코프 이름.** 2026-09-05 `@eeennsu`로 확정, 문서 전역 치환 완료(계정·조직 소유 확인은 publish 전 T-P1). 참고: `npm org create`는 CLI 명령이 아니며 조직 생성은 npmjs.com/org/create에서 한다.
 
 닫힌 항목: Text 제목 크기 → B-8. Button 누름 이벤트 → B-9. 오버레이 제어 API → B-11.
 
