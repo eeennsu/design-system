@@ -1,8 +1,39 @@
-# OMC: 런타임 상태는 제외, 지속 지식만 커밋
-.omc/*
-!.omc/skills/
-!.omc/plans/
-!.omc/research/
-!.omc/specs/
-!.omc/project-memory.json
-!.omc/notepad.md
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Storybook
+storybook-static/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+
+# Test / coverage
+coverage/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
