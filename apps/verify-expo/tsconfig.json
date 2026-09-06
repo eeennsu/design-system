@@ -1,0 +1,12 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "types": ["node", "jest"],
+    // expo 기본값은 `["react-native"]` 이고, 그러면 tsc 가 react-native-css 의 원본 .ts 를
+    // 그대로 읽어 그 패키지 내부 타입 오류가 이 앱의 typecheck 를 깨뜨린다. `.d.ts` 로
+    // 해석하게 비우면 skipLibCheck 가 덮는다. 런타임 해석은 Metro 가 하므로 영향이 없다.
+    "customConditions": []
+  },
+  "include": ["**/*.ts", "**/*.tsx", "globals.d.ts", "nativewind-env.d.ts"]
+}

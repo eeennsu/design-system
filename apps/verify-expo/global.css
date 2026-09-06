@@ -1,0 +1,2 @@
+/* 소비자 전역 CSS. DS 규칙(C-3)대로 래퍼 import 한 줄만 둔다. */
+@import "@eeennsu/native/themes/base.css";
