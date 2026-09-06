@@ -3,7 +3,8 @@ node_modules/
 .pnpm-store/
 
 # Build output
-dist/
+# packages/*/dist 와 packages/*/themes 는 추적한다 (plan.md T-0).
+# 래퍼 CSS 가 publish 대상이고, base.css vs bakery.css diff 가 AC-6a 검증이다.
 build/
 out/
 .turbo/
@@ -18,6 +19,12 @@ storybook-static/
 
 # Test / coverage
 coverage/
+test-results/
+playwright-report/
+
+# Pack / verify 임시 산출물
+*.tgz
+.verify-pack/
 
 # Env
 .env

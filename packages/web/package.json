@@ -1,0 +1,46 @@
+{
+  "name": "@eeennsu/web",
+  "version": "0.1.0",
+  "description": "웹(React 19 + Tailwind v4) 디자인 시스템 컴포넌트",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "themes"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./themes/*.css": "./themes/*.css"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --typecheck --passWithNoTests"
+  },
+  "dependencies": {
+    "@eeennsu/tokens": "workspace:*",
+    "@base-ui/react": "1.8.0",
+    "lucide-react": "1.41.0",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-dom": ">=19",
+    "tailwindcss": ">=4.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "jsdom": "^30.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3"
+  }
+}

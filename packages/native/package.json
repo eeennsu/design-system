@@ -1,0 +1,39 @@
+{
+  "name": "@eeennsu/native",
+  "version": "0.1.0",
+  "description": "React Native(Expo + NativeWind v5) 디자인 시스템 컴포넌트",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "themes"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./themes/*.css": "./themes/*.css"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run --typecheck --passWithNoTests"
+  },
+  "dependencies": {
+    "@eeennsu/tokens": "workspace:*",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-native": ">=0.81",
+    "react-native-svg": "*",
+    "tailwindcss": ">=4.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "react": "^19.2.0"
+  }
+}

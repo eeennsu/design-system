@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # 검증 앱(Playwright)이 쓰는 브라우저. packages/* 테스트에는 필요 없다.
+      - run: pnpm exec playwright install --with-deps chromium
+
+      # tokens -> web -> native -> apps 순서는 pnpm 이 의존성 그래프로 정한다.
+      - run: pnpm -r build
+
+      - run: pnpm -r test
+
+      # workspace:* 심링크로는 exports 맵·files·.d.ts 동봉을 검증하지 못한다(T-V3).
+      - run: pnpm verify:pack
