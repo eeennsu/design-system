@@ -3,8 +3,8 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-05
-- 진행: Phase 0 ~ Phase 3 완료. Phase 4(C-19 게이트) 이후 미착수
+- 기준일: 2026-09-06
+- 진행: Phase 0 ~ Phase 4 완료. Phase 5(native) 미착수 — 게이트 (7) 기기 확인 1건이 착수 조건으로 남았다
 
 ## 1. 완료 상태
 
@@ -17,9 +17,14 @@
 | 3 | T-V1 verify-next | 완료 | Playwright 16개 |
 | 3 | T-V2 verify-vite | 완료 | Playwright 5개 |
 | 3 | T-V3 pack 설치 | 완료 | `pnpm verify:pack` |
-| 4~7 | 게이트 · native · RN 검증 · publish | 미착수 | — |
+| 4 | T-G1 `apps/verify-expo` 생성 | 완료 | [gate-c19.md](gate-c19.md) "T-G1" |
+| 4 | T-G2 게이트 실행 | 완료 | jest 20개 + [gate-c19.md](gate-c19.md) 9항목 |
+| 5~7 | native · RN 검증 · publish | 미착수 | — |
 
-수동 확인으로 남은 것: AC-16 의 "비밀번호 자동완성 제안 UI"(브라우저 크롬이라 자동 단언 불가). DOM 쪽 근거(`<form>` + `autocomplete="current-password"`)는 Playwright 가 본다.
+수동 확인으로 남은 것 2건:
+
+1. AC-16 의 "비밀번호 자동완성 제안 UI"(브라우저 크롬이라 자동 단언 불가). DOM 쪽 근거(`<form>` + `autocomplete="current-password"`)는 Playwright 가 본다
+2. **게이트 (7) 기기 화면 확인.** Android 에뮬레이터 또는 Expo Go 에서 `apps/verify-expo` 를 띄운다. Phase 5 착수의 마지막 조건이다
 
 ## 2. 계획과 갈린 지점
 
@@ -70,6 +75,34 @@ RN 은 `TextInput` · `Pressable` 인스턴스에 `focus`/`blur` 가 있으므�
 plan §5.5 는 러너 2개(Vitest · Playwright)를 말한다. 그대로다. 다만 Playwright 는 `packages/*` 가
 아니라 검증 앱 안에 있고 `pnpm -r test` 가 둘 다 돌린다.
 
+### N-7. `lightningcss` 고정을 `overrides` 가 아니라 직접 의존성으로 했다
+
+plan §2.1 은 `apps/verify-expo/package.json` 에 `"overrides": { "lightningcss": "1.30.1" }` 를 넣으라고
+했다. **pnpm workspace 는 멤버 패키지의 `overrides` 필드를 읽지 않는다** — 루트 `pnpm.overrides` 만
+먹고, 루트에 넣으면 웹 쪽 Tailwind 가 쓰는 lightningcss 까지 같이 묶인다.
+
+`lightningcss` 는 `react-native-css` 의 **peer** 라(`>=1.27.0`) 검증 앱의 정확 버전 devDependency 로
+두면 같은 고정 효과가 나고 범위가 앱 안에 갇힌다. 그렇게 했다.
+
+### N-8. 게이트 스텁이 `bg-brand` 한 줄이 아니다
+
+plan v2 F-14 는 `packages/native/dist/_gate-stub.js` 를 `className="bg-brand"` 문자열 1줄로 적었다.
+구현은 게이트가 쓰는 클래스 어휘 전체를 담는다 — (5) 의 `text-xl`, (6) 의 `bg-danger` 처럼
+`bg-brand` 말고도 생성돼야 하는 클래스가 있기 때문이다.
+
+(3) 의 격리 판정은 약해지지 않는다. **스텁에만 있고 앱 소스에는 없는 클래스**(`mt-6` · `text-fg-muted` ·
+`bg-danger`)로 판정하고, 스텁에도 앱에도 없는 클래스(`bg-surface-hover` 등)가 생성되지 않는 것을
+음성 대조로 함께 단언한다.
+
+### N-9. 게이트 판정 (a) 에 `Appearance` 모킹이 필요했다
+
+plan §2.1 은 판정 (a) 를 "jest-expo + RNTL 의 `toHaveStyle`" 로만 적었다. 실제로는 그 위에
+**`NativeAppearance` 모킹**이 필요하다 — jest-expo 에는 그 TurboModule 이 없어
+`Appearance.setColorScheme` 이 no-op 이고 `getColorScheme()` 이 항상 `null` 이다.
+
+모킹 없이 돌리면 (2) 와 (4) 가 NativeWind 의 실제 동작과 무관하게 전부 실패로 보인다.
+`apps/verify-expo/jest.setup.js` 와 `tests/color-scheme.ts` 가 그 장치이고 T-R1 도 같은 것을 쓴다.
+
 ## 3. 구현 중 확인한 사실
 
 ### F-1. R23 요구 (a) — 비-inline `@theme` 변수도 소비자가 덮을 수 있다
@@ -113,7 +146,61 @@ v1 이 범위 밖으로 둔 동작을 함께 들여온다. 나중에 바꿀 때 
 소비자가 `@import "tailwindcss"` 를 이미 갖고 있어도 preflight 주 리셋과 유틸리티는 중복되지 않고
 `@supports … ::placeholder` 블록 한 쌍(+241 B)만 늘어난다. 상세는 [gate-c19.md](gate-c19.md).
 
+### F-8. RN 은 루트 클래스 셀렉터를 아예 해석하지 않는다
+
+게이트 (2)·(4) 의 실측이고 두 실패의 뿌리가 하나다. `.dark { … }` 는 어떤 노드에도 안 걸리고,
+`@media (prefers-color-scheme: dark)` 는 동작하는데 `:root:not(.light)` 의 `:not(.light)` 이 매칭을
+깨뜨린다. `:not` 을 뺀 `:root` 는 동작한다. 유틸리티 변형 `dark:` 는 정상이다.
+
+그래서 웹의 다크 3블록을 RN 소비자 CSS 에 그대로 복사하면 다크에서 **라이트 값**이 나온다.
+스펙 R24 와 알려진 동작 15 가 이 차이를 계약으로 적었다.
+
+### F-9. RN line-height 는 `px` 를 배수로 읽는다
+
+`--text-xl--line-height: 28px` 이 `fontSize 20 × 28 = 560` 이 된다. `1.75rem` 도 `490` 으로 틀린다.
+단위 없는 `1.4` 는 `28` 로 맞는다. fontSize · fontWeight 는 정상이다.
+
+`nativewind/theme` 이 `leading-*` 유틸리티만 단위 없는 값으로 덮는 것이 같은 문제를 아는 흔적인데,
+`text-<step>` 이 내는 line-height 는 덮지 않는다.
+
+처리 경로는 2026-09-06 사용자 확정으로 **(A) native 래퍼가 배수로 다시 낸다**(plan §2.3 D-31). T-N0 에서
+다크 블록과 함께 처리하고 T-N2 의 Text 는 `text-<step>` 클래스를 그대로 쓴다.
+
+### F-10. `@import "nativewind/theme"` 는 DS 토큰과 같이 못 쓴다
+
+`The --spacing(…) function requires that the --spacing theme variable exists` 로 컴파일이 깨진다.
+DS 가 `--spacing: initial` 로 리셋(C-6)하는데 `nativewind/theme` 이 끌어오는 `tailwindcss-safe-area` 가
+`--spacing(…)` 함수를 쓴다. `--spacing` 을 되살리면 컴파일되지만 어휘 봉쇄가 깨진다(F-2 의 반대편).
+
+v1 어휘는 그것 없이 전부 동작하므로 넣지 않는다. 못 쓰는 것은 `elevation-*` · `ripple-*` · `tint-*` 와
+`ios:` · `android:` · `native:` 변형 — 전부 v1 범위 밖이다.
+
+### F-11. jest 에서는 컴포넌트 출처가 className 해석을 가른다
+
+`react-native-css/components` 의 `View` · `Text` 는 className 이 style 로 풀리고, `react-native` 에서
+직접 import 한 `View` 는 안 풀린다(`style` 이 `undefined`, `className` 이 원시 prop 으로 남는다).
+Metro 빌드는 `globalClassNamePolyfill` 이 둘 다 처리하지만 jest 에는 Metro 가 없다.
+
+`@eeennsu/native` 컴포넌트가 어디서 import 하느냐가 T-R1 의 단언 가능 여부를 정한다(T-N1 확인 항목).
+
+### F-12. Metro 경로도 같은 값을 낸다
+
+`npx expo export --platform android` 산출 hbc 번들에 `#155dfc`(= `--bg-brand` 라이트 값)와 DS 클래스
+이름이 들어 있다. jest 판정이 postcss + `registerCSS` 라는 우회로를 쓰기 때문에, 실제 Metro
+파이프라인에서도 토큰이 같은 값으로 흐르는지 한 번 확인해 둔 것이다.
+
+### F-13. Expo 기본 tsconfig 는 라이브러리 원본 `.ts` 를 끌어온다
+
+`expo/tsconfig.base` 의 `customConditions: ["react-native"]` 때문에 tsc 가 `react-native-css/jest` 를
+`.d.ts` 가 아니라 패키지 안의 원본 `src/jest/index.ts` 로 해석한다. `skipLibCheck` 는 `.d.ts` 만
+덮으므로 그 패키지 내부 타입 오류 4건이 검증 앱의 typecheck 를 깨뜨렸다.
+
+`customConditions: []` 로 비워 `.d.ts` 경로로 돌렸다. 런타임 해석은 Metro 가 하므로 영향이 없다.
+대신 `useUnstableNativeVariable` 이 web 구현(`() => never`)으로 타이핑되므로 `App.tsx` 가 한 번
+캐스팅한다 — T-N1 · T-N2 가 `nativewind` 타입을 쓸 때 같은 것을 만난다.
+
 ## 4. 다음
 
-- Phase 4 C-19 게이트(T-G1 · T-G2) — native 착수 전 9항목. 웹은 이 게이트와 무관하다
-- Phase 7 publish 는 npm 계정이 준비된 뒤. `pnpm -r publish --access public` 전에 `--dry-run`
+- **게이트 (7) 기기 화면 확인 1회** — Android 에뮬레이터 또는 Expo Go. 2026-09-06 사용자 결정으로 미뤘고, Phase 5 착수의 마지막 조건으로 남아 있다
+- Phase 5 는 T-N0(native 래퍼 다크 블록 + 배수 line-height)부터. 게이트 (2)·(4)·(5) 결과로 추가된 태스크다
+- Phase 7 publish 는 native 까지 끝난 뒤 3패키지 lockstep. `pnpm -r publish --access public` 전에 `--dry-run`

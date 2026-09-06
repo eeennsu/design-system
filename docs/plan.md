@@ -33,7 +33,7 @@ Phase 3  T-V1 (Next) · T-V2 (Vite) → T-V3 (pack 설치)             웹 검�
            │
 Phase 4  T-G1 → T-G2                                             C-19 게이트 (통과해야 Phase 5 착수)
            │
-Phase 5  T-N1 → T-N2 → T-N3 → T-N4                                native   (AC-20, AC-21, AC-22)
+Phase 5  T-N0 → T-N1 → T-N2 → T-N3 → T-N4                         native   (AC-20, AC-21, AC-22)   T-N0은 게이트 (2)·(4) 결과로 추가된 토큰 빌드 변경(§2.3)
            │
 Phase 6  T-R1                                                    RN 검증   (AC-3 RN, AC-11 RN, AC-19 RN, AC-23, AC-25, AC-26 RN)
            │
@@ -80,6 +80,40 @@ Phase 7  T-P1                                                    publish 게이�
 - CLAUDE.md가 게이트에 포함한 "pnpm peer"(web 래퍼의 `@import "tailwindcss"` peer 해석, C-3)는 웹이 먼저 필요로 하므로 **T-W0에서 선확인**하고, 게이트에서는 (8)로 native 래퍼에 대해 재확인한다
 - (1)~(4)·(6)·(7)·(8) 중 하나라도 실패하면 Phase 5를 착수하지 않고 "실패 시 수정할 스펙·AC" 열의 스펙 개정을 먼저 한다. 개정은 스펙 문서에 R24로 기록한다(이 계획이 스펙을 직접 고치지 않는다는 원칙과 별개로, 게이트 실패는 스펙이 예정한 개정 경로다)
 - (5)·(9)는 실패해도 착수 가능하며 계획 분기만 바뀐다
+
+### 2.3 게이트 결과 (2026-09-06 실행)
+
+측정 전문은 [gate-c19.md](gate-c19.md), 스펙 개정은 design-system-spec.md "R24 개정 요약". 여기에는 **계획이 바뀐 것만** 적는다.
+
+| # | 결과 | 계획 변경 |
+|---|---|---|
+| (1) | 통과 | 없음 |
+| (2) | **실패** — `.dark`가 RN에서 죽는다 | 토큰 빌드가 native 래퍼에 `@media (prefers-color-scheme: dark) { :root { … } }` 블록을 추가로 낸다. T-T2 래퍼 템플릿 변경 → **T-N0**(아래) |
+| (3) | 통과 | 없음. T-N1이 `_gate-stub.js`를 실제 dist로 대체 |
+| (4) | **실패** — `:root:not(.light)`의 `:not`이 원인 | (2)와 같은 변경으로 함께 해결. 웹 산출물·`packages/tokens/themes/*.css`는 무변경 |
+| (5) | 부분 — lineHeight만 틀린다 | T-N2에 결정 1건이 붙는다(아래 D-31) |
+| (6) | 통과 | T-R1의 소비자 `global.css`가 3블록이 아니라 2블록 |
+| (7) | 부분 — 기기 확인 미실시 | Phase 5 착수 전 수동 1회. §5.7 "Expo SDK · RN · NativeWind · react-native-css" 행이 고정됐다 |
+| (8) | 통과 — 래퍼 무변경 | §9 S-5(보류) 종결. T-N1의 보류가 풀렸다 |
+| (9) | 통과(정보) | T-N1에 확인 1건 추가, T-R1은 `toHaveStyle`로 간다(격하 없음) |
+
+**추가 태스크 T-N0 — native 래퍼 다크 블록 (Phase 5 첫 번째)**
+
+- 읽을 파일: C-6 (R24) 산출물 항목, C-20 RN 항목, `docs/gate-c19.md` (2)·(4)
+- 할 일 2건 (둘 다 `packages/tokens/scripts/build-outputs.ts`의 native 래퍼 템플릿):
+  1. **다크 블록**(게이트 (2)·(4)) — semantic 다크 값을 `@media (prefers-color-scheme: dark) { :root { … } }` 한 블록으로 추가한다. 값 출처는 web·tokens와 같은 DTCG 소스 1본이고 셀렉터만 다르다
+  2. **line-height 단위 없는 배수**(게이트 (5), D-31 (A)) — `@theme { --text-<step>--line-height: <배수> }`를 native 래퍼에서 다시 낸다. 배수 = px ÷ 같은 스텝 fontSize px
+- web 래퍼·토큰 CSS는 손대지 않는다
+- 완료 조건: `pnpm --filter @eeennsu/tokens build` 후 `packages/native/themes/{base,bakery}.css`에 블록이 있고, 기존 스냅샷 테스트가 갱신된다. 같은 값이 세 곳(토큰 `.dark` · 토큰 `@media` · native 래퍼 `@media`)에 나오므로 **세 블록의 값 동일성을 tokens 테스트가 단언한다**(AC-5 동시 전파)
+- 검증: `apps/verify-expo/tests/gate.test.tsx`의 (2)·(4) 특성화 테스트를 "래퍼 다크 블록이 다크에서 적용된다"로 바꾼다
+- 닫는 AC: 없음. AC-19 (c)·AC-26 RN절의 전제
+
+**D-31 — (5) lineHeight 처리 경로: (A) native 산출물 분기 (사용자 확정 2026-09-06)**
+
+- **(A) 채택.** native 래퍼가 `--text-<step>--line-height`를 **단위 없는 배수**로 다시 낸다(`28px` → `1.75`. 배수 = px 값 ÷ 같은 스텝의 `--text-<step>` px 값). T-N0이 이미 native 전용 블록을 만드므로 파일이 늘지 않고, Text 어댑터가 필요 없어 `text-<step>` 클래스 한 줄로 세 값이 다 맞는다. 소비자가 `className="text-lg"`를 써도 정상
+- (B) 탈락: C-19 (5) 원안(RN Text 어댑터가 `@eeennsu/tokens` JS 객체에서 세 값을 읽어 `style`로 넣는다). 소비자 `className="text-lg"`가 RN에서 fontSize만 적용될 수 있어 AC-25 "웹·RN 클래스 어휘 일치"가 약해진다
+- 실행 위치: **T-N0**. 다크 블록과 같은 `build-outputs.ts` native 래퍼 템플릿 변경이라 한 태스크로 묶는다. 값 5스텝 — `sm` 20/14 · `md` 24/16 · `lg` 28/18 · `xl` 28/20 · `2xl` 32/24
+- 회귀 가드: `apps/verify-expo/tests/gate.test.tsx`의 (5) 특성화 테스트를 `lineHeight: 28`(정상값) 단언으로 바꾼다
 
 ---
 
@@ -532,7 +566,7 @@ design-system/
 | `lucide-react` · `lucide-react-native` | 같은 버전 | 아이콘 이름 일치 |
 | `tailwind-merge` | 3.x | `extendTailwindMerge` |
 | Vitest · Playwright | 최신 | — |
-| Expo SDK · RN · NativeWind · `react-native-css` | 게이트 (7)이 고정 | T-G1 |
+| Expo SDK · RN · NativeWind · `react-native-css` | **고정 완료(2026-09-06)** — Expo SDK 57(`expo ~57.0.20`) · `react-native 0.86.3` · `nativewind 5.0.0-preview.4` · `react-native-css 3.0.7` | T-G1. `lightningcss 1.30.1`도 함께 고정(`react-native-css` peer). 전체 목록은 [gate-c19.md](gate-c19.md) |
 
 ---
 
@@ -652,6 +686,8 @@ design-system/
 
 ### Phase 4 — C-19 게이트
 
+**상태: T-G1 · T-G2 완료(2026-09-06).** 결과와 계획 변경은 §2.3, 측정은 [gate-c19.md](gate-c19.md). 남은 것은 게이트 (7)의 기기 화면 확인 1회이며 그것이 Phase 5 착수 조건이다.
+
 **T-G1 `apps/verify-expo` 생성**
 - 읽을 파일: C-19 착수 게이트 · 손절 기준, AC-23. 이 문서 §2.1
 - 할 일: `create-expo-app@latest`(SDK 57)로 생성, §2.1 설치 절차(NativeWind preview 정확 버전, `lightningcss` override, postcss, `nativewind-env.d.ts`), `jest-expo` + RNTL 14(async `render`, `test-renderer` peer) 설정, 게이트 (3)·(8)용 스텁 `packages/native/dist/_gate-stub.js` 생성(v2 F-14 · F-23). (7) 실패 시 `--template blank@sdk-54`로 재생성(v2 F-9)
@@ -666,14 +702,18 @@ design-system/
 
 ### Phase 5 — native (게이트 후)
 
+**T-N0 native 래퍼 다크 블록** — 게이트 (2)·(4) 결과로 추가. 상세는 §2.3
+
 **T-N1 native 패키지 스캐폴드**
 - 읽을 파일: C-3 native 항목 · C-19, `docs/gate-c19.md`. 이 문서 §5.2
-- 완료 조건: `package.json` peer에 게이트가 고정한 버전. 래퍼 내용이 게이트 (8) 결과대로. `cn` · `icons: Record<IconName, LucideIcon>`(`lucide-react-native`). oklch 문자열 수용 여부 확인(§3.10)
+- 완료 조건: `package.json` peer에 게이트가 고정한 버전(`nativewind` `5.0.0-preview.4`는 T-G1이 이미 넣었다). 래퍼 내용은 게이트 (8) 결과대로 **무변경**(`@import "tailwindcss"` 유지, `nativewind/theme` 넣지 않음 — §9 S-5 종결). `cn` · `icons: Record<IconName, LucideIcon>`(`lucide-react-native`). oklch 문자열 수용 여부 확인(§3.10)
+- **(게이트 (9)) 컴포넌트가 `react-native`가 아니라 `react-native-css/components`에서 `View`·`Text`·`Pressable`·`TextInput`을 import하는지 확인한다.** Metro 빌드는 둘 다 되지만 jest에는 Metro가 없어 `react-native` 직접 import는 T-R1의 `toHaveStyle` 단언이 성립하지 않는다
+- `packages/native/dist/_gate-stub.js`를 실제 dist로 대체한다(T-G1 산출물)
 - 닫는 AC: 없음
 
 **T-N2 Stack · Card · Text**
-- 읽을 파일: AC-20 · C-19 (5) 분기, `docs/gate-c19.md` (5)
-- 완료 조건: `View` 기반 Stack(`flex-row`/`flex-col`) · Card. Text는 (5) 통과면 `text-<step>` 클래스, 실패면 JS 객체 `style` 폴백. `heading` → `accessibilityRole="header"`
+- 읽을 파일: AC-20 · C-19 (5) 분기, `docs/gate-c19.md` (5), 이 문서 §2.3 D-31
+- 완료 조건: `View` 기반 Stack(`flex-row`/`flex-col`) · Card. **Text는 `text-<step>` 클래스 그대로다** — D-31이 (A)로 확정돼 line-height 보정이 T-N0의 토큰 빌드에서 끝난다. JS 객체 `style` 폴백을 넣지 않는다. `heading` → `accessibilityRole="header"`
 - 닫는 AC: AC-20 일부
 
 **T-N3 Button · Input**
@@ -691,7 +731,7 @@ design-system/
 
 **T-R1 `apps/verify-expo` 화면 · 테스트**
 - 읽을 파일: AC-23 · AC-25 · AC-26 RN절 · AC-19 (c) · AC-22 · AC-11 RN절, `docs/gate-c19.md` (9)
-- 할 일: `global.css`에 `@import "@eeennsu/native/themes/base.css"` + AC-26 3블록. 화면: Text(제목) + Input × 2 + Text tone danger + Button primary + AC-25용 Button(`className="bg-danger mt-6"`) + Stack/Card. jest-expo: (1) `Appearance` 모킹 2조합에서 primary Button 배경 X/Y, (2) AC-25 className 버튼 — (9) 결과에 따라 `toHaveStyle` 또는 className prop 스냅샷, (3) `accessibilityLabel` 단언(Button · Input), (4) `bg-danger` 병합 결과. 웹과 같은 색·간격은 Android 에뮬레이터 스크린샷과 verify-next 스크린샷을 나란히 두고 수동 확인 1회. 타르볼(`pnpm pack`) 설치로 재실행
+- 할 일: `global.css`에 `@import "@eeennsu/native/themes/base.css"` + AC-26 **2블록**(`:root` + `@media (prefers-color-scheme: dark) { :root }`. 웹 3블록을 그대로 쓰면 다크가 라이트 값에 머문다 — 게이트 (6), 알려진 동작 15). 화면: Text(제목) + Input × 2 + Text tone danger + Button primary + AC-25용 Button(`className="bg-danger mt-6"`) + Stack/Card. jest-expo: (1) `Appearance` 모킹 2조합에서 primary Button 배경 X/Y, (2) AC-25 className 버튼 — **`toHaveStyle`**(게이트 (9) 통과라 스냅샷 격하를 쓰지 않는다), (3) `accessibilityLabel` 단언(Button · Input), (4) `bg-danger` 병합 결과. 게이트가 만든 `tests/gate-css.ts` · `tests/color-scheme.ts` · `jest.setup.js`를 그대로 쓴다 — `Appearance` 모킹 없이는 다크 조합이 판정되지 않는다. 웹과 같은 색·간격은 Android 에뮬레이터 스크린샷과 verify-next 스크린샷을 나란히 두고 수동 확인 1회. 타르볼(`pnpm pack`) 설치로 재실행(`pnpm verify:pack verify-expo`)
 - 완료 조건: jest 통과 + 수동 확인 기록(`docs/gate-c19.md` 또는 `docs/verify-rn.md`)
 - 닫는 AC: **AC-3 RN절**, **AC-11 RN절**, **AC-19 (c) RN**, **AC-22**, **AC-23**, **AC-25**, **AC-26 RN절**
 
@@ -803,9 +843,9 @@ design-system/
 | S-2 | C-17 children 규칙 | "웹 전용(Dialog · Drawer · Tooltip · Form)만 `ReactNode`"인데 C-12 · B-11은 Tooltip `children`을 앵커로 정의한다. 앵커는 `ReactElement` 1개여야 한다(Base UI `render`) | 정합 | 없음. D-11대로 `ReactElement`. 개정 시 C-17 문장에서 Tooltip 제외 |
 | S-3 | C-3 · B-7 | "토큰 파일 직접 import 경로는 공개하지 않는다"이나 래퍼의 `@import "@eeennsu/tokens/themes/<brand>.css"`가 해석되려면 tokens `exports`에 `./themes/*.css`가 있어야 한다. 기술적으로는 소비자도 import 가능 | 정합 | 없음. "공개하지 않는다 = 문서화하지 않는다"로 읽고 §5.2에 주석 |
 | S-4 | C-21 (출처 decisions-r21 B-6, v2 F-30) | "Base UI `Form` / `Field`를 내부 기반으로 쓰되"라고 했으나 v1 범위(submit 없음, 오류 표시는 `Text tone="danger"`)에서 Base UI Form의 기능이 쓰이지 않고, `Field`로 Input을 감싸면 Input 단독 사용과 DOM이 달라진다. D-13은 순수 `<form>`을 택했다 | 정합 | T-W6. B-6은 Form **범위**를 정한 결정이고 Base UI 사용은 구현 세부라 재개방이 아니다. 계약·AC 영향 없음. 개정 시 "Base UI Form은 v1에서 쓰지 않는다"로 |
-| S-5 | C-3 native 항목 ↔ NativeWind v5 문서 | 스펙은 래퍼가 `@import "tailwindcss"`를 먼저 포함한다고 하나, NativeWind v5 문서의 `global.css`는 `tailwindcss/theme.css layer(theme)` · `preflight.css layer(base)` · `utilities.css` 분리 import + `@import "nativewind/theme"`를 요구한다. 래퍼 한 줄로 이 구성을 대신할 수 있는지 미확인 | **보류** | T-N1 래퍼 구성은 게이트 (8) 결과 전에 확정하지 않는다. 스펙 C-3이 대체 규칙("소비자 CSS에서 tailwindcss 다음 줄에 import")을 이미 허용하므로 결과에 따라 C-3 native 문장만 개정 |
+| S-5 | C-3 native 항목 ↔ NativeWind v5 문서 | 스펙은 래퍼가 `@import "tailwindcss"`를 먼저 포함한다고 하나, NativeWind v5 문서의 `global.css`는 `tailwindcss/theme.css layer(theme)` · `preflight.css layer(base)` · `utilities.css` 분리 import + `@import "nativewind/theme"`를 요구한다 | **종결(2026-09-06)** | 게이트 (8) 통과. 래퍼를 그대로 둔다 — C-3 문장 개정 없음. `@import "nativewind/theme"`는 **넣을 수 없다**(DS의 `--spacing: initial` 리셋과 충돌해 컴파일이 깨진다). 그것 없이 v1 어휘가 전부 동작한다. T-N1 보류 해제 |
 | S-6 | AC-19 (c) | RN 검증이 "`Appearance` 모킹 2조합"인데 NativeWind가 테스트 환경에서 className을 style로 해석하지 못할 때의 격하 규칙이 AC-25 · AC-26 RN절에는 있고 AC-19 (c)에는 없다 | 정합 | T-R1. AC-25 격하 규칙을 준용하고 `docs/gate-c19.md`에 명시. 개정 시 AC-19 (c)에 같은 문장 추가 |
-| S-7 | C-6 리셋 범위 · C-15 어휘 봉쇄 | `--font-*`(패밀리)를 리셋하지 않고 `--font-sans`만 덮어쓰므로 Tailwind 기본 `--font-mono` · `--font-serif`가 남아 `font-mono` · `font-serif` 클래스가 생성된다. "className에 쓸 수 있는 클래스는 DS 토큰 어휘뿐"의 예외 | 정합 | 없음. v1 알려진 동작 후보(15)로 개정 시 추가. 리셋하면 소비자가 모노스페이스를 쓸 길이 없어져 유지 |
+| S-7 | C-6 리셋 범위 · C-15 어휘 봉쇄 | `--font-*`(패밀리)를 리셋하지 않고 `--font-sans`만 덮어쓰므로 Tailwind 기본 `--font-mono` · `--font-serif`가 남아 `font-mono` · `font-serif` 클래스가 생성된다. "className에 쓸 수 있는 클래스는 DS 토큰 어휘뿐"의 예외 | 정합 | 없음. v1 알려진 동작 후보(R24가 15·16을 썼으므로 다음 번호)로 개정 시 추가. 리셋하면 소비자가 모노스페이스를 쓸 길이 없어져 유지 |
 | S-8 | CLAUDE.md "C-19 게이트(… + pnpm peer)" | pnpm peer 해석 확인(C-3)은 웹이 먼저 필요로 하며 스펙은 이를 C-3 "착수 전 기술 확인"으로 둔다. 게이트 항목으로 두면 웹 착수가 게이트에 묶인다 | 정합 | 없음. T-W0에서 선확인, 게이트 (8)에서 native 재확인. CLAUDE.md 문구는 "C-3 선확인 + C-19 게이트"로 |
 | S-9 | decisions-r21 A-4 | "아이콘 전용일 때만 `aria-label`"은 R21 후속에서 뒤집혔고 스펙은 갱신됐으나 근거 문서 원문은 그대로다(B-9는 r21 헤더가 재개정 각주를 이미 달고 있어 제외. v2 F-30) | 정합 | 없음. 근거 문서는 이력이며 스펙이 우선. 개정 시 A-4에 "R21 후속으로 대체" 각주 |
 | S-10 | AC-26 (b) · C-8 (v2 F-30 위치 정정) | D-3 별칭 때문에 소비자가 `--bg-danger`를 덮으면 `--fg-danger`도 따라간다. AC-26 (b) "변수 단위로 격리"와 표면상 어긋나 보이나, 별칭은 스펙 C-8이 요구한 "같은 색"의 구현이다 | 정합 | T-V1의 AC-26 (b) 테스트는 별칭이 아닌 변수(`--bg-danger` 자체를 재선언하지 않은 상태)로 격리를 검사한다. 개정 시 알려진 동작에 "별칭 변수는 원본을 따라간다" 추가 |
@@ -818,5 +858,5 @@ design-system/
 | S-17 (v2) | C-7c · Ontology Icon | "색·크기는 토큰으로 결정"인데 계획은 색을 `currentColor`(글자색 상속)로 둔다. 글자색이 `tone`/variant 토큰에서 오므로 간접 토큰 결정이다 | 정합 | 없음. 개정 시 "색은 글자색 상속" 명시 |
 | S-18 (v2) | 알려진 동작 후보 | tailwind-merge의 font-size 스케일에 `base`가 하드코딩돼 소비자 `className="text-base"`가 DS `text-md`를 밀어내고 CSS도 없어 글자 크기가 사라진다(F-27). 리셋 네임스페이스 no-op(알려진 동작 1)의 특수 사례 | 정합 | T-T5 테스트 이름에 기록. 개정 시 알려진 동작 1에 "`text-base`는 twMerge에서도 크기 그룹으로 분류돼 DS 값을 밀어낸다" 추가 |
 
-- **보류 태스크는 T-N1(래퍼 구성)뿐이며** 이는 어차피 게이트 뒤에 있다. 게이트 전 태스크 중 스펙 정정을 기다려야 하는 것은 없다
+- **보류 항목 S-5는 게이트 (8)로 종결됐다(2026-09-06).** 남은 보류 태스크는 없다. 게이트 (2)·(4) 실패로 발생한 스펙 개정은 이 절과 별개이며 R24로 반영했다
 - 게이트 (1)~(8) 실패 시 개정 대상은 §2.2 표에 있다. 이 절과 별개로 취급한다

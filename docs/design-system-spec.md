@@ -7,6 +7,7 @@
 - 2026-09-05 R21 개정. 구현 전 검증 결과 반영. C-20·C-21 신설, AC-19 재작성, "알려진 동작(v1)" 신설. 결정 근거는 [decisions-r21.md](decisions-r21.md)
 - 2026-09-05 R22 개정. 소비 프로젝트 로컬 semantic 오버라이드 통로 신설(C-5b). C-19 게이트 (6) 추가, AC-26 신설, 알려진 동작 11~13 추가. 결정 근거는 [decisions-r22.md](decisions-r22.md)
 - 2026-09-05 R23 개정. 오버라이드 대상 확대(C-5c)를 트리거 조건부로 연기. C-5b에 트리거 기록, 알려진 동작 14 추가, Non-Goal 문구 구분. 계약·동작 변경 없음. 결정 근거는 [decisions-r23.md](decisions-r23.md)
+- 2026-09-06 R24 개정. C-19 착수 게이트 실행 결과 반영. 게이트 (2)·(4) 실패에 따라 RN 다크 경로를 `@media` 단일 셀렉터로 확정 — C-20 RN 항목, C-6 산출물, C-5b RN 항목, AC-19 (c), AC-26 RN절 수정, 알려진 동작 15~16 추가. 웹은 무변경. 측정 기록은 [gate-c19.md](gate-c19.md)
 - 본문의 `R{n}`은 인터뷰 라운드 번호. 결정 근거는 문서 끝 트랜스크립트에서 추적
 - 패키지명의 npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05). R21 보류 항목이었고 문자열 치환을 마쳤다
 
@@ -69,6 +70,21 @@ R22 반영 직후 사용자가 이어서 물음 — ① "통로가 소비 프로
 - 계약·타입·클래스 어휘·AC 변경 없음. 번호 유지, 삭제·재번호 없음
 
 R23 보류: 없음. 열린 항목 1건은 C-5c이며 **결정 대기가 아니라** 트리거 충족 시 열리는 조건부 항목이다. 계획 태스크 "토큰 인벤토리"에 요구 2건 추가 — (a) `--radius-*`와 폰트 패밀리 변수가 소비자 `:root` 재선언으로 덮이는지 확인(토큰 빌드가 `@theme inline`을 쓰는 범위에 달림) (b) 두 변수군의 이름을 나중에 공개 계약이 돼도 되는 이름으로 짓는다
+
+### R24 개정 요약 (2026-09-06)
+
+C-19 착수 게이트(T-G1 · T-G2)를 실행했다. 9항목 중 (1)(3)(6)(8)(9) 통과, **(2)(4) 실패**, (5) 부분 실패, (7)은 기기 확인만 남았다. 측정·근거는 전부 [gate-c19.md](gate-c19.md)에 있고 이 절은 결과만 싣는다.
+
+실패 2건은 같은 뿌리다 — **NativeWind v5(react-native-css)는 루트 클래스 셀렉터를 해석하지 않는다.** `.dark { … }`가 어떤 노드에도 안 걸리고(게이트 (2)), `@media (prefers-color-scheme: dark)` 자체는 동작하는데 `:root:not(.light)`의 `:not(.light)`이 매칭을 깨뜨린다(게이트 (4)). `:not(.light)`을 뺀 `:root`는 동작한다.
+
+- **C-20 RN 항목 재작성**: RN 다크는 hybrid가 아니라 **OS 단독**이다. 루트 클래스 우선 규칙은 웹 전용이며, RN 토큰 경로는 `@media (prefers-color-scheme: dark) { :root { … } }` 한 셀렉터만 쓴다. 웹의 `@custom-variant dark`와 2셀렉터 출력은 무변경
+- **C-6 산출물에 native 래퍼 다크 블록 추가**: 공유 토큰 파일(`@eeennsu/tokens/themes/<brand>.css`)은 그대로 두고, **native 래퍼가** 토큰 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`를 추가로 낸다. 값은 같은 DTCG 소스에서 나오므로 AC-5 동시 전파는 유지된다. 토큰 파일의 `.dark` 블록은 RN에서 무해하게 죽는다
+- **C-5b RN 항목 수정**: 소비자 로컬 오버라이드는 성립한다(게이트 (6) 통과). 다만 RN에서 쓰는 블록은 웹의 3블록이 아니라 **2블록**(`:root` + `@media (prefers-color-scheme: dark) { :root }`)이다
+- **AC-19 (c) · AC-26 RN절 수정**: 위 2블록 기준으로 바꾸고, RN 검증이 `toHaveStyle`로 가능함을 명시(게이트 (9)). AC-25의 className prop 스냅샷 격하 규칙은 **쓰지 않는다**
+- **알려진 동작 15 · 16 추가**: RN 다크 블록 형태가 웹과 다름(15), RN line-height가 `px`를 배수로 읽음(16)
+- 계약 타입·클래스 어휘·컴포넌트 API 변경 없음. 웹 산출물·웹 AC 무변경. 번호 유지, 삭제·재번호 없음
+
+R24 보류: 게이트 (7)의 기기 화면 확인 1회가 남았다. 이것이 Phase 5 착수의 마지막 조건이며 스펙 개정 대상은 아니다. 게이트 (5)(lineHeight)는 C-19가 이미 대체 경로를 갖고 있어 스펙 변경이 없고, 두 구현 경로 중 **native 산출물이 배수로 내는 쪽**으로 확정했다(2026-09-06 사용자 확정, 계획 §2.3 D-31).
 
 ## Topology
 
@@ -152,7 +168,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - **대상**: `:root`의 semantic 색 변수만(`@theme inline`이 `var()`로 참조하는 그 변수. 위 `--bg-brand`는 예시 이름이며 실제 이름은 계획 태스크 "토큰 인벤토리"가 정한다). 간격·타이포·radius·shadow는 대상이 아니다 — C-5a 불변 계층. `@theme` 네임스페이스 변수(`--color-brand` 등)는 `inline`이라 CSS 변수로 남지 않으므로 오버라이드 대상이 아니다. primitive 변수 재선언은 기술적으로 동작하나 계약 밖(알려진 동작 13)
   - **다크**: 3블록 전부 재선언한다 — `:root`, `.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`. 하나만 쓰면 hybrid 4조합 중 일부만 바뀐다(알려진 동작 12)
   - **공개 계약은 semantic 변수 이름**이다. 지원 목록은 토큰 빌드가 내는 semantic 색 키(C-6 `twMergeConfig` 색 키와 1:1)이며 별도 문서를 두지 않는다. 이름 변경·삭제는 소비자 CSS를 무효화하므로 파괴적 변경(major)이다. 추가는 추가적
-  - **RN**: 같은 채널. NativeWind v5는 `:root` 변수를 런타임 기본값으로 읽고 `@theme`은 클래스 생성용으로 쓴다(v5 테마 가이드). 소비자 `global.css`에 웹과 같은 3블록을 쓴다. NativeWind의 런타임 오버라이드(`VariableContextProvider`, `vars()`)는 DS 채널이 아니다 — 런타임 브랜드 전환은 범위 밖(C-5a). 소비자가 직접 써도 막지 않지만 지원하지 않는다. import 뒤 `:root` 재선언이 last-wins인지는 C-19 게이트 (6)
+  - **RN**: 같은 채널이며 게이트 (6)이 last-wins를 확인했다. **(R24) 다만 블록이 웹과 다르다 — `:root` + `@media (prefers-color-scheme: dark) { :root { … } }` 2블록**이다. `.dark`와 `:root:not(.light)`은 RN에서 죽으므로 쓰지 않는다(C-20 RN 항목, 알려진 동작 15). 값은 빌드 시점 캐스케이드로 굳으며 런타임 CSS 변수로 남지 않는다. NativeWind의 런타임 오버라이드(`VariableContextProvider`, `vars()`)는 DS 채널이 아니다 — 런타임 브랜드 전환은 범위 밖(C-5a). 소비자가 직접 써도 막지 않지만 지원하지 않는다. import 뒤 `:root` 재선언이 last-wins인지는 C-19 게이트 (6)
   - **JS 토큰 객체에는 닿지 않는다**(알려진 동작 11). v1 DS 코드가 JS 객체를 읽는 곳은 RN Text 폰트 폴백(C-19 (5), 타이포라 오버라이드 대상 아님)뿐이므로 DS 컴포넌트에는 영향 없음
   - **어휘 봉쇄 유지**: 이 채널은 값만 바꾸고 클래스를 만들지 않는다. C-15 "className이 유일한 커스텀 채널"은 컴포넌트 단위 커스텀에 대한 말이고, C-5b는 앱 단위 브랜드 주입이라 층위가 다르다. 소비자 `@theme` 확장으로 새 클래스를 만드는 것은 Non-Goal
   - **되돌리기**: 채널 자체는 CSS 캐스케이드라 닫을 수 없고, 계약에서 빼는 것만 가능하다. 그래서 여는 비용은 "이름 안정성 의무" 하나다. 탈락한 대안(B 소비자 `@theme` 확장, C 간격·타이포 브랜드 분리)은 [decisions-r22.md](decisions-r22.md)
@@ -164,6 +180,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - `@eeennsu/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
   - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
   - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
+  - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다
   - RN 런타임용 JS 객체
   - `twMergeConfig` — 색 키, spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
   - `Contracts` 타입 맵(`Size` / `TypographyStep` / `ControlSize` / `Tone` / `Variant` 포함)과 `webComponents` / `nativeComponents` 키 목록(C-17)
@@ -222,6 +239,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - **손절 기준**: `@eeennsu/native` 구현 착수 후 2주 안에 preview 버그로 AC-20의 5개 컴포넌트 중 하나라도 완성 불가하면 대체안으로 전환한다. 대체안 — 웹은 Tailwind v4 유지, RN만 Tailwind v3 + NativeWind v4. 토큰 빌드를 `@theme` CSS와 `tailwind.config.js` 두 갈래로 내고, 내장 유틸리티 차이(shadow·ring·border 기본값 등)를 문서화한다. 전환 시 C-3·AC-3·AC-25 수정 필요
   - **(R21) 착수 게이트**: `@eeennsu/native` 구현 착수 전에 NativeWind v5에서 다음 5건을 확인한다 — (1) `@theme inline`, (2) `.dark` 루트 셀렉터, (3) `@source`, (4) `:root:not(.light)`, (5) `--text-*--line-height` / `--text-*--font-weight` 복합 폰트 변수. R20 미결 3도 이 게이트에 편입한다 — R21 후속으로 단순화: NativeWind v5 preview가 요구하는 Expo SDK · RN 버전을 확인하고 검증 Expo 프로젝트를 그 버전으로 만든다(`spot` 호환 확인은 소멸). 요구 사양이 현행 Expo SDK와 안 맞으면 손절 기준과 무관하게 대체안 검토. (3) `@source`는 native 래퍼의 `@source "../dist"`(C-3)가 걸려 있어 미지원이면 RN 컴포넌트 클래스 생성 경로를 다시 정해야 한다
   - (5) 복합 폰트 변수 미지원 시 RN Text 어댑터가 `@eeennsu/tokens` JS 객체에서 fontSize · lineHeight · fontWeight 세 값을 읽어 `style`로 넣는다 — 위 "NativeWind로 표현 불가한 경우" 예외에 해당
+  - **(R24) 게이트 실행 완료(2026-09-06).** 결과는 [gate-c19.md](gate-c19.md), 개정은 위 "R24 개정 요약". 고정한 버전 — `nativewind` `5.0.0-preview.4`, `react-native-css` `3.0.7`, Expo SDK 57(RN 0.86.3). `--template blank@sdk-54` 재시도는 필요 없었다. 손절 기준(착수 후 2주)의 기산점인 Phase 5 착수일은 게이트 (7) 기기 확인 뒤에 정한다
   - **(R22) (6) 소비자 `:root` 재선언 캐스케이드** — 소비자 `global.css`에서 native 래퍼 import 뒤에 쓴 `:root { --bg-brand: … }`(및 `.dark` / `@media` 블록)가 DS 토큰 파일의 같은 변수를 last-wins로 덮는지. C-5b의 RN 성립 조건. v5 테마 가이드는 `:root`를 런타임 기본값으로 읽는다고만 하고 import 순서 캐스케이드는 명시하지 않는다. 미지원이면 RN 로컬 오버라이드 채널을 `VariableContextProvider` 루트 래핑으로 재설계하고 C-5b RN 항목·AC-26 RN 절을 수정한다(웹 채널은 무영향)
 - C-20. **(R21 신설) 다크모드 전략 hybrid.** 루트 엘리먼트에 `.dark` / `.light` 클래스가 있으면 클래스가 OS 설정보다 우선하고, 없으면 OS `prefers-color-scheme`을 따른다
   - 웹 래퍼(`@eeennsu/web/themes/<brand>.css`)가 `@custom-variant dark`를 선언한다:
@@ -235,7 +253,11 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
     ```
   - 토큰 파일(`tokens/themes/<brand>.css`)의 semantic 다크 오버라이드도 같은 두 셀렉터로 낸다 — `.dark { … }`와 `@media (prefers-color-scheme: dark) { :root:not(.light) { … } }`(동일 값). 두 브랜드 파일 모두 이 블록을 갖는다
   - next-themes는 해석된 테마를 `light` / `dark` 클래스로 루트에 쓴다. 클래스가 있으면 클래스가 이기고, 없으면(Vite 검증 프로젝트, 코드 0줄) OS를 따른다
-  - RN은 NativeWind `dark:`가 기본으로 시스템 색 구성표를 따르고 수동 전환 API로 덮을 수 있으므로 본질적으로 hybrid다. 토큰 파일의 `.dark` / `:root:not(.light)` 셀렉터를 NativeWind v5가 무시하거나 지원하는지는 C-19 게이트 (2)·(4)
+  - **(R24 재작성) RN은 hybrid가 아니라 OS 단독이다.** 게이트 (2)·(4) 실측 — NativeWind v5(react-native-css)는 루트 클래스 셀렉터를 해석하지 않는다. `.dark { … }`는 어떤 노드에도 걸리지 않고, `@media (prefers-color-scheme: dark)`는 동작하지만 `:root:not(.light)`의 `:not(.light)`이 매칭을 깨뜨린다. `:not`을 뺀 `:root`는 동작한다
+    - 따라서 RN 다크는 **`@media (prefers-color-scheme: dark) { :root { … } }` 한 셀렉터**로 낸다. 이 블록은 native 래퍼가 낸다(C-6). 토큰 파일의 `.dark` 블록은 RN에서 무해하게 죽는다
+    - 클래스로 OS를 덮는 경로는 RN에 없다. 앱이 색 구성표를 바꾸려면 `Appearance.setColorScheme`(RN API)을 쓰며, 그러면 `@media` 블록이 따라간다. NativeWind v5는 자체 `colorScheme.set` API가 없고 `Appearance`를 쓰라고 안내한다
+    - 유틸리티 변형 `dark:`는 정상 동작한다(Tailwind 기본 `dark` 변형 = `@media (prefers-color-scheme: dark)`). DS 컴포넌트는 semantic 변수로 색을 내므로 `dark:`를 쓰지 않지만, 소비자 `className`에서는 쓸 수 있다
+    - 웹은 무변경 — `@custom-variant dark`와 토큰 파일의 2셀렉터 출력을 그대로 둔다. hybrid는 **웹 전용 규칙**이다
   - class 단독 대비 hybrid는 상위집합이라 되돌리기는 쉽다. 검증은 AC-19
 - C-21. **(R21 신설) Form v1 범위.** 레이아웃 + `Label` 연결 + 오류 텍스트 표시(`Text tone="danger"` 또는 Base UI `Field.Error`). 계약은 `children: ReactNode`(웹 전용이라 허용) + `className`. submit 개념 없음. react-hook-form 미도입 — RN Form이 v2라 계약 대칭을 v1에서 검증할 수 없다
   - 웹은 `<form onSubmit={e => e.preventDefault()}>`를 렌더한다. 계약에 `onSubmit` prop은 없다. `div` + `role="form"` 불채택 — 브라우저 비밀번호 자동완성·저장 제안은 `<form>` 안의 `type="password"` 기준으로 동작하고, AC-16 검증 화면이 로그인이라 `div`는 검증 자체를 약화시킨다
@@ -263,6 +285,8 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 12. 로컬 오버라이드에서 다크 3블록(`:root` / `.dark` / `@media … :root:not(.light)`) 중 일부만 재선언하면 hybrid 4조합(AC-19)이 갈린다. 예: `:root`만 재선언하면 `.dark` 클래스가 있을 때는 소비자 라이트 값이 DS 다크 값을 덮고(같은 특이성, 뒤가 이김), 클래스 없이 OS 다크일 때는 DS 다크 값이 남는다(`:root:not(.light)`이 더 특이함). 버그가 아니라 CSS 특이성이며, 3블록 전부 쓰는 것이 계약이다.
 13. primitive 변수(`--blue-500` 등)도 `:root`에 있어 재선언하면 기술적으로 덮이지만 계약 밖이다. 이름 안정성을 보장하지 않으며 minor 버전에서 바뀔 수 있다. 오버라이드 대상은 semantic 색 변수뿐이다.
 14. **(R23)** 컴포넌트 내부 형태(Button 높이·패딩, Card radius, Input 테두리)와 폰트 패밀리는 앱 단위 통로가 없다. 앱 전체에서 바꾸려면 `className` 임의값(`rounded-[2px]`, 알려진 동작 3)을 호출 지점마다 반복해야 하고, 빠뜨린 곳을 잡는 테스트가 없다. v1에서 앱마다 갈리는 축은 색(C-5b) · 간격 리듬(C-7a 열거 중 무엇을 고르는가) · 화면 구조 셋이다. 이 제약이 실제로 문제가 되는지는 소비 프로젝트 2개를 만들어 본 뒤 판단하며, 그때의 확대안이 C-5b (R23) 트리거다.
+15. **(R24)** RN 로컬 오버라이드(C-5b)의 다크 블록은 웹과 형태가 다르다 — 웹은 3블록(`:root` / `.dark` / `@media … :root:not(.light)`), RN은 2블록(`:root` / `@media … :root`). 웹 3블록을 RN에 그대로 붙여넣으면 다크에서 소비자 **라이트** 값이 나온다(다크 블록 둘 다 죽는다). 에러가 아니라 무효이며, 같은 소비자 CSS를 웹·RN에 복사할 때의 유일한 차이점이다. 근거는 [gate-c19.md](gate-c19.md) (2)·(4)·(6).
+16. **(R24)** RN의 `text-<step>` line-height는 `px` 값을 그대로 쓰지 않는다. react-native-css가 line-height를 단위 없는 배수로 읽어 `--text-xl--line-height: 28px`이 `fontSize 20 × 28 = 560`이 된다(`rem`도 같은 방식으로 틀린다). fontSize·fontWeight는 정상이다. C-19 (5)의 두 경로 중 **native 산출물이 이 값을 단위 없는 배수로 내는 쪽**으로 확정했다(2026-09-06 사용자 확정, 계획 §2.3 D-31). Text 어댑터는 두지 않으므로 소비자 `className="text-lg"`도 RN에서 세 값이 다 적용된다.
 
 ## Non-Goals
 
@@ -324,15 +348,15 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-19. **(R21 재작성)** 다크모드가 AC-16의 import 한 줄 외 추가 설정 없이 hybrid로 동작한다.
   - (a) 루트 엘리먼트에 `.dark` / `.light` 클래스가 없으면 OS `prefers-color-scheme`을 따른다. Vite 검증 프로젝트에서 코드 0줄로 확인.
   - (b) 루트에 `.dark` 또는 `.light` 클래스가 있으면 클래스가 OS 설정보다 우선한다. Next.js 검증 프로젝트에서 next-themes로 확인.
-  - (c) RN은 시스템 색 구성표를 따르며 NativeWind의 수동 전환 API로 덮을 수 있다.
-  - 검증: 웹은 Playwright `emulateMedia({ colorScheme })` × 루트 클래스 유무 4조합에서 semantic 배경색 computed style을 토큰 값과 비교. RN은 `Appearance` 모킹 2조합. 브랜드는 `base`.
+  - (c) **(R24 수정)** RN은 OS 색 구성표만 따른다. 루트 클래스로 덮는 경로는 없다(게이트 (2)·(4), C-20 RN 항목). 앱이 바꾸려면 `Appearance.setColorScheme`을 쓴다.
+  - 검증: 웹은 Playwright `emulateMedia({ colorScheme })` × 루트 클래스 유무 4조합에서 semantic 배경색 computed style을 토큰 값과 비교. RN은 `Appearance` 모킹 2조합(라이트 / 다크)이며 `toHaveStyle`로 단언한다 — 게이트 (9)가 jest에서 className 해석을 확인했으므로 AC-25의 스냅샷 격하 규칙을 쓰지 않는다. 브랜드는 `base`.
 - [ ] AC-24. **(R20 신설, R21 수정) 커스텀 검증**: AC-16 화면에서 버튼 하나에 `className`으로 배경색·여백을 바꾸면 그 버튼만 바뀌고 다른 버튼은 그대로다. 사용한 클래스는 DS `@theme` 어휘(`bg-danger`, `mt-6` 등 — `mt-6`은 열거 안의 키)여야 한다. 전제: 어휘 봉쇄(C-15)로 `@theme` 밖의 클래스는 애초에 생성되지 않는다
 - [ ] AC-26. **(R22 신설) 로컬 오버라이드 검증**: AC-16 화면의 전역 CSS에서 `@import "@eeennsu/web/themes/base.css"` 다음 줄에 semantic 색 변수 하나(예: `--bg-brand`)를 3블록(`:root` / `.dark` / `@media … :root:not(.light)`)으로 재선언한다. 라이트 값 X·다크 값 Y는 `base`·`bakery` 어느 값과도 다르게 잡는다
   - (a) `Button variant="primary"` 배경과 `className="bg-brand"`를 준 요소의 computed style이 AC-19 4조합(`emulateMedia` × 루트 클래스 유무)에서 각각 X 또는 Y다 — 컴포넌트 기본 스타일과 소비자 클래스가 같은 변수를 따라감
   - (b) 재선언하지 않은 semantic 변수(예: `--bg-danger`)는 `base` 값 그대로다 — 오버라이드가 변수 단위로 격리됨
   - (c) 소비자 CSS에 `tailwind.config`·PostCSS·`@theme` 편집이 없다 — C-3 "import 한 줄" 유지, 추가된 건 CSS 선언뿐
   - (d) 회귀 가드: 알려진 동작 12 재현. `:root`만 재선언한 상태로 4조합을 돌려 `.dark` 클래스 조합에서 X, 클래스 없는 OS 다크 조합에서 `base` 다크 값이 나옴을 확인한다. 통과 기준이 아니라 "이 불일치가 계약대로 발생한다"는 스냅샷
-  - RN: AC-23 화면에서 같은 3블록을 `global.css`에 쓰고 `Button variant="primary"` 배경이 `Appearance` 모킹 2조합에서 X / Y다. AC-25 격하 규칙 적용(NativeWind가 테스트 환경에서 해석 못 하면 수동 확인 명시). 전제는 C-19 게이트 (6) 통과
+  - RN: **(R24 수정)** AC-23 화면의 `global.css`에 **2블록**(`:root` + `@media (prefers-color-scheme: dark) { :root }`)을 쓰고 `Button variant="primary"` 배경이 `Appearance` 모킹 2조합에서 X / Y다. 웹의 3블록을 그대로 쓰면 다크 조합이 X에 머문다(알려진 동작 15). AC-25 격하 규칙은 쓰지 않는다 — 게이트 (9)가 `toHaveStyle` 검증을 확인했다. 전제인 게이트 (6)은 통과했다
   - Vite(AC-17)에서는 반복하지 않는다 — 캐스케이드는 번들러 무관이고 AC-17의 목적은 프레임워크 비종속 렌더 확인
 
 ### platform-adapter (`@eeennsu/native`)
@@ -573,5 +597,12 @@ Inter가 양쪽 공통이지만 **한글 글리프가 없어** 현재 웹 프로
 **Q:** 걱정이 유효하다면 C-5c(오버라이드 대상을 색 + `--radius-*` + 폰트 패밀리로 확대)를 지금 여나? ① 지금 연다 / ② 트리거 조건부 연기
 **A:** **② 연기.** 비대칭이 결정적 — 대상 추가는 나중에도 추가적(minor)이라 기다리는 비용이 0인데, 지금 열면 이름 안정성 의무 3종 + AC-6a 문구 수정을 앱 0개 상태의 추측으로 문다
 **결과:** 계약·동작·AC 변경 없음. C-5b에 (R23) 확대 트리거 기록(DS v1 + 소비 프로젝트 2개 구축 후 사용자 판단), 알려진 동작 14 추가, Non-Goal에 후보 C ↔ C-5c 구분 및 자동 검증 AC 부재 명시, Ontology `SemanticVariable` 명명 규칙 한 줄, 계획 태스크 "토큰 인벤토리"에 요구 2건(radius·폰트 패밀리 오버라이드 가능 여부 확인 / 계약 후보 명명). 조합 검증 충돌 0, 문구 보강 1. 결정 근거는 [decisions-r23.md](decisions-r23.md)
+
+### Round 24 — platform-adapter / Constraints · **C-19 착수 게이트 실행** (2026-09-06)
+**성격:** 인터뷰 라운드가 아니다. C-19가 예정한 개정 경로(게이트 실패 시 스펙을 먼저 고친다)를 실행한 것이며, 질문·선택지가 아니라 측정 결과가 입력이다. 측정 전문은 [gate-c19.md](gate-c19.md)
+**측정:** 빈 Expo 프로젝트(SDK 57 / RN 0.86.3 / nativewind 5.0.0-preview.4 / react-native-css 3.0.7)에서 9항목. jest-expo + RNTL 14로 판정했고, `Appearance.setColorScheme`이 jest에서 no-op이라 `NativeAppearance`를 모킹해야 (2)·(4)를 실제로 판정할 수 있었다
+**결과:** (1)(3)(6)(8)(9) 통과, (2)(4) 실패, (5) 부분(lineHeight만), (7)은 기기 화면 확인 1회 미실시. 실패 2건의 뿌리는 하나 — react-native-css가 루트 클래스 셀렉터를 해석하지 않는다(`.dark` 사문화, `:root:not(.light)`의 `:not`이 매칭을 깨뜨림). `:not`을 뺀 `@media … :root`는 동작한다
+**개정:** C-20 RN 항목 재작성(RN 다크 = OS 단독), C-6에 native 래퍼 전용 다크 블록 추가, C-5b RN 항목 2블록으로 수정, AC-19 (c)·AC-26 RN절 수정, 알려진 동작 15~16 추가. 웹 산출물·웹 AC·계약 타입·클래스 어휘 무변경. 게이트 (8) 결과로 계획 §9 S-5(보류) 종결 — native 래퍼를 바꾸지 않는다
+**남은 것:** 게이트 (7) 기기 화면 확인 1회. 이것이 Phase 5 착수의 마지막 조건이다
 
 </details>
