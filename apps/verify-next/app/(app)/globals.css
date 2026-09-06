@@ -1,0 +1,20 @@
+/* C-3: 소비 프로젝트 설정은 이 import 한 줄까지다. */
+@import "@eeennsu/web/themes/base.css";
+
+/*
+ * C-5b 앱 전용 브랜드. 래퍼 import 다음 줄, 레이어 밖에서 semantic 변수를 재선언한다.
+ * 다크는 3블록을 모두 써야 한다 — 하나라도 빠지면 AC-26 (d) 가 보여주는 어긋남이 생긴다.
+ */
+:root {
+  --bg-brand: oklch(62% 0.19 145);
+}
+
+.dark {
+  --bg-brand: oklch(72% 0.16 145);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --bg-brand: oklch(72% 0.16 145);
+  }
+}

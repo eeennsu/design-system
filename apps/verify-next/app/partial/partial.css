@@ -1,0 +1,9 @@
+@import "@eeennsu/web/themes/base.css";
+
+/*
+ * 일부러 `:root` 하나만 재선언한다. C-5b 가 3블록을 요구하는 이유를 고정하는 회귀 가드다
+ * (AC-26 (d)). 정상 경로는 app/(app)/globals.css 다.
+ */
+:root {
+  --bg-brand: oklch(62% 0.19 145);
+}
