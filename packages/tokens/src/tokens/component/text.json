@@ -1,0 +1,47 @@
+{
+  "$description": "타이포 스텝. CSS 로 나가는 유일한 component 계층 토큰이다(--text-<step> 3종 변수). 나머지 component 토큰은 정적 클래스로만 나간다(plan D-26).",
+  "component": {
+    "text": {
+      "sm": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.14}",
+          "lineHeight": "{primitive.typography.lineHeight.20}",
+          "fontWeight": "{primitive.typography.fontWeight.regular}"
+        }
+      },
+      "md": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.16}",
+          "lineHeight": "{primitive.typography.lineHeight.24}",
+          "fontWeight": "{primitive.typography.fontWeight.regular}"
+        }
+      },
+      "lg": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.18}",
+          "lineHeight": "{primitive.typography.lineHeight.28}",
+          "fontWeight": "{primitive.typography.fontWeight.medium}"
+        }
+      },
+      "xl": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.20}",
+          "lineHeight": "{primitive.typography.lineHeight.28}",
+          "fontWeight": "{primitive.typography.fontWeight.semibold}"
+        }
+      },
+      "2xl": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.24}",
+          "lineHeight": "{primitive.typography.lineHeight.32}",
+          "fontWeight": "{primitive.typography.fontWeight.bold}"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$description": "Badge recipe. size 는 sm · md 만(plan D-15).",
+  "component": {
+    "badge": {
+      "sm": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.2}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.0}" },
+        "text": { "$type": "typography", "$value": "{component.text.sm}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.full}" }
+      },
+      "md": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.1}" },
+        "text": { "$type": "typography", "$value": "{component.text.sm}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.full}" }
+      }
+    }
+  }
+}

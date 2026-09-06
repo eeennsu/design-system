@@ -1,0 +1,12 @@
+{
+  "$description": "Textarea 는 size 를 행수로 해석한다(plan D-14). 패딩·글자 크기는 Input md 고정.",
+  "component": {
+    "textarea": {
+      "rows": {
+        "sm": { "$type": "number", "$value": 3 },
+        "md": { "$type": "number", "$value": 5 },
+        "lg": { "$type": "number", "$value": 8 }
+      }
+    }
+  }
+}

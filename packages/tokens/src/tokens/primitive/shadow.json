@@ -1,0 +1,10 @@
+{
+  "$description": "그림자 스케일. RN 은 NativeWind 가 boxShadow 로 해석한다(RN 0.81+).",
+  "primitive": {
+    "shadow": {
+      "sm": { "$type": "shadow", "$value": "0 1px 2px oklch(0% 0 0 / 0.05)" },
+      "md": { "$type": "shadow", "$value": "0 4px 8px oklch(0% 0 0 / 0.08)" },
+      "lg": { "$type": "shadow", "$value": "0 12px 24px oklch(0% 0 0 / 0.12)" }
+    }
+  }
+}

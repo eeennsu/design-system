@@ -1,0 +1,11 @@
+{
+  "$description": "Tooltip recipe.",
+  "component": {
+    "tooltip": {
+      "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.2}" },
+      "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.1}" },
+      "text": { "$type": "typography", "$value": "{component.text.sm}" },
+      "radius": { "$type": "dimension", "$value": "{primitive.radius.sm}" }
+    }
+  }
+}

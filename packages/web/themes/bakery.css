@@ -1,0 +1,16 @@
+/* 생성 파일. packages/tokens/scripts/build.ts 가 만든다. 직접 수정하지 않는다. */
+/* @eeennsu/web — brand: bakery. 소비자 공개 경로다(C-3). */
+
+@import "tailwindcss";
+@import "@eeennsu/tokens/themes/bakery.css";
+
+/* 다크모드 hybrid — 루트 클래스가 OS 설정보다 우선한다(C-20). */
+@custom-variant dark {
+  &:where(.dark, .dark *) { @slot; }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not(.light, .light *)) { @slot; }
+  }
+}
+
+/* DS 컴포넌트의 정적 클래스 문자열을 스캔한다(C-3 · C-4 (2)). */
+@source "../dist";

@@ -1,0 +1,9 @@
+{
+  "$description": "Drawer recipe. Base UI Dialog 를 side 클래스로 재사용한다(plan D-12).",
+  "component": {
+    "drawer": {
+      "padding": { "$type": "dimension", "$value": "{primitive.spacing.6}" },
+      "width": { "$type": "className", "$value": "max-w-sm w-full" }
+    }
+  }
+}

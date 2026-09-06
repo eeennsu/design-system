@@ -1,0 +1,25 @@
+{
+  "$description": "Input recipe. Button 과 같은 py + text 조합에서 같은 높이가 되도록 1px 테두리를 전제한다(plan D-6).",
+  "component": {
+    "input": {
+      "sm": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.1}" },
+        "text": { "$type": "typography", "$value": "{component.text.sm}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" }
+      },
+      "md": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.2}" },
+        "text": { "$type": "typography", "$value": "{component.text.md}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" }
+      },
+      "lg": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "text": { "$type": "typography", "$value": "{component.text.lg}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" }
+      }
+    }
+  }
+}

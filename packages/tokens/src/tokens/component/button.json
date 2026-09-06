@@ -1,0 +1,28 @@
+{
+  "$description": "Button recipe. 높이는 고정 h-* 없이 2 x paddingY + lineHeight + 2(투명 테두리)로 만든다 — sm 30 / md 42 / lg 54 (plan D-6).",
+  "component": {
+    "button": {
+      "sm": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.1}" },
+        "text": { "$type": "typography", "$value": "{component.text.sm}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" },
+        "gap": { "$type": "dimension", "$value": "{primitive.spacing.1}" }
+      },
+      "md": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.4}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.2}" },
+        "text": { "$type": "typography", "$value": "{component.text.md}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" },
+        "gap": { "$type": "dimension", "$value": "{primitive.spacing.2}" }
+      },
+      "lg": {
+        "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.6}" },
+        "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
+        "text": { "$type": "typography", "$value": "{component.text.lg}" },
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.lg}" },
+        "gap": { "$type": "dimension", "$value": "{primitive.spacing.2}" }
+      }
+    }
+  }
+}

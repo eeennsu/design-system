@@ -1,0 +1,10 @@
+{
+  "$description": "Card recipe. size 축 없음.",
+  "component": {
+    "card": {
+      "padding": { "$type": "dimension", "$value": "{primitive.spacing.4}" },
+      "radius": { "$type": "dimension", "$value": "{primitive.radius.lg}" },
+      "shadow": { "$type": "shadow", "$value": "{primitive.shadow.sm}" }
+    }
+  }
+}

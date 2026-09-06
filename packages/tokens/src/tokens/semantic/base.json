@@ -1,0 +1,149 @@
+{
+  "$description": "semantic 색 (브랜드 base). :root 변수 이름은 공개 계약이다(C-5b). 값은 primitive 참조 또는 같은 모드의 semantic 별칭만 쓴다.",
+  "semantic": {
+    "light": {
+      "bg": {
+        "canvas": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        },
+        "surface": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        },
+        "surface-muted": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.100}"
+        },
+        "surface-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.200}"
+        },
+        "brand": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.600}"
+        },
+        "brand-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.700}"
+        },
+        "danger": {
+          "$type": "color",
+          "$value": "{primitive.color.red.600}"
+        },
+        "danger-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.red.700}"
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": "{primitive.color.black-alpha.50}"
+        }
+      },
+      "fg": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.900}"
+        },
+        "muted": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.500}"
+        },
+        "danger": {
+          "$type": "color",
+          "$value": "{semantic.light.bg.danger}"
+        },
+        "on-brand": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        },
+        "on-danger": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.300}"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.light.bg.brand}"
+        }
+      }
+    },
+    "dark": {
+      "bg": {
+        "canvas": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.950}"
+        },
+        "surface": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.900}"
+        },
+        "surface-muted": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.800}"
+        },
+        "surface-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.700}"
+        },
+        "brand": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.500}"
+        },
+        "brand-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.400}"
+        },
+        "danger": {
+          "$type": "color",
+          "$value": "{primitive.color.red.500}"
+        },
+        "danger-hover": {
+          "$type": "color",
+          "$value": "{primitive.color.red.400}"
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": "{primitive.color.black-alpha.60}"
+        }
+      },
+      "fg": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.50}"
+        },
+        "muted": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.400}"
+        },
+        "danger": {
+          "$type": "color",
+          "$value": "{semantic.dark.bg.danger}"
+        },
+        "on-brand": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        },
+        "on-danger": {
+          "$type": "color",
+          "$value": "{primitive.color.white}"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.gray.700}"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.dark.bg.brand}"
+        }
+      }
+    }
+  }
+}
