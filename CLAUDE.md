@@ -31,4 +31,15 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 - 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
 - 구현 계획: [docs/plan.md](docs/plan.md) v2. 토큰 인벤토리·값, 컴포넌트 축 매트릭스, `Contracts<P>`, 패키지 구성, 태스크(T-0 ~ T-P1)와 AC 매핑이 여기 있다. 스펙과 어긋나는 지점은 plan.md §9에 모으고 스펙은 고치지 않는다
 - 계획 검증: [docs/plan-verification.md](docs/plan-verification.md). 2026-09-05 검증 완료(B 2·P 21·N 13, 전부 plan.md v2에 반영). 사용자 확정 4건은 plan.md D-6 · D-28 · D-29 · D-30
-- 착수 게이트는 두 단계다. 웹(Phase 1~3)은 C-3 선확인(T-W0: web 래퍼 `@import "tailwindcss"`의 pnpm peer 해석·중복 출력)만 필요하다. **native(Phase 5) 착수 전에만** C-19 게이트(plan.md §2, 9건: NativeWind v5 확인 6건 + Expo SDK + native 래퍼 구성 + 테스트 환경 className 해석)를 통과해야 한다. 구현 문서는 아직 없다
+- 착수 게이트는 두 단계다. 웹(Phase 1~3)은 C-3 선확인(T-W0: web 래퍼 `@import "tailwindcss"`의 pnpm peer 해석·중복 출력)만 필요하다. **native(Phase 5) 착수 전에만** C-19 게이트(plan.md §2, 9건: NativeWind v5 확인 6건 + Expo SDK + native 래퍼 구성 + 테스트 환경 className 해석)를 통과해야 한다
+- 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 웹 선확인은 2026-09-05 통과, C-19 게이트는 미착수
+- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(Phase 0~3 완료), 계획과 갈린 지점 6건, 구현 중 확인한 사실 7건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
+
+## 현재 코드 상태
+
+- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 53
+- `packages/web` — 컴포넌트 14개, Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 67(타입 테스트 포함)
+- `packages/native` — 스캐폴드만. Phase 5
+- `apps/verify-next` · `apps/verify-vite` — 검증 앱. Playwright 16 + 5
+- 명령: `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack`(타르볼 설치 재검증) · `pnpm version:set <v>`
+- 토큰 산출물(`packages/*/themes/*.css`, `packages/tokens/src/generated`, `src/brands`)과 `dist`는 **추적한다**. 손으로 고치지 않는다 — 빌드가 덮고 테스트가 잡는다

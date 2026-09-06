@@ -176,6 +176,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 
 - **inline은 색 네임스페이스만.** `--color-*`가 `var(--bg-…)`를 참조해야 `:root` 재선언이 클래스와 컴포넌트에 함께 전파된다(C-5b 메커니즘)
 - **spacing · radius · shadow · text · font는 비-inline `@theme`.** 값이 리터럴이고 참조할 `:root` 변수가 없다. 비-inline이면 Tailwind가 `:root`에 CSS 변수로 남기므로, `--radius-md`·`--font-sans`는 소비자 `:root` 재선언으로 **기술적으로 덮인다**. T-T4 probe가 이를 확인해 기록한다. 계약은 여전히 semantic 색뿐이며(C-5b), C-5c 트리거 충족 전까지 이름 안정성을 약속하지 않는다
+- **T-T4 결과 (2026-09-05, tailwindcss 4.3.3, `packages/tokens/tests/probe.test.ts`)**: R23 요구 (a) 확인됨. `rounded-md`는 `border-radius: var(--radius-md)`, `font-sans`는 `font-family: var(--font-sans)`로 컴파일되므로 토큰 CSS 뒤에 온 소비자 `:root { --radius-md: 2px; --font-sans: X }`가 last-wins로 이긴다. 즉 **C-5c를 열 때 필요한 것은 빌드 변경이 아니라 이름을 계약으로 승격하는 결정뿐**이다. 같은 테스트 파일이 F-26도 재확인했다 — `--spacing: initial`을 빼도 4.3.3에서는 `mt-5`가 생성되지 않는다(즉 현재 버전에서는 불필요). peer 하한 4.1과의 차이 가능성 때문에 §3.11대로 유지한다
 
 ### 3.8 component 계층 (소스에는 있으나 CSS 변수로 내지 않음)
 
