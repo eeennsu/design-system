@@ -5,4 +5,35 @@
 @import "tailwindcss";
 @import "@eeennsu/tokens/themes/base.css";
 
+/* RN 다크 — 토큰 파일의 .dark 와 :root:not(.light) 는 NativeWind v5 에서 죽는다(게이트 (2)·(4)). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-canvas: oklch(13% 0.028 261.692);
+    --bg-surface: oklch(21% 0.034 264.665);
+    --bg-surface-muted: oklch(27.8% 0.033 256.848);
+    --bg-surface-hover: oklch(37.3% 0.034 259.733);
+    --bg-brand: oklch(62.3% 0.214 259.815);
+    --bg-brand-hover: oklch(70.7% 0.165 254.624);
+    --bg-danger: oklch(63.7% 0.237 25.331);
+    --bg-danger-hover: oklch(70.4% 0.191 22.216);
+    --bg-overlay: oklch(0% 0 0 / 0.6);
+    --fg-default: oklch(98.5% 0.002 247.839);
+    --fg-muted: oklch(70.7% 0.022 261.325);
+    --fg-danger: var(--bg-danger);
+    --fg-on-brand: oklch(100% 0 0);
+    --fg-on-danger: oklch(100% 0 0);
+    --border-default: oklch(37.3% 0.034 259.733);
+    --border-focus: var(--bg-brand);
+  }
+}
+
+/* RN line-height — px 를 배수로 읽으므로 배수로 다시 낸다(게이트 (5), plan D-31). */
+@theme {
+  --text-sm--line-height: 1.4285714285714286;
+  --text-md--line-height: 1.5;
+  --text-lg--line-height: 1.5555555555555556;
+  --text-xl--line-height: 1.4;
+  --text-2xl--line-height: 1.3333333333333333;
+}
+
 @source "../dist";

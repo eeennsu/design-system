@@ -31,7 +31,7 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 - 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
 - 구현 계획: [docs/plan.md](docs/plan.md) v2. 토큰 인벤토리·값, 컴포넌트 축 매트릭스, `Contracts<P>`, 패키지 구성, 태스크(T-0 ~ T-P1)와 AC 매핑이 여기 있다. 스펙과 어긋나는 지점은 plan.md §9에 모으고 스펙은 고치지 않는다
 - 계획 검증: [docs/plan-verification.md](docs/plan-verification.md). 2026-09-05 검증 완료(B 2·P 21·N 13, 전부 plan.md v2에 반영). 사용자 확정 4건은 plan.md D-6 · D-28 · D-29 · D-30
-- 착수 게이트는 두 단계다. 둘 다 실행했다 — 웹 선확인(T-W0) 2026-09-05 통과, C-19 게이트(T-G1 · T-G2) 2026-09-06 실행. **Phase 5(native) 착수 조건으로 남은 것은 게이트 (7)의 기기 화면 확인 1회뿐이고, 2026-09-06 사용자 결정으로 미뤄 둔 상태다.** 그 확인 전에 Phase 5 를 착수하지 않는다. Phase 5 첫 태스크는 T-N0(native 래퍼에 다크 블록 + 배수 line-height)이며 plan §2.3 에 있다
+- 착수 게이트는 두 단계이고 **둘 다 닫혔다** — 웹 선확인(T-W0) 2026-09-05 통과, C-19 게이트(T-G1 · T-G2) 2026-09-06 실행, 게이트 (7) 기기 화면 확인 2026-09-08 완료(Android 에뮬레이터 + Expo Go, 스크린샷은 `docs/assets/`). **Phase 5 착수 조건은 없다.** 기기 확인에서 (5) lineHeight 결함이 화면 레이아웃을 무너뜨리는 것을 봤고, T-N0 이 그것을 고쳤다
 - 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 9항목 판정과 고정한 버전이 여기 있다 — (1)(3)(6)(8)(9) 통과, (2)(4) 실패(R24 개정 완료), (5) 부분, (7) 기기 확인 미실시
 - 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(Phase 0~4 완료), 계획과 갈린 지점 9건, 구현 중 확인한 사실 13건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
 

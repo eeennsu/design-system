@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { buildOutputs } from "../scripts/build-outputs.js";
-import { component } from "../src/generated/values.js";
+import { component, text } from "../src/generated/values.js";
 
 const tokensRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const packagesRoot = dirname(tokensRoot);
@@ -84,6 +84,52 @@ describe("AC-3 래퍼가 같은 토큰 파일을 import 한다", () => {
   it("브랜드마다 자기 토큰 파일을 가리킨다", () => {
     expect(output("web/themes/bakery.css")).toContain('@import "@eeennsu/tokens/themes/bakery.css";');
     expect(output("native/themes/bakery.css")).toContain('@import "@eeennsu/tokens/themes/bakery.css";');
+  });
+});
+
+describe("T-N0 native 래퍼 다크 · line-height", () => {
+  /** `--bg-brand: oklch(...)` 형태의 선언을 이름 → 값 맵으로 만든다. */
+  const declarations = (block: string): Record<string, string> =>
+    Object.fromEntries(
+      [...block.matchAll(/^\s*(--[a-z-]+):\s*(.+);$/gm)].map((match) => [match[1]!, match[2]!]),
+    );
+
+  for (const brand of ["base", "bakery"] as const) {
+    it(`${brand}: 다크 값이 세 블록에서 같다 (토큰 .dark · 토큰 @media · native @media)`, () => {
+      const tokens = output(`tokens/themes/${brand}.css`);
+      const native = output(`native/themes/${brand}.css`);
+
+      const tokenDarkClass = /^\.dark \{\n([\s\S]*?)^\}/m.exec(tokens)?.[1] ?? "";
+      const tokenDarkMedia = /:root:not\(\.light\) \{\n([\s\S]*?)^ {2}\}/m.exec(tokens)?.[1] ?? "";
+      const nativeDarkMedia = /^ {2}:root \{\n([\s\S]*?)^ {2}\}/m.exec(native)?.[1] ?? "";
+
+      const fromClass = declarations(tokenDarkClass);
+      expect(Object.keys(fromClass)).toHaveLength(16);
+      expect(declarations(tokenDarkMedia)).toEqual(fromClass);
+      expect(declarations(nativeDarkMedia)).toEqual(fromClass);
+    });
+  }
+
+  it("native 래퍼 다크 셀렉터에는 :not(.light) 이 없다 (게이트 (4))", () => {
+    const native = output("native/themes/base.css");
+    expect(native).toContain("@media (prefers-color-scheme: dark) {\n  :root {");
+    expect(native).not.toMatch(/^\s*:root:not\(\.light\)/m); // 주석에는 이유로 남아 있다
+  });
+
+  it("native line-height 는 배수이고 fontSize 를 곱하면 원래 px 다 (게이트 (5), plan D-31)", () => {
+    const native = output("native/themes/base.css");
+    for (const [step, value] of Object.entries(text)) {
+      const matched = new RegExp(`--text-${step}--line-height: ([\\d.]+);`).exec(native);
+      expect(matched, `${step} 배수가 없다`).not.toBeNull();
+      const ratio = Number(matched![1]);
+      expect(ratio).toBeGreaterThan(1);
+      expect(Number.parseFloat(value.fontSize) * ratio).toBe(Number.parseFloat(value.lineHeight));
+    }
+  });
+
+  it("토큰 CSS 와 web 래퍼는 무변경이다 — 배수는 native 래퍼에만 있다", () => {
+    expect(output("tokens/themes/base.css")).toContain("--text-xl--line-height: 28px;");
+    expect(output("web/themes/base.css")).not.toContain("line-height");
   });
 });
 

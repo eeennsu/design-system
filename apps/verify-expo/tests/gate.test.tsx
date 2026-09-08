@@ -18,6 +18,10 @@ import { compileGlobalCss, hasClass } from "./gate-css";
 
 /** :root 의 --bg-brand = oklch(54.6% 0.245 262.881) */
 const BRAND_LIGHT = "#155dfc";
+/** @media 다크의 --bg-brand = oklch(62.3% 0.214 259.815) */
+const BRAND_DARK = "#2b7fff";
+/** @media 다크의 --bg-danger = oklch(63.7% 0.237 25.331) */
+const DANGER_DARK = "#fb2c36";
 
 async function styleOf(
   className: string,
@@ -45,27 +49,39 @@ describe("(1) @theme inline — 통과", () => {
 });
 
 describe("(2) .dark 루트 셀렉터 — 실패(무시)", () => {
-  test("토큰 파일의 .dark 블록은 다크에서도 적용되지 않는다", async () => {
-    expect(await styleOf("bg-brand", { scheme: "dark" })).toEqual({
-      backgroundColor: BRAND_LIGHT,
-    });
-  });
-
-  test("소비자가 쓴 .dark 블록도 무시된다", async () => {
+  test("소비자가 쓴 .dark 블록은 무시된다 — 값은 래퍼 다크 블록이 정한다", async () => {
     const style = await styleOf("bg-brand", {
       extraCss: `.dark { --bg-brand: rgb(10 11 12); }`,
       scheme: "dark",
     });
-    expect(style).toEqual({ backgroundColor: BRAND_LIGHT });
+    expect(style).toEqual({ backgroundColor: BRAND_DARK });
   });
 
   test("대신 dark: 유틸리티 변형은 동작한다", async () => {
     const extraCss = `@source inline("dark:bg-danger");`;
     expect(await styleOf("bg-brand dark:bg-danger", { extraCss, scheme: "dark" })).toEqual({
-      backgroundColor: "#e7000b",
+      backgroundColor: DANGER_DARK,
     });
     expect(await styleOf("bg-brand dark:bg-danger", { extraCss, scheme: "light" })).toEqual({
       backgroundColor: BRAND_LIGHT,
+    });
+  });
+});
+
+describe("T-N0 native 래퍼 다크 블록 — (2)·(4) 실패의 우회", () => {
+  test("래퍼의 @media (prefers-color-scheme: dark) { :root } 가 다크에서 적용된다", async () => {
+    expect(await styleOf("bg-brand", { scheme: "dark" })).toEqual({
+      backgroundColor: BRAND_DARK,
+    });
+    expect(await styleOf("bg-brand", { scheme: "light" })).toEqual({
+      backgroundColor: BRAND_LIGHT,
+    });
+  });
+
+  test("canvas · fg 도 함께 다크 값이 된다", async () => {
+    expect(await styleOf("bg-canvas text-fg", { scheme: "dark" })).toEqual({
+      backgroundColor: "#030712",
+      color: "#f9fafb",
     });
   });
 });
@@ -88,12 +104,12 @@ describe("(3) @source — 통과", () => {
 });
 
 describe("(4) @media (prefers-color-scheme: dark) — :not(.light) 만 실패", () => {
-  test(":root:not(.light) 는 다크에서도 적용되지 않는다", async () => {
+  test(":root:not(.light) 는 다크에서도 적용되지 않는다 — 래퍼 다크 값이 남는다", async () => {
     const style = await styleOf("bg-brand", {
       extraCss: `@media (prefers-color-scheme: dark) { :root:not(.light) { --bg-brand: rgb(7 8 9); } }`,
       scheme: "dark",
     });
-    expect(style).toEqual({ backgroundColor: BRAND_LIGHT });
+    expect(style).toEqual({ backgroundColor: BRAND_DARK });
   });
 
   test(":not(.light) 을 뺀 :root 는 다크에서 적용된다", async () => {
@@ -107,18 +123,18 @@ describe("(4) @media (prefers-color-scheme: dark) — :not(.light) 만 실패", 
   });
 });
 
-describe("(5) 복합 폰트 변수 — 부분 실패", () => {
-  test("fontSize · fontWeight 는 맞고 lineHeight 는 틀린다", async () => {
+describe("(5) 복합 폰트 변수 — T-N0 배수 처리 후 통과", () => {
+  test("text-xl 이 fontSize · lineHeight · fontWeight 세 값을 다 적용한다", async () => {
     registerCSS(await compileGlobalCss());
     await render(
       <Text testID="probe" className="text-xl">
         x
       </Text>,
     );
-    // --text-xl--line-height: 28px 인데 28 을 배수로 읽어 20 * 28 = 560 이 된다.
+    // T-N0 이 native 래퍼에서 배수(1.4)로 다시 내므로 20 * 1.4 = 28 이 된다(plan D-31).
     expect(screen.getByTestId("probe").props.style).toEqual({
       fontSize: 20,
-      lineHeight: 560,
+      lineHeight: 28,
       fontWeight: 600,
     });
   });

@@ -3,7 +3,7 @@
 착수 게이트는 두 단계다(CLAUDE.md · [plan.md](plan.md) §2).
 
 - **웹 선확인 (T-W0)** — C-3 래퍼 2건. Phase 1~3의 전제. **완료(2026-09-05)**
-- **C-19 게이트 (T-G1 · T-G2)** — NativeWind v5 9항목. Phase 5 착수 전에만 필요하다. **실행 완료(2026-09-06). 수동 확인 1건 남음**
+- **C-19 게이트 (T-G1 · T-G2)** — NativeWind v5 9항목. Phase 5 착수 전에만 필요하다. **완료(실행 2026-09-06, 기기 확인 2026-09-08)**
 
 ---
 
@@ -68,11 +68,13 @@ Phase 5(native) 착수 전에만 필요하다. 9항목은 [plan.md](plan.md) §2
 | (4) | `:root:not(.light)` | **실패** — `:not(.light)` 이 원인. `:not` 을 뺀 `:root` 는 동작한다. R24 개정 대상 |
 | (5) | 복합 폰트 변수 | **부분** — fontSize · fontWeight 통과, lineHeight 실패 |
 | (6) | 소비자 `:root` 재선언 last-wins | **통과** — 단 다크 블록 형태가 웹과 다르다((2)·(4)의 귀결) |
-| (7) | Expo SDK · RN 버전 | **부분** — SDK 57에서 생성 · 설치 · Metro 번들까지 통과. 기기 화면 확인은 **수동 확인 필요(미실시)** |
+| (7) | Expo SDK · RN 버전 | **통과** — SDK 57. 기기 화면 확인 2026-09-08 완료(에뮬레이터 Pixel_4a + Expo Go) |
 | (8) | native 래퍼 구성 | **통과** — 래퍼를 그대로 둔다. 발견 2건 기록 |
 | (9) | 테스트 환경 className 해석 | **통과(정보)** — 컴포넌트 출처 제한이 붙는다 |
 
-**Phase 5 착수 조건**: (2)·(4) 실패에 대한 스펙 R24 개정 + (7) 수동 확인. 개정은 완료했고 (7) 수동 확인만 남았다.
+**Phase 5 착수 조건**: (2)·(4) 실패에 대한 스펙 R24 개정 + (7) 수동 확인. **둘 다 완료(2026-09-08). Phase 5 착수 가능.**
+
+**T-N0 반영 (2026-09-08).** 아래 (2)·(4)·(5) 절은 **T-N0 이전의 실측 기록**이다. T-N0 이 `packages/native/themes/*.css` 에 `@media (prefers-color-scheme: dark) { :root }` 블록과 배수 line-height 를 넣은 뒤로 세 항목의 실질 동작이 바뀌었다 — 다크는 래퍼 블록으로 적용되고 `text-<step>` 은 세 값이 다 맞는다. `apps/verify-expo/tests/gate.test.tsx` 의 단언도 그에 맞춰 갱신했다. **NativeWind 자체의 동작은 그대로다**(`.dark` 무시 · `:not(.light)` 실패 · line-height px 오독). 세 절을 남겨 두는 이유는 나중에 NativeWind 가 고쳐졌을 때 무엇이 원래 문제였는지 알기 위해서다.
 
 ---
 
@@ -122,7 +124,7 @@ Phase 5(native) 착수 전에만 필요하다. 9항목은 [plan.md](plan.md) §2
 
 - `pnpm --filter verify-expo test` — `tsc --noEmit` + jest 20개 통과(게이트 19 + smoke 1). T-G1 완료 조건인 "빈 테스트 1개"는 smoke 다
 - `npx expo export --platform android` — 성공(1,105 모듈, 2.7 MB hbc). 번들 문자열에 `#155dfc`(= `--bg-brand` 라이트 값)와 DS 클래스 이름이 들어 있다. **jest 경로뿐 아니라 실제 Metro 경로에서도 토큰이 흐른다**
-- 기기 부팅(`npx expo start` → Android) — **미실시. 수동 확인 필요**
+- 기기 부팅(`npx expo start` → Android) — **완료(2026-09-08).** 아래 (7) 참조
 
 **설치 중 남은 peer 경고 2건** (게이트 판정에 영향 없음, 기록만)
 
@@ -133,14 +135,14 @@ Phase 5(native) 착수 전에만 필요하다. 9항목은 [plan.md](plan.md) §2
 
 ### 판정 수단
 
-plan §2.1 이 정한 두 가지 중 **(a) jest-expo + RNTL** 로 (1)~(6)·(8)·(9)를 판정했다. (b) 기기 화면은 미실시다.
+plan §2.1 이 정한 두 가지 중 **(a) jest-expo + RNTL** 로 (1)~(6)·(8)·(9)를 판정했다. **(b) 기기 화면은 2026-09-08 에 실행했고 (7) 절에 있다.**
 
 (a) 를 쓰려면 두 가지가 필요했다.
 
 1. **CSS 컴파일** — `apps/verify-expo/tests/gate-css.ts` 가 `global.css` 를 `@tailwindcss/postcss` 로 컴파일하고, 그 결과를 `react-native-css/jest` 의 `registerCSS` 에 넣는다. 소비자 CSS 를 흉내내는 `extraCss` 를 뒤에 붙일 수 있다(게이트 (6))
 2. **다크 전환** — `Appearance.setColorScheme` 은 **jest-expo 에서 no-op 이다.** `NativeAppearance` TurboModule 이 없어 `getColorScheme()` 이 항상 `null` 이고 change 이벤트도 안 뜬다. `jest.setup.js` 가 그 모듈을 최소 모킹하고 `tests/color-scheme.ts` 가 RN 이 네이티브에서 받는 것과 같은 `appearanceChanged` 이벤트를 `DeviceEventEmitter` 로 쏜다. 이 장치 없이 판정하면 **(2)·(4) 가 실제와 무관하게 전부 실패로 보인다**
 
-증거 파일: `apps/verify-expo/tests/gate.test.tsx` (19개). 실패로 기록한 항목도 단언이 있다 — NativeWind 가 나중에 고쳐지면 테스트가 깨져서 알려주는 것이 목적이다.
+증거 파일: `apps/verify-expo/tests/gate.test.tsx`. 실패로 기록한 항목도 단언이 있다 — NativeWind 가 나중에 고쳐지면 테스트가 깨져서 알려주는 것이 목적이다. T-N0 뒤에는 (2)·(4)·(5) 단언이 "래퍼가 우회한 결과"로 바뀌었다(아래 각 절).
 
 ---
 
@@ -215,12 +217,32 @@ NativeWind 의 `nativewind/theme` 도 이 문제를 알고 `leading-*` 유틸리
 
 last-wins 자체는 성립한다. C-5b 의 RN 채널은 유지하되 **다크 블록의 형태가 웹과 다르다** — (2)·(4) 의 직접적 귀결이며 R24 개정에 포함했다. `VariableContextProvider` 재설계는 필요 없다.
 
-### (7) Expo SDK · RN 버전 — 부분 (수동 확인 필요)
+### (7) Expo SDK · RN 버전 — 통과 (기기 확인 2026-09-08 완료)
 
 - SDK 57(`create-expo-app@latest`)로 만든 프로젝트에서 (1)~(6)·(8)·(9)가 전부 판정 가능했다. `--template blank@sdk-54` 재시도는 하지 않았다
 - `npx expo export --platform android` 가 성공하고 번들에 토큰 값이 들어간다(위 T-G1)
-- **남은 것: 기기 화면 확인.** Android 에뮬레이터 AVD 는 두 개(`Medium_Phone_API_36.1`, `Pixel_4a`) 있으나 부팅하지 않았다. `apps/verify-expo/App.tsx` 가 확인용 화면이다 — `bg-brand` 색 견본, `text-xl` 한 줄, `useUnstableNativeVariable` 로 읽은 `--bg-brand` · `--fg-default` 값, 색 구성표 토글 버튼
-- 이 항목이 남아 있는 동안 Phase 5 를 착수하지 않는다
+- **기기 화면 확인 (2026-09-08).** Android 에뮬레이터 `Pixel_4a`(API 33, 1080x2340) + Expo Go SDK 57.0.0. `npx expo start` → `adb reverse tcp:8081 tcp:8081` → `exp://127.0.0.1:8081` 딥링크로 열었다. 판정은 스크린샷과 `uiautomator dump` 의 엘리먼트 bounds 두 가지로 했다
+
+**T-N0 전 (1차 확인) — 화면이 깨졌다**
+
+`uiautomator dump` 에 텍스트 노드가 `C-19 gate` 하나뿐이고 bounds 가 `[88,264][992,2340]` 이었다. 즉 첫 Text 가 화면 끝까지 늘어나 나머지 자식(브랜드 색 견본 · `text-xl` · probe 2개 · 토글)이 전부 화면 밖으로 밀렸다.
+
+원인은 (5) 의 lineHeight 오독이다 — `text-2xl` 의 `--text-2xl--line-height: 32px` 를 배수로 읽어 `24 x 32 = 768dp`(≈2112px)가 되었다. **(5) 의 실패가 화면에서는 "글자 크기가 조금 틀리다" 가 아니라 "레이아웃이 무너진다" 로 나타난다**는 것이 이 확인의 소득이다. (7) 자체의 실패는 아니다
+
+**T-N0 후 (2차 확인) — 통과**
+
+`packages/native/themes/*.css` 에 배수 line-height 와 다크 블록이 들어간 뒤 다시 확인했다.
+
+| | 라이트 | 다크(`Appearance.setColorScheme("dark")`) |
+|---|---|---|
+| 화면 | ![라이트](assets/gate7-android-light.png) | ![다크](assets/gate7-android-dark.png) |
+| `--bg-brand` (probe) | `#155dfc` (blue-600) | `#3080ff` (blue-500) |
+| `--fg-default` (probe) | `#101828` (gray-900) | `#f9fafb` (gray-50) |
+| canvas | 흰색 | gray-950 |
+
+엘리먼트 bounds 도 스케일과 맞는다 — `C-19 gate` 높이 88px = 32dp = `text-2xl` 24dp x 1.333, `text-xl` 높이 77px = 28dp = 20dp x 1.4. 브랜드 견본은 `h-16`(64dp) · `rounded-md`(8dp)로 그려진다
+
+부기: probe 가 읽은 다크 brand 값(`#3080ff`)은 jest 환경에서 `react-native-css` 가 같은 oklch 를 환산한 값(`#2b7fff`)과 한 단계 다르다. 런타임(`useUnstableNativeVariable`)과 테스트 환경의 oklch→sRGB 환산 경로가 달라서이며, 두 값 모두 blue-500 이고 육안 차이는 없다. 자동 단언은 jest 값을 쓴다
 
 ### (8) native 래퍼 구성 — 통과 (래퍼 무변경)
 
@@ -261,9 +283,9 @@ Metro 빌드에서는 `withNativewind` 의 `globalClassNamePolyfill: true` 가 `
 
 ### 남는 것
 
-- **(7) 기기 화면 확인 1회.** Android 에뮬레이터 또는 Expo Go. 2026-09-06 사용자 결정으로 **미루었다.** 이것이 Phase 5 착수의 마지막 조건이며 그때까지 Phase 5 를 착수하지 않는다
+- ~~(7) 기기 화면 확인 1회~~ **완료(2026-09-08).** 위 (7) 절 참조. T-N0 전후로 두 번 확인했고, T-N0 이 필요한 이유를 화면으로 확인했다
 - T-N0 이 native 래퍼에 다크 블록과 배수 line-height 를 낸다(게이트 (2)·(4)·(5))
 - T-N1 이 `packages/native/dist/_gate-stub.js` 를 실제 dist 로 대체한다
 - T-N4 의 의도적 파괴 확인 기록도 이 문서 말미에 붙인다
 
-- Phase 5 착수일: 미정
+- Phase 5 착수일: 2026-09-08

@@ -126,6 +126,13 @@ function expectNumber(value: unknown, path: string): number {
   return value;
 }
 
+/** `"20px"` → `20`. native 래퍼가 line-height 를 배수로 낼 때 쓴다(T-N0). */
+function pxNumber(value: string, path: string): number {
+  const matched = /^(-?\d+(?:\.\d+)?)px$/.exec(value.trim());
+  if (!matched) throw new Error(`px 값이 아니다: ${value} (${path})`);
+  return Number(matched[1]);
+}
+
 // ------------------------------------------------------- 이름 규칙 (§3.1)
 
 /** `:root` 변수 이름. 소비자 로컬 오버라이드의 공개 계약이다(C-5b). */
@@ -448,8 +455,20 @@ function webWrapperCss(brand: Brand): string {
   ].join("\n");
 }
 
-function nativeWrapperCss(brand: Brand): string {
-  return [
+/**
+ * native 래퍼 (T-N0).
+ *
+ * 토큰 파일이 낸 다크 2셀렉터는 RN 에서 둘 다 죽는다(게이트 (2)·(4)) — `.dark` 는 무시되고
+ * `@media` 쪽은 `:not(.light)` 때문에 매칭되지 않는다. 그래서 native 래퍼만 `:not` 없는
+ * `@media (prefers-color-scheme: dark) { :root }` 를 한 블록 더 낸다. 값은 같은 DTCG 소스에서
+ * 나오므로 셀렉터만 다르다(C-6 R24, C-20 RN 항목).
+ *
+ * line-height 는 px 를 배수로 오독하므로(게이트 (5)) 같은 래퍼에서 단위 없는 배수로 다시 낸다
+ * (plan D-31 (A)). 배수 = 스텝의 line-height px ÷ 같은 스텝의 fontSize px.
+ */
+function nativeWrapperCss(source: TokenSource, brand: Brand): string {
+  const text = textSteps(source.shared);
+  const lines: string[] = [
     GENERATED,
     `/* @eeennsu/native — brand: ${brand}. 소비자 공개 경로다(C-3). */`,
     "/* @custom-variant dark 를 넣지 않는다 — RN 은 NativeWind 의 dark: 기본 동작을 쓴다(C-20, plan v2 F-21). */",
@@ -457,9 +476,27 @@ function nativeWrapperCss(brand: Brand): string {
     '@import "tailwindcss";',
     `@import "@eeennsu/tokens/themes/${brand}.css";`,
     "",
-    '@source "../dist";',
+    "/* RN 다크 — 토큰 파일의 .dark 와 :root:not(.light) 는 NativeWind v5 에서 죽는다(게이트 (2)·(4)). */",
+    "@media (prefers-color-scheme: dark) {",
+    "  :root {",
+    ...semanticBlock(source, brand, "dark", "    "),
+    "  }",
+    "}",
     "",
-  ].join("\n");
+    "/* RN line-height — px 를 배수로 읽으므로 배수로 다시 낸다(게이트 (5), plan D-31). */",
+    "@theme {",
+  ];
+  for (const step of TEXT_STEPS) {
+    const value = text[step];
+    const fontSize = pxNumber(value.fontSize, `component.text.${step}.fontSize`);
+    const lineHeight = pxNumber(value.lineHeight, `component.text.${step}.lineHeight`);
+    lines.push(`  --text-${step}--line-height: ${lineHeight / fontSize};`);
+  }
+  lines.push("}");
+  lines.push("");
+  lines.push('@source "../dist";');
+  lines.push("");
+  return lines.join("\n");
 }
 
 // -------------------------------------------------------------- TS 생성
@@ -573,7 +610,7 @@ export function buildOutputs(tokensDir: string): Output[] {
   for (const brand of BRANDS) {
     outputs.push({ path: `tokens/themes/${brand}.css`, contents: tokenCss(source, brand) });
     outputs.push({ path: `web/themes/${brand}.css`, contents: webWrapperCss(brand) });
-    outputs.push({ path: `native/themes/${brand}.css`, contents: nativeWrapperCss(brand) });
+    outputs.push({ path: `native/themes/${brand}.css`, contents: nativeWrapperCss(source, brand) });
     outputs.push({ path: `tokens/src/brands/${brand}.ts`, contents: brandTs(source, brand) });
   }
   outputs.push({ path: "tokens/src/generated/values.ts", contents: valuesTs(source) });

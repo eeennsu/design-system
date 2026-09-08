@@ -93,7 +93,7 @@ Phase 7  T-P1                                                    publish 게이�
 | (4) | **실패** — `:root:not(.light)`의 `:not`이 원인 | (2)와 같은 변경으로 함께 해결. 웹 산출물·`packages/tokens/themes/*.css`는 무변경 |
 | (5) | 부분 — lineHeight만 틀린다 | T-N2에 결정 1건이 붙는다(아래 D-31) |
 | (6) | 통과 | T-R1의 소비자 `global.css`가 3블록이 아니라 2블록 |
-| (7) | 부분 — 기기 확인 미실시 | Phase 5 착수 전 수동 1회. §5.7 "Expo SDK · RN · NativeWind · react-native-css" 행이 고정됐다 |
+| (7) | **통과**(기기 확인 2026-09-08) | 없음. §5.7 "Expo SDK · RN · NativeWind · react-native-css" 행이 고정됐다 |
 | (8) | 통과 — 래퍼 무변경 | §9 S-5(보류) 종결. T-N1의 보류가 풀렸다 |
 | (9) | 통과(정보) | T-N1에 확인 1건 추가, T-R1은 `toHaveStyle`로 간다(격하 없음) |
 
