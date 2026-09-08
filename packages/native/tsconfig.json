@@ -4,7 +4,16 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-jsx",
-    "lib": ["ES2022"]
+    "lib": ["ES2022"],
+
+    // tokens · web 은 NodeNext 다. native 만 bundler 인 이유: `react-native-css` 가 내는
+    // `.d.ts` 가 확장자 없는 상대 import(`export * from "./runtime"`)를 쓰는데
+    // 그 패키지의 `dist/typescript/module/package.json` 이 `"type": "module"` 이라
+    // NodeNext 해석에서 `./runtime` 이 풀리지 않는다(useCssElement 가 안 보인다).
+    // RN 소비자는 Metro 로 번들하므로 bundler 해석이 실제 런타임과도 맞는다.
+    // 우리 소스는 상대 import 에 `.js` 를 그대로 붙여 두므로 산출물은 두 해석 모두에서 유효하다.
+    "module": "ESNext",
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.test-d.ts", "src/**/*.test-d.tsx"]

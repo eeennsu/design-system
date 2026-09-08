@@ -8,7 +8,9 @@
  * 치환하므로 web 타르볼은 `@eeennsu/tokens@0.1.0` 을 npm 에서 찾다 실패한다. 루트
  * `pnpm.overrides` 로 풀면 워크스페이스 소스 `packages/web` 까지 타르볼 사본으로 바뀐다.
  *
- * 사용법: pnpm verify:pack [앱이름 ...]   (기본값: verify-next verify-vite)
+ * 사용법: pnpm verify:pack [앱이름 ...]   (기본값: verify-next verify-vite verify-expo)
+ *
+ * T-R1 이 native 타르볼과 `verify-expo` 를 더했다. 앱마다 자기가 선언한 DS 의존성만 바꾼다.
  */
 import { execFileSync } from "node:child_process";
 import { cpSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -18,7 +20,10 @@ import { fileURLToPath } from "node:url";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const apps = process.argv.slice(2);
-const targets = apps.length > 0 ? apps : ["verify-next", "verify-vite"];
+const targets = apps.length > 0 ? apps : ["verify-next", "verify-vite", "verify-expo"];
+
+/** publish 대상 3패키지. lockstep 이라 항상 함께 낸다(§5.3). */
+const packages = ["tokens", "web", "native"];
 
 /** `file:` 스펙과 pnpm 인자에는 슬래시 경로를 쓴다 — Windows 역슬래시는 이스케이프로 먹힌다. */
 const slash = (path) => path.split("\\").join("/");
@@ -45,14 +50,14 @@ const untouched = new Map(
 // ------------------------------------------------------------------ 1. pack
 
 const tarballs = {};
-for (const name of ["tokens", "web"]) {
+for (const name of packages) {
   run("pnpm", ["--filter", `@eeennsu/${name}`, "pack", "--pack-destination", slash(scratch)], root);
 }
 for (const file of readdirSync(scratch).filter((entry) => entry.endsWith(".tgz"))) {
-  const name = file.startsWith("eeennsu-tokens") ? "tokens" : file.startsWith("eeennsu-web") ? "web" : null;
+  const name = packages.find((candidate) => file.startsWith(`eeennsu-${candidate}-`));
   if (name) tarballs[name] = join(scratch, file);
 }
-for (const name of ["tokens", "web"]) {
+for (const name of packages) {
   if (!tarballs[name]) throw new Error(`타르볼을 못 찾았다: ${name}`);
   console.log(`  ${name} → ${tarballs[name]}`);
 }
@@ -66,7 +71,7 @@ const check = (condition, message) => {
 };
 
 console.log("\n타르볼 내용:");
-for (const name of ["tokens", "web"]) {
+for (const name of packages) {
   // GNU tar 는 `C:/...` 를 원격 호스트로 읽는다. cwd 를 옮기고 파일명만 넘긴다.
   const entries = capture("tar", ["-tzf", basename(tarballs[name])], scratch)
     .split("\n")
@@ -85,14 +90,16 @@ for (const name of ["tokens", "web"]) {
   );
 }
 
-const webManifest = JSON.parse(
-  capture("tar", ["-xzOf", basename(tarballs.web), "package/package.json"], scratch),
-);
-const tokensRange = webManifest.dependencies["@eeennsu/tokens"];
-check(
-  typeof tokensRange === "string" && !tokensRange.startsWith("workspace:"),
-  `web: @eeennsu/tokens 가 실제 버전으로 치환됐다 (${tokensRange})`,
-);
+for (const name of ["web", "native"]) {
+  const manifest = JSON.parse(
+    capture("tar", ["-xzOf", basename(tarballs[name]), "package/package.json"], scratch),
+  );
+  const tokensRange = manifest.dependencies["@eeennsu/tokens"];
+  check(
+    typeof tokensRange === "string" && !tokensRange.startsWith("workspace:"),
+    `${name}: @eeennsu/tokens 가 실제 버전으로 치환됐다 (${tokensRange})`,
+  );
+}
 
 // ------------------------------------------------- 3. 앱 사본 설치 후 재실행
 
@@ -102,11 +109,19 @@ for (const app of targets) {
   const copy = join(scratch, app);
   cpSync(source, copy, {
     recursive: true,
-    filter: (path) => !/[\\/](node_modules|\.next|dist|test-results|playwright-report)([\\/]|$)/.test(path),
+    filter: (path) =>
+      !/[\\/](node_modules|\.next|\.expo|dist|test-results|playwright-report)([\\/]|$)/.test(path),
   });
 
   const manifest = JSON.parse(readFileSync(join(copy, "package.json"), "utf8"));
-  manifest.dependencies["@eeennsu/web"] = `file:${slash(tarballs.web)}`;
+  let replaced = 0;
+  for (const name of ["web", "native"]) {
+    if (manifest.dependencies?.[`@eeennsu/${name}`]) {
+      manifest.dependencies[`@eeennsu/${name}`] = `file:${slash(tarballs[name])}`;
+      replaced += 1;
+    }
+  }
+  if (replaced === 0) throw new Error(`${app} 이 DS 패키지를 의존하지 않는다`);
   if (manifest.devDependencies?.["@eeennsu/tokens"]) {
     manifest.devDependencies["@eeennsu/tokens"] = `file:${slash(tarballs.tokens)}`;
   }
