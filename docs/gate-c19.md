@@ -284,8 +284,26 @@ Metro 빌드에서는 `withNativewind` 의 `globalClassNamePolyfill: true` 가 `
 ### 남는 것
 
 - ~~(7) 기기 화면 확인 1회~~ **완료(2026-09-08).** 위 (7) 절 참조. T-N0 전후로 두 번 확인했고, T-N0 이 필요한 이유를 화면으로 확인했다
-- T-N0 이 native 래퍼에 다크 블록과 배수 line-height 를 낸다(게이트 (2)·(4)·(5))
-- T-N1 이 `packages/native/dist/_gate-stub.js` 를 실제 dist 로 대체한다
-- T-N4 의 의도적 파괴 확인 기록도 이 문서 말미에 붙인다
+- ~~T-N0 이 native 래퍼에 다크 블록과 배수 line-height 를 낸다(게이트 (2)·(4)·(5))~~ **완료(2026-09-08).** 위 "T-N0 반영" 참조
+- ~~T-N1 이 `packages/native/dist/_gate-stub.js` 를 실제 dist 로 대체한다~~ **완료(2026-09-08).** 게이트 (3) 테스트도 실제 dist 기준으로 바뀌었다 — `text-fg-muted`(Text tone) · `bg-danger`(Button variant) · `rounded-lg`(Card) 가 생성되고, DS 가 안 쓰는 `p-24` · `shadow-lg` · `bg-overlay` · `rounded-full` 은 생성되지 않는다
+- ~~T-N4 의 의도적 파괴 확인 기록~~ **완료(2026-09-08).** AC-21 "실제로 깨지는지" 를 수동 1회 확인했고 둘 다 되돌렸다:
+  1. native `Button` 을 `FC<ButtonProps & { extra?: string }>` 로 넓힘 → 맵 동등성 테스트 1건 실패
+  2. `components` 에서 `Text` export 를 뺌 → 맵 동등성 + 키 목록 테스트 2건 실패
+
+  절차와 결과는 `packages/native/tests/contracts.test-d.tsx` 머리 주석에도 있다
 
 - Phase 5 착수일: 2026-09-08
+
+### T-R1 — RN 검증 (2026-09-06 게이트와 별개, 2026-09-08)
+
+- 자동: `apps/verify-expo/tests/ds.test.tsx` 9개 — AC-22(접근성 이름 · `kind` 파생) · AC-26 RN절(재선언 변수는 따라가고 나머지는 DS 기본) · AC-19 (c)(코드 0줄로 OS 다크) · AC-11 RN절 · AC-25(`className="bg-danger mt-6"` 이 그 버튼만 바꾼다) · 타이포 3값
+- 소비자 `global.css` 는 **2블록**이다(`:root` + `@media (prefers-color-scheme: dark) { :root }`). 웹의 3블록 중 `.dark` 는 RN 에서 죽는다(게이트 (2))
+- 타르볼: `pnpm verify:pack` 이 tokens · web · native 3개를 pack 하고 검증 앱 3개를 워크스페이스 밖에서 재실행한다. **native 타르볼에서만 드러난 문제 1건** — DS 가 ESM 단일 출력이라 jest 소비자는 `transformIgnorePatterns` 에 `@eeennsu` 를 넣어야 한다(implementation-notes N-14)
+- **AC-23 수동 비교 (2026-09-08).** 같은 화면을 웹·RN 에서 만들어 나란히 봤다
+
+| | 웹 (`verify-next`, 393x851) | RN (`verify-expo`, Pixel_4a) |
+|---|---|---|
+| 라이트 | ![web light](assets/ac23-web-light.png) | ![rn light](assets/ac23-rn-light.png) |
+| 다크 | ![web dark](assets/ac23-web-dark.png) | ![rn dark](assets/ac23-rn-dark.png) |
+
+브랜드 초록(소비자 재선언) · danger 빨강(DS 기본) · 카드 표면과 테두리 · 입력 높이 · 요소 순서가 같고, `mt-6` 를 준 "변경" 버튼만 양쪽에서 같은 만큼 내려간다. 차이는 두 가지다 — RN 은 placeholder 색이 플랫폼 기본이고(N-13), 웹은 `Label` 컴포넌트를 쓰지만 RN v1 에는 Label 이 없어 `Text` 로 대신했다(AC-20 의 5개에 Label 이 없다)

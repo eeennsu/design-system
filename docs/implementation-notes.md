@@ -3,8 +3,8 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-06
-- 진행: Phase 0 ~ Phase 4 완료. Phase 5(native) 미착수 — 게이트 (7) 기기 확인 1건이 착수 조건으로 남았다
+- 기준일: 2026-09-08
+- 진행: **Phase 0 ~ Phase 6 완료.** 남은 것은 Phase 7(publish)뿐이고 npm 계정 준비를 기다린다
 
 ## 1. 완료 상태
 
@@ -18,13 +18,17 @@
 | 3 | T-V2 verify-vite | 완료 | Playwright 5개 |
 | 3 | T-V3 pack 설치 | 완료 | `pnpm verify:pack` |
 | 4 | T-G1 `apps/verify-expo` 생성 | 완료 | [gate-c19.md](gate-c19.md) "T-G1" |
-| 4 | T-G2 게이트 실행 | 완료 | jest 20개 + [gate-c19.md](gate-c19.md) 9항목 |
-| 5~7 | native · RN 검증 · publish | 미착수 | — |
+| 4 | T-G2 게이트 실행 | 완료 | jest + [gate-c19.md](gate-c19.md) 9항목. (7) 기기 확인 2026-09-08 |
+| 5 | T-N0 native 래퍼 다크 · 배수 line-height | 완료 | `packages/native/themes/*.css`, tokens 테스트 58개 |
+| 5 | T-N1 ~ T-N4 native | 완료 | `packages/native` 컴포넌트 5개, 테스트 22개(타입·dist) |
+| 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 30개(게이트 20 + DS 9 + smoke 1) + 화면 비교 |
+| 7 | T-P1 publish | 미착수 | npm 계정 준비 중 |
 
-수동 확인으로 남은 것 2건:
+수동 확인 상태:
 
-1. AC-16 의 "비밀번호 자동완성 제안 UI"(브라우저 크롬이라 자동 단언 불가). DOM 쪽 근거(`<form>` + `autocomplete="current-password"`)는 Playwright 가 본다
-2. **게이트 (7) 기기 화면 확인.** Android 에뮬레이터 또는 Expo Go 에서 `apps/verify-expo` 를 띄운다. Phase 5 착수의 마지막 조건이다
+1. AC-16 의 "비밀번호 자동완성 제안 UI"(브라우저 크롬이라 자동 단언 불가) — **남아 있다.** DOM 쪽 근거(`<form>` + `autocomplete="current-password"`)는 Playwright 가 본다
+2. ~~게이트 (7) 기기 화면 확인~~ — **완료(2026-09-08).** [gate-c19.md](gate-c19.md) (7) 절
+3. ~~AC-23 웹·RN 화면 비교~~ — **완료(2026-09-08).** `docs/assets/ac23-{web,rn}-{light,dark}.png` 네 장. 색(브랜드 초록 · danger 빨강) · 카드 표면 · 간격 순서가 같고, `mt-6` 를 준 버튼만 양쪽에서 같은 만큼 내려간다
 
 ## 2. 계획과 갈린 지점
 
@@ -102,6 +106,62 @@ plan §2.1 은 판정 (a) 를 "jest-expo + RNTL 의 `toHaveStyle`" 로만 적었
 
 모킹 없이 돌리면 (2) 와 (4) 가 NativeWind 의 실제 동작과 무관하게 전부 실패로 보인다.
 `apps/verify-expo/jest.setup.js` 와 `tests/color-scheme.ts` 가 그 장치이고 T-R1 도 같은 것을 쓴다.
+
+### N-10. native 만 `moduleResolution: "bundler"` 다
+
+tokens · web 은 `NodeNext` 인데 `packages/native/tsconfig.json` 만 `module: "ESNext"` +
+`moduleResolution: "bundler"` 다. `react-native-css` 가 내는 `.d.ts` 가 확장자 없는 상대 import
+(`export * from "./runtime"`)를 쓰는데 그 패키지의 `dist/typescript/module/package.json` 이
+`"type": "module"` 이라 NodeNext 해석에서 풀리지 않는다 — `useCssElement` 가 "없는 export" 가 된다.
+
+RN 소비자는 Metro 로 번들하므로 bundler 해석이 실제 런타임과도 맞다. 우리 소스는 상대 import 에
+`.js` 를 그대로 붙여 두므로 산출물은 두 해석 어느 쪽에서도 유효하다.
+
+### N-11. native 는 `react` · `react-native` 를 검증 앱과 **정확히 같은 버전**으로 고정한다
+
+`packages/native` 의 devDependency 를 `react@19.2.3` · `react-native@0.86.3` · `react-native-css@3.0.7`
+로 못 박았다. 범위(`^19.2.0`)로 두면 pnpm 이 19.2.8 을 깔고, 격리 레이아웃에서
+`packages/native/node_modules/react` 와 `apps/verify-expo/node_modules/react` 의 realpath 가 갈린다.
+그러면 검증 앱이 DS 컴포넌트를 렌더할 때 React 가 두 벌이라 "Invalid hook call" 로 죽는다.
+
+버전을 맞추면 세 패키지가 같은 `.pnpm` 디렉터리를 가리켜 한 벌이 된다. C-19 고정 정책과도 방향이 같다
+— 게이트가 고정한 조합으로 개발한다.
+
+### N-12. RN Icon 은 색을 `className` → `color` prop 으로 옮긴다
+
+웹 Icon 은 `currentColor` 로 글자색을 상속하지만 RN 에는 `currentColor` 도, View → Text 색 상속도 없다.
+그래서 `react-native-css` 의 `useCssElement` 로 `{ className: { target: false, nativeStyleMapping:
+{ color: "color" } } }` 매핑을 걸어 클래스의 색만 lucide `color` prop 으로 넘긴다.
+호출부는 웹과 같은 `text-fg-on-brand` 를 쓴다(§9 S-17, AC-25).
+
+같은 이유로 **Button 이 variant 를 표면(Pressable)과 전경(라벨 Text) 둘로 쪼갠다.** 웹은 버튼 하나에
+`bg-brand text-fg-on-brand` 를 같이 얹지만 RN 은 라벨 Text 가 색을 따로 받아야 한다.
+결과: 소비자가 Button `className` 에 글자색 클래스를 주면 웹은 라벨이 바뀌고 RN 은 안 바뀐다.
+
+### N-13. RN Input 에는 `placeholder:` 변형이 없다
+
+웹 Input 의 기본 클래스에는 `placeholder:text-fg-muted` 가 있지만 RN 쪽은 뺐다.
+`react-native-css` 가 `placeholder:` 를 `placeholderTextColor` 로 옮기지 않는다.
+v1 RN 은 플랫폼 기본 placeholder 색을 쓴다.
+
+### N-14. 검증 앱 jest 설정 2건 — ESM 패키지와 `.mjs`
+
+`lucide-react-native` 와 `@eeennsu/*` 는 ESM 단일 출력(plan D-22)이라 jest-expo 의
+`transformIgnorePatterns` 허용 목록에 넣어야 한다. 그리고 lucide 는 `react-native` 조건에서
+`.mjs` 를 내주는데 jest-expo 의 transform 은 `^.+\.[jt]sx?$` 라 `.mjs` 를 건드리지 않는다.
+두 줄을 `apps/verify-expo/jest.config.js` 에 넣었다.
+
+`workspace:*` 심링크로 쓸 때는 DS 패키지 경로가 `node_modules` 밖이라 첫 번째 문제가 안 보이고,
+**타르볼 설치(verify:pack)에서만 드러난다.** RN 소비자가 jest 를 쓴다면 같은 한 줄이 필요하다.
+
+### N-15. 게이트 CSS 와 앱 CSS 를 분리했다
+
+T-R1 이 `apps/verify-expo/global.css` 에 AC-26 용 `:root` 재선언을 넣으면서, 같은 파일을 컴파일하던
+게이트 테스트의 기준값이 흔들렸다. 게이트는 `tests/fixtures/gate-global.css`(래퍼 import 한 줄)를,
+T-R1 은 실제 `global.css` 를 쓴다.
+
+컴파일 기준점도 다르다 — 게이트는 존재하지 않는 base 로 자동 소스 탐지를 막아 `@source "../dist"` 만
+남기고(그래서 (3) 이 격리 판정이 된다), T-R1 은 앱 루트를 base 로 줘서 Metro 빌드와 같은 조건으로 본다.
 
 ## 3. 구현 중 확인한 사실
 
@@ -199,8 +259,30 @@ Metro 빌드는 `globalClassNamePolyfill` 이 둘 다 처리하지만 jest 에�
 대신 `useUnstableNativeVariable` 이 web 구현(`() => never`)으로 타이핑되므로 `App.tsx` 가 한 번
 캐스팅한다 — T-N1 · T-N2 가 `nativewind` 타입을 쓸 때 같은 것을 만난다.
 
+### F-16. RN 에는 `invalid` 를 알릴 접근성 채널이 없다
+
+웹 Input 은 `invalid` 를 `aria-invalid` 로 낸다. RN 에는 대응물이 없다 —
+`accessibilityState` 는 `disabled · selected · checked · busy · expanded` 뿐이고
+`aria-invalid` 는 react-native 에 **존재하지 않는 prop** 이라 넘겨도 조용히 버려진다
+(타입은 `react-native-css` 의 느슨한 prop 확장 때문에 통과한다).
+
+그래서 RN `invalid` 는 테두리 색까지만 간다. 오류를 읽히려면 소비자가 `Text tone="danger"` 로
+메시지를 놓는다 — 웹 Form 의 오류 표시(C-21)와 같은 방식이라 계약이 갈리지는 않는다.
+
+### F-14. (5) 의 lineHeight 결함은 화면에서 레이아웃 붕괴로 나타난다
+
+T-N0 전 기기 확인에서 `text-2xl` Text 하나가 화면 끝까지(768dp) 늘어나 나머지 자식이 전부 화면 밖으로
+밀렸다. `--text-2xl--line-height: 32px` 를 배수로 읽어 `24 x 32 = 768` 이 된 것이다.
+"글자 크기가 조금 틀리다" 가 아니라 "화면이 안 나온다" 라서, T-N0 을 Phase 5 첫 태스크로 둔 판단이 맞았다.
+
+### F-15. 런타임과 jest 의 oklch 환산이 한 단계 다르다
+
+같은 `--bg-brand` 다크 값을 `useUnstableNativeVariable` 은 `#3080ff` 로, jest 의 `react-native-css` 는
+`#2b7fff` 로 준다. 둘 다 blue-500 이고 육안 차이는 없다. 자동 단언은 jest 값을 쓰고, 기기 확인은
+probe 텍스트를 눈으로 본다.
+
 ## 4. 다음
 
-- **게이트 (7) 기기 화면 확인 1회** — Android 에뮬레이터 또는 Expo Go. 2026-09-06 사용자 결정으로 미뤘고, Phase 5 착수의 마지막 조건으로 남아 있다
-- Phase 5 는 T-N0(native 래퍼 다크 블록 + 배수 line-height)부터. 게이트 (2)·(4)·(5) 결과로 추가된 태스크다
-- Phase 7 publish 는 native 까지 끝난 뒤 3패키지 lockstep. `pnpm -r publish --access public` 전에 `--dry-run`
+- **Phase 7 publish 만 남았다.** npm 계정이 준비되면 `pnpm -r publish --dry-run` → `pnpm -r publish --access public`. 3패키지 lockstep(§5.3)이라 `@eeennsu/tokens` · `web` · `native` 를 같은 버전으로 함께 낸다
+- publish 전 체크: 전체 테스트 + `pnpm verify:pack`(3앱) 재실행. 둘 다 2026-09-08 기준 통과
+- publish 후 T-P1 완료 조건으로 "새 빈 프로젝트에서 npm 설치로 AC-16 화면이 뜬다" 수동 1회가 남는다

@@ -1,0 +1,7 @@
+/*
+ * C-19 게이트 전용 소비자 CSS. 래퍼 import 한 줄뿐이다(C-3).
+ *
+ * 앱의 실제 `global.css` 와 분리한 이유: 앱 쪽에는 AC-26 용 `:root` 재선언(C-5b)이 들어가
+ * `--bg-brand` 가 브랜드 기본값이 아니게 된다. 게이트 측정은 DS 기본값 기준이어야 한다.
+ */
+@import "@eeennsu/native/themes/base.css";

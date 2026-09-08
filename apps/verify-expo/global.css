@@ -1,2 +1,19 @@
-/* 소비자 전역 CSS. DS 규칙(C-3)대로 래퍼 import 한 줄만 둔다. */
+/* C-3: 소비 프로젝트 설정은 이 import 한 줄까지다. */
 @import "@eeennsu/native/themes/base.css";
+
+/*
+ * C-5b 앱 전용 브랜드. 래퍼 import 다음 줄, 레이어 밖에서 semantic 변수를 재선언한다.
+ * 값은 apps/verify-next 와 같은 초록이다 — AC-23 의 웹·RN 화면 비교가 같은 색이어야 한다.
+ *
+ * 웹은 3블록(`:root` · `.dark` · `@media :root:not(.light)`)이지만 **RN 은 2블록이다**.
+ * `.dark` 는 NativeWind 가 무시하고 `:not(.light)` 은 매칭되지 않는다(게이트 (2)·(4)·(6)).
+ */
+:root {
+  --bg-brand: oklch(62% 0.19 145);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-brand: oklch(72% 0.16 145);
+  }
+}

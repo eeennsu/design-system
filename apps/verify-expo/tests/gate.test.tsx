@@ -41,9 +41,10 @@ describe("(1) @theme inline — 통과", () => {
   });
 
   test("간격 · radius 도 토큰 값 그대로 들어온다", async () => {
-    expect(await styleOf("p-8 rounded-md")).toEqual({
-      padding: 32,
-      borderRadius: 8,
+    // Card recipe 의 클래스라 DS dist 에 있다(아래 (3) 참조).
+    expect(await styleOf("p-4 rounded-lg")).toEqual({
+      padding: 16,
+      borderRadius: 12,
     });
   });
 });
@@ -78,9 +79,9 @@ describe("T-N0 native 래퍼 다크 블록 — (2)·(4) 실패의 우회", () =>
     });
   });
 
-  test("canvas · fg 도 함께 다크 값이 된다", async () => {
-    expect(await styleOf("bg-canvas text-fg", { scheme: "dark" })).toEqual({
-      backgroundColor: "#030712",
+  test("surface · fg 도 함께 다크 값이 된다", async () => {
+    expect(await styleOf("bg-surface text-fg", { scheme: "dark" })).toEqual({
+      backgroundColor: "#101828",
       color: "#f9fafb",
     });
   });
@@ -88,16 +89,17 @@ describe("T-N0 native 래퍼 다크 블록 — (2)·(4) 실패의 우회", () =>
 
 describe("(3) @source — 통과", () => {
   test("래퍼의 @source \"../dist\" 만으로 클래스가 생성된다", async () => {
-    // 아래 셋은 packages/native/dist/_gate-stub.js 에만 있고 앱 소스에는 없다.
+    // 이 컴파일은 global.css 한 줄에서만 출발한다(gate-css.ts 가 base 를 앱 밖으로 둔다).
+    // 따라서 나오는 클래스는 전부 @eeennsu/native 의 dist 에서 스캔된 것이다.
     const css = await compileGlobalCss();
-    expect(hasClass(css, "mt-6")).toBe(true);
-    expect(hasClass(css, "text-fg-muted")).toBe(true);
-    expect(hasClass(css, "bg-danger")).toBe(true);
+    expect(hasClass(css, "text-fg-muted")).toBe(true); // Text tone="muted"
+    expect(hasClass(css, "bg-danger")).toBe(true); // Button variant="danger"
+    expect(hasClass(css, "rounded-lg")).toBe(true); // Card
   });
 
-  test("스텁에도 앱 소스에도 없는 클래스는 생성되지 않는다", async () => {
+  test("DS 가 쓰지 않는 클래스는 생성되지 않는다", async () => {
     const css = await compileGlobalCss();
-    for (const className of ["bg-surface-hover", "text-lg", "p-24", "shadow-lg"]) {
+    for (const className of ["p-24", "shadow-lg", "bg-overlay", "rounded-full"]) {
       expect(hasClass(css, className)).toBe(false);
     }
   });

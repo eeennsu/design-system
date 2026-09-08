@@ -1,5 +1,6 @@
+import { Button, Card, Input, Stack, Text } from "@eeennsu/native";
 import { useUnstableNativeVariable } from "nativewind";
-import { Appearance, Pressable, Text, View } from "react-native";
+import { Appearance, Pressable, Text as RNText, ScrollView } from "react-native";
 
 import "./global.css";
 
@@ -8,41 +9,73 @@ const useNativeVariable = useUnstableNativeVariable as unknown as (
   name: string,
 ) => string | undefined;
 
-/** 게이트 판정 (b) 화면. 값 확인은 화면 텍스트로 읽는다. */
+/** 게이트 판정 (b) 화면에서 쓰던 변수 probe. 기기 확인을 다시 할 수 있게 남긴다. */
 function Probe({ name }: { name: string }) {
   const value = useNativeVariable(name);
   return (
-    <Text className="text-sm text-fg">
+    <Text size="sm" tone="muted">
       {name} = {String(value)}
     </Text>
   );
 }
 
+/**
+ * T-R1 검증 화면 (AC-11 RN절 · AC-19 (c) · AC-22 · AC-23 · AC-25 · AC-26 RN절).
+ *
+ * `apps/verify-next` 의 로그인 화면과 같은 구성이다 — 두 스크린샷을 나란히 놓고
+ * 색·간격이 같은지 보는 것이 AC-23 의 수동 확인이다. 다크모드 코드는 없다(OS 를 따른다).
+ */
 export default function App() {
   return (
-    <View className="bg-canvas gap-4 p-8 pt-24">
-      <Text className="text-2xl text-fg">C-19 gate</Text>
+    <ScrollView className="bg-canvas" contentContainerClassName="p-4 pt-24">
+      <Card className="w-full">
+        <Stack className="gap-4">
+          <Text heading="1" size="xl">
+            로그인
+          </Text>
 
-      {/* (1) @theme inline — bg-brand 이 :root 의 --bg-brand 로 칠해지는가 */}
-      <View className="bg-brand h-16 rounded-md" />
+          <Stack className="gap-1">
+            <Text size="sm">이메일</Text>
+            <Input label="이메일" kind="email" placeholder="you@example.com" />
+          </Stack>
 
-      {/* (5) 복합 폰트 변수 — fontSize · lineHeight · fontWeight */}
-      <Text className="text-xl text-fg">text-xl</Text>
+          <Stack className="gap-1">
+            <Text size="sm">비밀번호</Text>
+            <Input label="비밀번호" kind="password" />
+          </Stack>
 
-      <Probe name="--bg-brand" />
-      <Probe name="--fg-default" />
+          <Text tone="danger" size="sm">
+            이메일 또는 비밀번호가 올바르지 않습니다
+          </Text>
 
-      {/* (2) .dark 셀렉터 — Appearance 로 전환 */}
-      <Pressable
-        className="bg-surface-muted rounded-md p-4"
-        onPress={() =>
-          Appearance.setColorScheme(
-            Appearance.getColorScheme() === "dark" ? "light" : "dark",
-          )
-        }
-      >
-        <Text className="text-md text-fg">toggle color scheme</Text>
-      </Pressable>
-    </View>
+          <Button label="로그인" variant="primary" />
+
+          {/* AC-25: 같은 variant 인데 하나만 className 으로 바꾼다. */}
+          <Stack direction="row" className="gap-2">
+            <Button label="기본" variant="primary" />
+            <Button label="변경" variant="primary" className="bg-danger mt-6" />
+          </Stack>
+
+          {/* AC-26: 재선언한 변수는 따라가고, 재선언하지 않은 변수는 그대로여야 한다. */}
+          <Stack className="bg-brand p-8">{null}</Stack>
+          <Stack className="bg-danger p-8">{null}</Stack>
+
+          <Probe name="--bg-brand" />
+          <Probe name="--fg-default" />
+
+          {/* AC-19 (c): 수동 전환. OS 다크는 이 버튼 없이도 따라간다. */}
+          <Pressable
+            className="bg-surface-muted rounded-md p-4"
+            onPress={() =>
+              Appearance.setColorScheme(
+                Appearance.getColorScheme() === "dark" ? "light" : "dark",
+              )
+            }
+          >
+            <RNText className="text-md text-fg">toggle color scheme</RNText>
+          </Pressable>
+        </Stack>
+      </Card>
+    </ScrollView>
   );
 }
