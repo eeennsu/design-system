@@ -86,7 +86,7 @@
   --fg-muted: oklch(70.7% 0.022 261.325);
   --fg-danger: var(--bg-danger);
   --fg-on-brand: oklch(13% 0.028 261.692);
-  --fg-on-danger: oklch(100% 0 0);
+  --fg-on-danger: oklch(13% 0.028 261.692);
   --border-default: oklch(37.3% 0.034 259.733);
   --border-focus: var(--bg-brand);
 }
@@ -106,7 +106,7 @@
     --fg-muted: oklch(70.7% 0.022 261.325);
     --fg-danger: var(--bg-danger);
     --fg-on-brand: oklch(13% 0.028 261.692);
-    --fg-on-danger: oklch(100% 0 0);
+    --fg-on-danger: oklch(13% 0.028 261.692);
     --border-default: oklch(37.3% 0.034 259.733);
     --border-focus: var(--bg-brand);
   }

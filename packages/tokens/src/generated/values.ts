@@ -191,6 +191,12 @@ export const component = {
     "radius": "lg",
     "shadow": "sm"
   },
+  "chip": {
+    "paddingX": "4",
+    "paddingY": "2",
+    "text": "sm",
+    "radius": "full"
+  },
   "dialog": {
     "padding": "6",
     "radius": "lg",

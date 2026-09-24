@@ -131,7 +131,7 @@
         },
         "on-danger": {
           "$type": "color",
-          "$value": "{primitive.color.white}"
+          "$value": "{primitive.color.gray.950}"
         }
       },
       "border": {

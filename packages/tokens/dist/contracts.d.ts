@@ -38,12 +38,13 @@ type Press<P extends Platform> = P extends "web" ? {
     onPress?: () => void;
 };
 /**
- * 아이콘 이름 — tokens 가 소유한 큐레이션 유니온 24개(plan D-8).
+ * 아이콘 이름 — tokens 가 소유한 큐레이션 유니온 28개(plan D-8). v1 24개에 탭 바 · 날짜용 4개
+ * (home · list · chart-pie · calendar)를 더했다(구현 노트 N-17).
  * lucide 전체 이름에서 파생하지 않는다: 계약이 tokens 에 있어 lucide 에 의존할 수 없고,
  * 웹·RN lucide 버전이 어긋나면 이름이 갈린다. 이름 추가는 tokens + 양쪽 맵 3곳이며
  * 한쪽만 고치면 `Record<IconName, LucideIcon>` 이 컴파일 에러를 낸다.
  */
-export type IconName = "check" | "x" | "plus" | "minus" | "trash" | "pencil" | "search" | "chevron-down" | "chevron-up" | "chevron-left" | "chevron-right" | "arrow-left" | "arrow-right" | "menu" | "settings" | "user" | "mail" | "lock" | "eye" | "eye-off" | "info" | "alert-circle" | "loader" | "external-link";
+export type IconName = "check" | "x" | "plus" | "minus" | "trash" | "pencil" | "search" | "chevron-down" | "chevron-up" | "chevron-left" | "chevron-right" | "arrow-left" | "arrow-right" | "menu" | "settings" | "user" | "mail" | "lock" | "eye" | "eye-off" | "info" | "alert-circle" | "loader" | "external-link" | "home" | "list" | "chart-pie" | "calendar";
 /**
  * 컴포넌트 prop 계약. 웹·RN 구현이 이 맵을 그대로 만족해야 한다(C-17, AC-21).
  * 닫힌 type 리터럴로 두는 이유: AC-11a · AC-15 의 mapped type 테스트가
@@ -107,6 +108,29 @@ export type Contracts<P extends Platform> = {
         size?: BadgeSize;
         className?: string;
     };
+    /**
+     * 고르는 칩(N-17). `label` 이 가시 텍스트이자 접근성 이름이고(C-13), `selected` 는
+     * `disabled` 와 같은 상태 불리언이다(C-11 예외). 고른 상태를 바꾸는 것은 소비자의 누름 이벤트다 —
+     * 오버레이의 `open` 을 Button 누름으로 토글하는 것과 같은 방식이다(C-12).
+     */
+    Chip: {
+        label: string;
+        selected?: boolean;
+        disabled?: boolean;
+        className?: string;
+        ref?: Ref<FocusHandle>;
+    } & Press<P>;
+    /**
+     * 단독 아이콘(N-17). 이름 문자열만 받고 플랫폼 분기는 DS 안에 둔다(C-7c). 색은 Text 와 같은
+     * `tone` 이다. `label` 이 있으면 의미 있는 그림으로 읽히고, 없으면 꾸밈이라 보조 기술에서 숨긴다.
+     */
+    Icon: {
+        name: IconName;
+        size?: ControlSize;
+        tone?: Tone;
+        label?: string;
+        className?: string;
+    };
     Text: {
         children: string | string[];
         tone?: Tone;
@@ -157,13 +181,13 @@ export type Contracts<P extends Platform> = {
         className?: string;
     };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17). */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form"];
 /**
- * RN 구현 9개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box 를 더했다(구현 노트 N-16).
- * 오버레이 · Form · ButtonGroup 은 v2.
+ * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
+ * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.
  */
-export declare const nativeComponents: readonly ["Button", "Input", "Textarea", "Label", "Card", "Badge", "Text", "Stack", "Box"];
+export declare const nativeComponents: readonly ["Button", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box"];
 export type WebKey = (typeof webComponents)[number];
 export type NativeKey = (typeof nativeComponents)[number];
 export {};

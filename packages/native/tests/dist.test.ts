@@ -35,6 +35,12 @@ describe.skipIf(!built)("dist 검사", () => {
     expect(existsSync(join(dist, "_gate-stub.js"))).toBe(false);
   });
 
+  it("lucide 목록 파일을 import 하지 않는다 — Metro 가 아이콘 전체를 번들에 넣는다(N-17, F-22)", () => {
+    const icon = readFileSync(join(dist, "icon.js"), "utf8");
+    expect(icon).not.toMatch(/from "lucide-react-native";/);
+    expect(icon).toMatch(/from "lucide-react-native\/icons\/check";/);
+  });
+
   it('"use client" 를 쓰지 않는다 — RN 에는 서버 컴포넌트 경계가 없다', () => {
     for (const file of readdirSync(dist).filter((name) => name.endsWith(".js"))) {
       expect(readFileSync(join(dist, file), "utf8"), file).not.toContain('"use client"');

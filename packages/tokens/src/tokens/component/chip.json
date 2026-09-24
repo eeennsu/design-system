@@ -1,0 +1,23 @@
+{
+  "$description": "Chip recipe. 크기는 하나다. 높이는 2 x paddingY + lineHeight + 2(테두리) = 38 이고, RN 은 세로 hitSlop 5 로 누름 영역 48 을 채운다(구현 노트 N-17).",
+  "component": {
+    "chip": {
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.4}"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.2}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.sm}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.full}"
+      }
+    }
+  }
+}

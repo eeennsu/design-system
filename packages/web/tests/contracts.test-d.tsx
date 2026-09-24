@@ -16,7 +16,7 @@ import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
 import type { FC } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import { Badge, Button, Dialog, Input, Stack, Text, components } from "../src/index.js";
+import { Badge, Button, Chip, Dialog, Icon, Input, Stack, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -90,6 +90,30 @@ describe("AC-11a · AC-12 · AC-13 · AC-15 없어야 할 prop", () => {
 
   it("ButtonGroup 자체에는 누름 이벤트도 size 도 없다 (plan D-30)", () => {
     expectTypeOf<Extract<keyof Contracts<"web">["ButtonGroup"], "onClick" | "size">>().toEqualTypeOf<never>();
+  });
+});
+
+describe("N-17 Chip · Icon 계약", () => {
+  it("Chip 은 Button 처럼 label 필수 · onClick · FocusHandle ref 이고 selected 는 불리언이다", () => {
+    expectTypeOf<Contracts<"web">["Chip"]["label"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Chip"]["selected"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Chip"]["onClick"]>().toEqualTypeOf<(() => void) | undefined>();
+    expectTypeOf<Contracts<"web">["Chip"]>().not.toHaveProperty("onPress");
+    // @ts-expect-error label 필수
+    assertType(<Chip />);
+    // @ts-expect-error 선택 상태를 바꾸는 콜백은 계약이 아니다 — 소비자가 onClick 에서 바꾼다
+    assertType(<Chip label="식비" onValueChange={() => {}} />);
+  });
+
+  it("Icon 은 이름 · 크기 · tone · label 만 받고 label 은 선택이다", () => {
+    assertType(<Icon name="home" />);
+    assertType(<Icon name="calendar" size="lg" tone="muted" label="날짜" />);
+    // @ts-expect-error 목록에 없는 이름
+    assertType(<Icon name="nope" />);
+    // @ts-expect-error 색 리터럴은 tone 이 아니다
+    assertType(<Icon name="home" tone="#333" />);
+    // @ts-expect-error 아이콘에 누름 이벤트는 없다 — 누르는 것은 Button 이다
+    assertType(<Icon name="home" onClick={() => {}} />);
   });
 });
 

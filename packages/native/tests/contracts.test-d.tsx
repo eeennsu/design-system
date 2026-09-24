@@ -21,6 +21,8 @@ import {
   Box,
   Button,
   Card,
+  Chip,
+  Icon,
   Input,
   Label,
   Stack,
@@ -44,11 +46,30 @@ describe("C-17 맵 동등성", () => {
     expectTypeOf(components).toEqualTypeOf<{ [K in NativeKey]: FC<Contracts<"native">[K]> }>();
   });
 
-  it("키 목록이 맵의 키와 같다 — v1 핵심 5개(AC-20) + 4개(N-16)", () => {
+  it("키 목록이 맵의 키와 같다 — v1 핵심 5개(AC-20) + 4개(N-16) + Chip · Icon(N-17)", () => {
     expectTypeOf<(typeof nativeComponents)[number]>().toEqualTypeOf<keyof typeof components>();
     expectTypeOf<NativeKey>().toEqualTypeOf<
-      "Button" | "Input" | "Textarea" | "Label" | "Card" | "Badge" | "Text" | "Stack" | "Box"
+      | "Button"
+      | "Input"
+      | "Textarea"
+      | "Label"
+      | "Card"
+      | "Badge"
+      | "Chip"
+      | "Icon"
+      | "Text"
+      | "Stack"
+      | "Box"
     >();
+  });
+
+  it("Chip 은 누름 갈래만 웹과 다르고, Icon 은 웹과 같다(N-17)", () => {
+    expectTypeOf<Contracts<"native">["Chip"]>().toHaveProperty("onPress");
+    expectTypeOf<Contracts<"native">["Chip"]>().not.toHaveProperty("onClick");
+    expectTypeOf<Omit<Contracts<"native">["Chip"], "onPress">>().toEqualTypeOf<
+      Omit<Contracts<"web">["Chip"], "onClick">
+    >();
+    expectTypeOf<Contracts<"native">["Icon"]>().toEqualTypeOf<Contracts<"web">["Icon"]>();
   });
 
   it("추가한 4개는 웹과 prop 이 같다 — 누름 갈래가 없는 컴포넌트다", () => {
@@ -135,6 +156,8 @@ describe("AC-11a · AC-12 · AC-15 없어야 할 것", () => {
 describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
   it("label 이 빠지면 에러다", () => {
     // @ts-expect-error label 필수
+    assertType(<Chip />);
+    // @ts-expect-error label 필수
     assertType(<Button />);
     // @ts-expect-error label 필수
     assertType(<Input />);
@@ -156,6 +179,9 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
   it("icon 은 큐레이션 이름만 받는다", () => {
     // @ts-expect-error 목록에 없는 이름
     assertType(<Button label="a" icon="nope" />);
+    // @ts-expect-error 목록에 없는 이름
+    assertType(<Icon name="nope" />);
+    assertType(<Icon name="chart-pie" tone="muted" />);
   });
 
   it("누름 핸들러가 이벤트 인자를 받지 않는다", () => {

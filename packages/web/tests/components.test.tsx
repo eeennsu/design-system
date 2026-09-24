@@ -13,9 +13,11 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Chip,
   Dialog,
   Drawer,
   Form,
+  Icon,
   Input,
   Label,
   Stack,
@@ -173,6 +175,79 @@ describe("AC-7 Button · ButtonGroup", () => {
       </ButtonGroup>,
     );
     expect(screen.getByRole("group", { name: "정렬" })).toBeInTheDocument();
+  });
+});
+
+describe("N-17 Chip · Icon", () => {
+  it("Chip label 이 가시 텍스트이자 접근성 이름이고, 고른 상태를 aria-pressed 로 알린다", () => {
+    render(
+      <Stack>
+        <Chip label="식비" selected />
+        <Chip label="배달" />
+      </Stack>,
+    );
+    expect(screen.getByRole("button", { name: "식비" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "배달" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "식비" })).toHaveClass("bg-brand", "text-fg-on-brand");
+    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface", "border-border");
+  });
+
+  it("Chip onClick 이 인자 없이 호출되고, 상태는 소비자가 바꾼다", () => {
+    const onClick = vi.fn();
+    render(<Chip label="식비" onClick={onClick} />);
+    fireEvent.click(screen.getByRole("button", { name: "식비" }));
+    expect(onClick).toHaveBeenCalledWith();
+    expect(screen.getByRole("button", { name: "식비" })).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("Chip type 은 button 이고 disabled 면 누름이 막힌다", () => {
+    const onClick = vi.fn();
+    render(<Chip label="식비" disabled onClick={onClick} />);
+    const chip = screen.getByRole("button", { name: "식비" });
+    expect(chip).toHaveAttribute("type", "button");
+    expect(chip).toHaveClass("opacity-50", "pointer-events-none");
+    fireEvent.click(chip);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("Chip ref 가 focus 핸들로 동작한다 (C-17)", () => {
+    const ref = createRef<FocusHandle>();
+    render(<Chip label="식비" ref={ref} />);
+    ref.current?.focus();
+    expect(screen.getByRole("button", { name: "식비" })).toHaveFocus();
+  });
+
+  it("label 없는 Icon 은 꾸밈이라 숨고, 있으면 이름 있는 그림이다", () => {
+    const { container } = render(
+      <Stack>
+        <Icon name="home" />
+        <Icon name="calendar" label="날짜" />
+      </Stack>,
+    );
+    const [decorative] = container.querySelectorAll("svg");
+    expect(decorative).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("img", { name: "날짜" })).not.toHaveAttribute("aria-hidden");
+  });
+
+  it("Icon tone 이 Text 와 같은 fg 색 클래스로 간다", () => {
+    const { container } = render(
+      <Stack>
+        <Icon name="home" />
+        <Icon name="info" tone="muted" />
+        <Icon name="alert-circle" tone="danger" className="text-brand" />
+      </Stack>,
+    );
+    const [home, info, alert] = container.querySelectorAll("svg");
+    expect(home).toHaveClass("text-fg");
+    expect(info).toHaveClass("text-fg-muted");
+    // 소비자 className 이 같은 그룹을 이긴다(C-15)
+    expect(alert).toHaveClass("text-brand");
+    expect(alert).not.toHaveClass("text-fg-danger");
+  });
+
+  it("Button 은 눌림 표면 active: 를 hover 와 같은 색으로 갖는다", () => {
+    render(<Button label="저장" />);
+    expect(screen.getByRole("button", { name: "저장" })).toHaveClass("active:bg-brand-hover");
   });
 });
 

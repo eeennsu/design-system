@@ -29,10 +29,13 @@ export const inputSizes = {
 };
 /**
  * 테두리 1px 이 Button 과 높이를 맞춘다 — 없으면 Input 이 2px 낮다(plan D-6).
+ * 포커스되면 테두리가 `border-focus` 색이 된다(plan D-9. 0.2.0 까지 빠져 있었다, N-17).
  * 웹에는 있는 `placeholder:text-fg-muted` 가 빠져 있다 — react-native-css 는
  * `placeholder:` 변형을 `placeholderTextColor` 로 옮기지 않는다. v1 은 플랫폼 기본색을 쓴다.
  */
-export const controlBase = "w-full bg-surface text-fg border border-border";
+export const controlBase = "w-full bg-surface text-fg border border-border focus:border-border-focus";
+/** 오류 테두리는 포커스 중에도 danger 로 둔다 — 웹은 테두리가 아니라 outline 으로 포커스를 그린다. */
+export const invalidBorder = "border-danger focus:border-danger";
 /**
  * 한 줄 입력. `label` 은 `accessibilityLabel` 로만 간다 — 가시 라벨은 Label 조합이다(C-13).
  * `id` 를 주면 같은 `htmlFor` 의 Label 과 `accessibilityLabelledBy` 로 이어진다(Android 전용).
@@ -49,6 +52,6 @@ export const Input = ({ label, kind = "text", size = "md", id, placeholder, disa
     return (_jsx(TextInput, { ref: ref, id: id, accessibilityLabel: label, accessibilityLabelledBy: id ? labelNativeId(id) : undefined, placeholder: placeholder, editable: !disabled, value: value, defaultValue: defaultValue, onChangeText: onValueChange, 
         // kind 파생 속성은 하나씩 넘긴다. 스프레드로 넘기면 계약에 없는 prop 이 섞여도
         // 타입이 잡아주지 못하고, 웹 Input 과 읽는 방식도 갈린다(AC-11a 취지).
-        secureTextEntry: attributes.secureTextEntry, keyboardType: attributes.keyboardType, autoCapitalize: attributes.autoCapitalize, autoComplete: attributes.autoComplete, textContentType: attributes.textContentType, className: cn(controlBase, inputSizes[size], invalid && "border-danger", disabled && "opacity-50", className) }));
+        secureTextEntry: attributes.secureTextEntry, keyboardType: attributes.keyboardType, autoCapitalize: attributes.autoCapitalize, autoComplete: attributes.autoComplete, textContentType: attributes.textContentType, className: cn(controlBase, inputSizes[size], invalid && invalidBorder, disabled && "opacity-50", className) }));
 };
 //# sourceMappingURL=input.js.map

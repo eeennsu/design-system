@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Dialog, Drawer, Input, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Card, Chip, Dialog, Drawer, Input, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -54,6 +54,13 @@ describe("Badge", () => {
       expect(screen.getByText("표시")).toHaveClass(...expected(component.badge[size]));
     });
   }
+});
+
+describe("Chip", () => {
+  it("토큰 recipe 와 같다 (N-17)", () => {
+    render(<Chip label="식비" />);
+    expect(screen.getByRole("button")).toHaveClass(...expected(component.chip));
+  });
 });
 
 describe("Card · 오버레이", () => {

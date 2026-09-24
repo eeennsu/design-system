@@ -1,5 +1,6 @@
-import { Box, Button, Card, Input, Label, Stack, Text } from "@eeennsu/native";
+import { Box, Button, Card, Chip, Icon, Input, Label, Stack, Text } from "@eeennsu/native";
 import { useUnstableNativeVariable } from "nativewind";
+import { useState } from "react";
 import { Appearance, Pressable, Text as RNText, ScrollView } from "react-native";
 
 import "./global.css";
@@ -26,6 +27,8 @@ function Probe({ name }: { name: string }) {
  * 색·간격이 같은지 보는 것이 AC-23 의 수동 확인이다. 다크모드 코드는 없다(OS 를 따른다).
  */
 export default function App() {
+  const [category, setCategory] = useState("식비");
+
   return (
     <ScrollView className="bg-canvas" contentContainerClassName="p-4 pt-24">
       <Card className="w-full">
@@ -54,6 +57,27 @@ export default function App() {
           <Stack direction="row" className="gap-2">
             <Button label="기본" variant="primary" />
             <Button label="변경" variant="primary" className="bg-danger mt-6" />
+          </Stack>
+
+          {/* N-17: 고르는 칩과 단독 아이콘. 칩을 누르는 동안 표면이 진해진다(active:). */}
+          <Stack direction="row" wrap className="gap-3">
+            {["식비", "배달", "교통"].map((name) => (
+              <Chip
+                key={name}
+                label={name}
+                selected={name === category}
+                onPress={() => setCategory(name)}
+              />
+            ))}
+          </Stack>
+          <Stack direction="row" align="center" className="gap-4">
+            <Icon name="home" />
+            <Icon name="list" tone="muted" />
+            <Icon name="chart-pie" className="text-brand" />
+            <Icon name="calendar" label="날짜" size="lg" />
+            <Text size="sm" tone="muted" className="tabular-nums">
+              1,234,567원
+            </Text>
           </Stack>
 
           {/* AC-26: 재선언한 변수는 따라가고, 재선언하지 않은 변수는 그대로여야 한다. */}

@@ -2,13 +2,15 @@ import { Badge } from "./badge.js";
 import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Card } from "./card.js";
+import { Chip } from "./chip.js";
+import { Icon } from "./icon.js";
 import { Input } from "./input.js";
 import { Label } from "./label.js";
 import { Stack } from "./stack.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 
-export { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea };
+export { Badge, Box, Button, Card, Chip, Icon, Input, Label, Stack, Text, Textarea };
 export { cn } from "./cn.js";
 
 /**
@@ -22,6 +24,8 @@ export const components = {
   Label,
   Card,
   Badge,
+  Chip,
+  Icon,
   Text,
   Stack,
   Box,

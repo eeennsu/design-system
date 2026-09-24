@@ -2,7 +2,7 @@ import { component, type Contracts } from "@eeennsu/tokens";
 import type { FC } from "react";
 import { TextInput } from "react-native-css/components";
 import { cn } from "./cn.js";
-import { controlBase, inputSizes } from "./input.js";
+import { controlBase, inputSizes, invalidBorder } from "./input.js";
 import { labelNativeId } from "./label.js";
 
 type TextareaProps = Contracts<"native">["Textarea"];
@@ -45,7 +45,7 @@ export const Textarea: FC<TextareaProps> = ({
     className={cn(
       controlBase,
       inputSizes.md,
-      invalid && "border-danger",
+      invalid && invalidBorder,
       disabled && "opacity-50",
       className,
     )}

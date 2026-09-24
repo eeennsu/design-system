@@ -138,6 +138,12 @@ export declare const component: {
         readonly radius: "lg";
         readonly shadow: "sm";
     };
+    readonly chip: {
+        readonly paddingX: "4";
+        readonly paddingY: "2";
+        readonly text: "sm";
+        readonly radius: "full";
+    };
     readonly dialog: {
         readonly padding: "6";
         readonly radius: "lg";

@@ -1,4 +1,5 @@
-import { type ControlSize, type IconName } from "@eeennsu/tokens";
+import { type Contracts, type ControlSize, type IconName } from "@eeennsu/tokens";
+import type { FC } from "react";
 import { type LucideIcon } from "lucide-react";
 /**
  * `IconName` → lucide 컴포넌트. `Record<IconName, LucideIcon>` 이라 tokens 의 목록에
@@ -8,18 +9,24 @@ import { type LucideIcon } from "lucide-react";
  * major 에서 사라질 수 있다(plan v2 F-6).
  */
 declare const icons: Record<IconName, LucideIcon>;
-type IconProps = {
+type GlyphProps = {
     name: IconName;
     size?: ControlSize;
     spin?: boolean;
     className?: string;
 };
 /**
- * DS 내부 전용이다 — 공개 컴포넌트가 아니고 `Contracts` 에도 없다.
+ * 컴포넌트 안에 붙는 아이콘(Button 의 `icon` · `loading`). 공개 `Icon` 과 달리 `spin` 을 받고
+ * 색은 `currentColor` 로 부모 글자색을 상속한다(§9 S-17). 가시 텍스트 옆이라 늘 보조 기술에서 숨긴다.
  * 크기는 클래스가 아니라 lucide `size` prop(JS 숫자)으로 준다 — 20px 는 spacing 열거
  * 밖이라 `size-5` 클래스가 생성되지 않기 때문이다(plan v2 F-8).
- * 색은 `currentColor` 상속이라 별도 prop 이 없다(§9 S-17).
  */
-export declare function Icon({ name, size, spin, className }: IconProps): import("react").JSX.Element;
+export declare function Glyph({ name, size, spin, className }: GlyphProps): import("react").JSX.Element;
+/**
+ * 단독 아이콘(구현 노트 N-17). 색을 상속하지 않고 `tone` 으로 정한다 — RN 에는 글자색 상속이
+ * 없으므로 두 플랫폼이 같은 결과를 내려면 색을 아이콘 자신이 가져야 한다(AC-25).
+ * `label` 이 있으면 `role="img"` 과 이름을 갖는 그림이고, 없으면 꾸밈이라 `aria-hidden` 이다.
+ */
+export declare const Icon: FC<Contracts<"web">["Icon"]>;
 export { icons };
 //# sourceMappingURL=icon.d.ts.map

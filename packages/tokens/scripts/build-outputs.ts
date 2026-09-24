@@ -465,6 +465,9 @@ function webWrapperCss(brand: Brand): string {
  *
  * line-height 는 px 를 배수로 오독하므로(게이트 (5)) 같은 래퍼에서 단위 없는 배수로 다시 낸다
  * (plan D-31 (A)). 배수 = 스텝의 line-height px ÷ 같은 스텝의 fontSize px.
+ *
+ * `tabular-nums` 는 react-native-css 가 `font-variant-numeric` 을 옮기지 않아 RN 에서 무효다.
+ * 같은 클래스에 RN 전용 선언을 더해 웹과 같은 결과를 낸다(AC-25, 구현 노트 F-21).
  */
 function nativeWrapperCss(source: TokenSource, brand: Brand): string {
   const text = textSteps(source.shared);
@@ -492,6 +495,11 @@ function nativeWrapperCss(source: TokenSource, brand: Brand): string {
     const lineHeight = pxNumber(value.lineHeight, `component.text.${step}.lineHeight`);
     lines.push(`  --text-${step}--line-height: ${lineHeight / fontSize};`);
   }
+  lines.push("}");
+  lines.push("");
+  lines.push("/* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */");
+  lines.push(".tabular-nums {");
+  lines.push("  -rn-font-variant: tabular-nums;");
   lines.push("}");
   lines.push("");
   lines.push('@source "../dist";');

@@ -4,16 +4,20 @@ import { Button as BaseButton } from "@base-ui/react/button";
 import type { Contracts, ControlSize, Variant } from "@eeennsu/tokens";
 import type { FC, Ref } from "react";
 import { cn } from "./cn.js";
-import { Icon } from "./icon.js";
+import { Glyph } from "./icon.js";
 
 type ButtonProps = Contracts<"web">["Button"];
 
-/** variant → semantic 색 매핑(§4.2). ghost 만 배경이 없다. */
+/**
+ * variant → semantic 색 매핑(§4.2). ghost 만 배경이 없다.
+ * `active:` 는 누르는 동안의 표면이다 — RN 에는 hover 가 없어 눌림 표시를 이것으로 낸다(N-17).
+ * 웹도 같은 클래스를 가져 두 플랫폼의 어휘가 같다(AC-25).
+ */
 const variants: Record<Variant, string> = {
-  primary: "bg-brand text-fg-on-brand hover:bg-brand-hover",
-  secondary: "bg-surface-muted text-fg hover:bg-surface-hover",
-  ghost: "text-fg hover:bg-surface-hover",
-  danger: "bg-danger text-fg-on-danger hover:bg-danger-hover",
+  primary: "bg-brand text-fg-on-brand hover:bg-brand-hover active:bg-brand-hover",
+  secondary: "bg-surface-muted text-fg hover:bg-surface-hover active:bg-surface-hover",
+  ghost: "text-fg hover:bg-surface-hover active:bg-surface-hover",
+  danger: "bg-danger text-fg-on-danger hover:bg-danger-hover active:bg-danger-hover",
 };
 
 /** 높이는 고정 `h-*` 없이 `py + text + 투명 테두리` 로 만든다 — 30 / 42 / 54 (plan D-6). */
@@ -66,7 +70,7 @@ export const Button: FC<ButtonProps> = ({
         className,
       )}
     >
-      {loading ? <Icon name="loader" size={size} spin /> : icon ? <Icon name={icon} size={size} /> : null}
+      {loading ? <Glyph name="loader" size={size} spin /> : icon ? <Glyph name={icon} size={size} /> : null}
       {label}
     </BaseButton>
   );

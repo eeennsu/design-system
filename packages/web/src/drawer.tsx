@@ -4,7 +4,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import type { Contracts } from "@eeennsu/tokens";
 import type { FC } from "react";
 import { cn } from "./cn.js";
-import { Icon } from "./icon.js";
+import { Glyph } from "./icon.js";
 
 type DrawerProps = Contracts<"web">["Drawer"];
 
@@ -44,7 +44,7 @@ export const Drawer: FC<DrawerProps> = ({
           aria-label="닫기"
           className="absolute top-4 right-4 text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus"
         >
-          <Icon name="x" size="sm" />
+          <Glyph name="x" size="sm" />
         </BaseDialog.Close>
       </BaseDialog.Popup>
     </BaseDialog.Portal>

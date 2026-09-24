@@ -44,8 +44,8 @@ export declare const colors: {
             readonly default: "oklch(98.5% 0.002 247.839)";
             readonly muted: "oklch(70.7% 0.022 261.325)";
             readonly danger: "oklch(63.7% 0.237 25.331)";
-            readonly "on-brand": "oklch(100% 0 0)";
-            readonly "on-danger": "oklch(100% 0 0)";
+            readonly "on-brand": "oklch(13% 0.028 261.692)";
+            readonly "on-danger": "oklch(13% 0.028 261.692)";
         };
         readonly border: {
             readonly default: "oklch(37.3% 0.034 259.733)";

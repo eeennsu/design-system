@@ -8,8 +8,8 @@
  * DS 컴포넌트에는 `testID` prop 이 없다(AC-11a: 스프레드 없음). 그래서 조회는
  * 접근성 이름·텍스트·렌더 트리로 한다 — 소비자가 실제로 쓸 수 있는 것과 같은 경로다.
  */
-import { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea } from "@eeennsu/native";
-import { cleanup, render, screen } from "@testing-library/react-native";
+import { Badge, Box, Button, Card, Chip, Icon, Input, Label, Stack, Text, Textarea } from "@eeennsu/native";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
 
@@ -27,6 +27,11 @@ const DS_SURFACE_LIGHT = "#fff";
 const DS_SURFACE_DARK = "#101828";
 const DS_SURFACE_MUTED_LIGHT = "#f3f4f6";
 const DS_ON_BRAND = "#fff";
+/** base 다크의 on-brand · on-danger 는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다(N-17). */
+const DS_ON_BRAND_DARK = "#030712";
+/** 앱이 --bg-brand-hover 는 재선언하지 않았으므로 DS base 값(blue-700)이다. */
+const DS_BRAND_HOVER_LIGHT = "#1447e6";
+const DS_FG_MUTED_LIGHT = "#6a7282";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -218,5 +223,88 @@ describe("N-16 추가 4개 — Textarea · Label · Badge · Box", () => {
   test("Box 는 className 만 받는다", async () => {
     await mount(<Box className="bg-danger p-8">{null}</Box>);
     expect(rootStyle()).toMatchObject({ backgroundColor: DS_DANGER_LIGHT, padding: 32 });
+  });
+});
+
+describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭 숫자", () => {
+  test("Chip 은 고른 상태를 selected 로 알리고 brand 로 채운다", async () => {
+    await mount(
+      <Stack direction="row" className="gap-3">
+        <Chip label="식비" selected />
+        <Chip label="배달" />
+      </Stack>,
+    );
+    const food = screen.getByRole("button", { name: "식비" });
+    expect(food.props.accessibilityState).toMatchObject({ selected: true });
+    expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: 9999 });
+    expect(screen.getByText("식비").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });
+    expect(screen.getByRole("button", { name: "배달" }).props.accessibilityState).toMatchObject({
+      selected: false,
+    });
+  });
+
+  test("Chip · Button 은 누르는 동안 active: 표면이다", async () => {
+    await mount(<Chip label="식비" selected />);
+    await fireEvent(screen.getByRole("button", { name: "식비" }), "pressIn");
+    expect(screen.getByRole("button", { name: "식비" }).props.style).toMatchObject({
+      backgroundColor: DS_BRAND_HOVER_LIGHT,
+    });
+
+    await mount(<Button label="저장" />);
+    await fireEvent(screen.getByRole("button", { name: "저장" }), "pressIn");
+    expect(screen.getByRole("button", { name: "저장" }).props.style).toMatchObject({
+      backgroundColor: DS_BRAND_HOVER_LIGHT,
+    });
+  });
+
+  test("누름 영역이 48 이 되도록 세로 hitSlop 을 준다 — Button 30 · 42 · 54, Chip 38", async () => {
+    await mount(
+      <Stack>
+        <Button label="작게" size="sm" />
+        <Button label="기본" />
+        <Button label="크게" size="lg" />
+        <Chip label="칩" />
+      </Stack>,
+    );
+    expect(screen.getByRole("button", { name: "작게" }).props.hitSlop).toEqual({ top: 9, bottom: 9 });
+    expect(screen.getByRole("button", { name: "기본" }).props.hitSlop).toEqual({ top: 3, bottom: 3 });
+    expect(screen.getByRole("button", { name: "크게" }).props.hitSlop).toBeUndefined();
+    expect(screen.getByRole("button", { name: "칩" }).props.hitSlop).toEqual({ top: 5, bottom: 5 });
+  });
+
+  test("Input 은 포커스되면 테두리가 border-focus(= brand)다. invalid 는 danger 를 지킨다", async () => {
+    await mount(<Input label="금액" />);
+    await fireEvent(screen.getByLabelText("금액"), "focus");
+    expect(screen.getByLabelText("금액").props.style).toMatchObject({ borderColor: APP_BRAND_LIGHT });
+
+    await mount(<Input label="금액" invalid />);
+    await fireEvent(screen.getByLabelText("금액"), "focus");
+    expect(screen.getByLabelText("금액").props.style).toMatchObject({ borderColor: DS_DANGER_LIGHT });
+  });
+
+  test("tabular-nums 가 fontVariant 로 풀린다 — native 래퍼의 RN 선언(F-21)", async () => {
+    await mount(<Text className="tabular-nums">411,600원</Text>);
+    expect(rootStyle()).toMatchObject({ fontVariant: "tabular-nums" });
+  });
+
+  test("Icon 은 tone 을 lucide 색으로 넘기고, label 이 없으면 꾸밈이라 숨는다", async () => {
+    await mount(<Icon name="home" tone="muted" />);
+    const tree = screen.toJSON();
+    if (!tree || Array.isArray(tree)) throw new Error("루트가 하나가 아니다");
+    expect(tree.props).toMatchObject({
+      accessible: false,
+      importantForAccessibility: "no-hide-descendants",
+    });
+    const svg = tree.children?.[0];
+    if (!svg || typeof svg === "string") throw new Error("svg 가 없다");
+    expect(svg.props.stroke).toBe(DS_FG_MUTED_LIGHT);
+
+    await mount(<Icon name="calendar" label="날짜" />);
+    expect(screen.getByRole("image", { name: "날짜" })).toBeTruthy();
+  });
+
+  test("base 다크의 on-brand 글자는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다", async () => {
+    await mount(<Badge variant="primary">신규</Badge>, "dark");
+    expect(screen.getByText("신규").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
   });
 });

@@ -4,7 +4,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import type { Contracts } from "@eeennsu/tokens";
 import type { FC } from "react";
 import { cn } from "./cn.js";
-import { Icon } from "./icon.js";
+import { Glyph } from "./icon.js";
 
 /**
  * 모달 대화상자. `label` 은 제목으로 렌더되고 Base UI 가 `aria-labelledby` 를 연결한다(plan D-10).
@@ -42,7 +42,7 @@ export const Dialog: FC<Contracts<"web">["Dialog"]> = ({
           aria-label="닫기"
           className="absolute top-4 right-4 text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus"
         >
-          <Icon name="x" size="sm" />
+          <Glyph name="x" size="sm" />
         </BaseDialog.Close>
       </BaseDialog.Popup>
     </BaseDialog.Portal>

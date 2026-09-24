@@ -46,7 +46,7 @@ export const colors = {
             "muted": "oklch(70.7% 0.022 261.325)",
             "danger": "oklch(63.7% 0.237 25.331)",
             "on-brand": "oklch(13% 0.028 261.692)",
-            "on-danger": "oklch(100% 0 0)"
+            "on-danger": "oklch(13% 0.028 261.692)"
         },
         "border": {
             "default": "oklch(37.3% 0.034 259.733)",
