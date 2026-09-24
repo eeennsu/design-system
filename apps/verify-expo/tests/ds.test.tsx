@@ -235,7 +235,10 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     );
     const food = screen.getByRole("button", { name: "식비" });
     expect(food.props.accessibilityState).toMatchObject({ selected: true });
+    // component 토큰 chip: px 4 · py 2 · radius full (높이 38 = 8 + 줄 높이 20 + 8 + 테두리 2)
     expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: 9999 });
+    expect(JSON.stringify(food.props.style)).toMatch(/"padding(Horizontal|Inline|Left)":16/);
+    expect(JSON.stringify(food.props.style)).toMatch(/"padding(Vertical|Block|Top)":8/);
     expect(screen.getByText("식비").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });
     expect(screen.getByRole("button", { name: "배달" }).props.accessibilityState).toMatchObject({
       selected: false,
@@ -333,16 +336,32 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     expect(rootStyle()).toMatchObject({ fontVariant: "tabular-nums" });
   });
 
-  test("Icon 은 svg 가 루트다 — tone 이 색으로, 배치 클래스가 루트 style 로 간다", async () => {
-    await mount(<Icon name="home" tone="muted" className="ml-6" />);
+  test("Icon 의 배치 · 변형 · 투명도 클래스는 루트 View 에 한 번만 걸린다", async () => {
+    // svg 에 직접 주면 lucide 가 style 을 도형마다 펼쳐 rotate 는 던지고 opacity 는 곱해진다(N-17)
+    await mount(<Icon name="chevron-down" tone="muted" className="ml-6 rotate-180 opacity-50" />);
     const tree = screen.toJSON();
     if (!tree || Array.isArray(tree)) throw new Error("루트가 하나가 아니다");
-    // 감싸는 View 가 있으면 배치 클래스가 안쪽에 붙어 웹과 갈린다(N-17)
-    expect(tree.type).toBe("RNSVGSvgView");
-    expect(tree.props.stroke).toBe(DS_FG_MUTED_LIGHT);
-    expect(tree.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ marginLeft: 24 })]));
+    expect(tree.type).toBe("View");
+    expect(tree.props.style).toMatchObject({ marginLeft: 24, opacity: 0.5 });
+    expect(JSON.stringify(tree.props.style)).toContain("180deg");
     // label 이 없으면 꾸밈이라 숨는다
     expect(tree.props).toMatchObject({ accessible: false, importantForAccessibility: "no-hide-descendants" });
+
+    const svg = tree.children?.[0];
+    if (!svg || typeof svg === "string") throw new Error("svg 가 없다");
+    expect(svg.type).toBe("RNSVGSvgView");
+    expect(svg.props.stroke).toBe(DS_FG_MUTED_LIGHT);
+    // 도형까지 내려가는 style 이 없다
+    expect(JSON.stringify(svg)).not.toMatch(/"opacity":0\.5|180deg/);
+  });
+
+  test("Icon 색은 소비자 className 이 tone 을 이긴다(C-15)", async () => {
+    await mount(<Icon name="home" tone="muted" className="text-brand" />);
+    const tree = screen.toJSON();
+    if (!tree || Array.isArray(tree)) throw new Error("루트가 하나가 아니다");
+    const svg = tree.children?.[0];
+    if (!svg || typeof svg === "string") throw new Error("svg 가 없다");
+    expect(svg.props.stroke).toBe(APP_BRAND_LIGHT);
   });
 
   test("Icon label 이 있으면 이름 있는 그림, 빈 문자열이면 꾸밈이다", async () => {
@@ -356,5 +375,12 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
   test("base 다크의 on-brand 글자는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다", async () => {
     await mount(<Badge variant="primary">신규</Badge>, "dark");
     expect(screen.getByText("신규").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
+
+    await mount(<Chip label="식비" selected />, "dark");
+    expect(screen.getByText("식비").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
+    expect(screen.getByText("식비").props.maxFontSizeMultiplier).toBeUndefined();
+
+    await mount(<Button label="삭제" variant="danger" />, "dark");
+    expect(screen.getByText("삭제").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
   });
 });

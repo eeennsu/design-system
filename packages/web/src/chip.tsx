@@ -11,8 +11,8 @@ type ChipProps = Contracts<"web">["Chip"];
  * 고르는 칩(구현 노트 N-17). 토글 버튼이라 고른 상태를 `aria-pressed` 로 알린다.
  * `label` 이 가시 텍스트이자 접근성 이름이고(C-13), 상태를 바꾸는 것은 소비자의 `onClick` 이다.
  *
- * 고른 칩은 brand 로 채우고, 고르지 않은 칩은 surface 에 테두리다. 테두리 대비가 3:1 이 안 되지만
- * 칩은 글자로 식별되고 고른 상태는 채움 색으로 갈린다(WCAG 1.4.11 예외).
+ * 고른 칩은 brand 로 채우고, 고르지 않은 칩은 surface 에 테두리다. 칩은 글자가 컨트롤을 식별하므로
+ * 테두리에 3:1 을 요구하지 않는다(WCAG 1.4.11). 고른 상태의 채움은 배경과 3:1 을 넘긴다(tokens 대비 테스트).
  */
 export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false, onClick, className, ref }) => (
   <BaseButton
@@ -26,7 +26,7 @@ export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false,
       "inline-flex items-center justify-center border px-4 py-2 text-sm rounded-full",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus",
       selected
-        ? "border-brand bg-brand text-fg-on-brand hover:bg-brand-hover"
+        ? "border-brand bg-brand text-fg-on-brand hover:border-brand-hover hover:bg-brand-hover"
         : "border-border bg-surface text-fg hover:bg-surface-hover",
       // 누르는 동안은 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다(Button 과 같다)
       "active:opacity-80",

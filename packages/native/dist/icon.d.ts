@@ -29,8 +29,8 @@ export declare function Glyph({ name, size, className }: GlyphProps): import("re
  * 웹도 같은 방식이라 같은 className 이 같은 결과를 낸다(AC-25).
  * `label` 이 있으면 이름을 가진 그림(`image`)이고, 없거나 빈 문자열이면 꾸밈이라 보조 기술에서 숨긴다.
  *
- * 감싸는 View 를 두지 않는다 — 두면 `ml-auto` · `absolute` 같은 배치 클래스가 안쪽 svg 에 붙어
- * 웹(svg 자신이 flex 항목)과 결과가 갈린다. 접근성 속성은 lucide 를 거쳐 svg 루트에 붙는다.
+ * 배치 · 변형 · 투명도 클래스는 루트 View(Frame)에 한 번 붙는다. 그림 크기는 `size` prop 이 정한다 —
+ * className 의 `size-*` 는 View 칸만 바꾼다(알려진 동작 20).
  */
 export declare const Icon: FC<Contracts<"native">["Icon"]>;
 export { icons };

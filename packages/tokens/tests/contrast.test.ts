@@ -63,6 +63,8 @@ const textPairs = (s: Scheme): [string, string, string][] => [
 const nonTextPairs = (s: Scheme): [string, string, string][] => [
   ["border.focus / bg.canvas (포커스 표시)", s.border.focus, s.bg.canvas],
   ["border.focus / bg.surface (포커스 표시)", s.border.focus, s.bg.surface],
+  ["bg.brand / bg.canvas (고른 Chip 채움)", s.bg.brand, s.bg.canvas],
+  ["bg.brand / bg.surface (고른 Chip 채움)", s.bg.brand, s.bg.surface],
 ];
 
 describe.each([
@@ -77,7 +79,7 @@ describe.each([
       expect(failing).toEqual([]);
     });
 
-    it(`${scheme}: 포커스 표시가 3:1 이상이다`, () => {
+    it(`${scheme}: 포커스 표시와 고른 칩 채움이 3:1 이상이다`, () => {
       const failing = nonTextPairs(colors[scheme])
         .map(([name, fg, bg]) => [name, Number(contrast(fg, bg).toFixed(2))] as const)
         .filter(([, ratio]) => ratio < 3);
