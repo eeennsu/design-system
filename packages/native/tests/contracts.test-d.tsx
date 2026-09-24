@@ -16,7 +16,18 @@ import type {
 import { nativeComponents } from "@eeennsu/tokens";
 import type { FC } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import { Button, Card, Input, Stack, Text, components } from "../src/index.js";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Input,
+  Label,
+  Stack,
+  Text,
+  Textarea,
+  components,
+} from "../src/index.js";
 
 /**
  * AC-21 "실제로 깨지는지" 확인 — 2026-09-08 수동 1회. 되돌렸다.
@@ -33,9 +44,18 @@ describe("C-17 맵 동등성", () => {
     expectTypeOf(components).toEqualTypeOf<{ [K in NativeKey]: FC<Contracts<"native">[K]> }>();
   });
 
-  it("키 목록이 맵의 키와 같다 — v1 RN 은 5개다(AC-20)", () => {
+  it("키 목록이 맵의 키와 같다 — v1 핵심 5개(AC-20) + 4개(N-16)", () => {
     expectTypeOf<(typeof nativeComponents)[number]>().toEqualTypeOf<keyof typeof components>();
-    expectTypeOf<NativeKey>().toEqualTypeOf<"Button" | "Input" | "Card" | "Stack" | "Text">();
+    expectTypeOf<NativeKey>().toEqualTypeOf<
+      "Button" | "Input" | "Textarea" | "Label" | "Card" | "Badge" | "Text" | "Stack" | "Box"
+    >();
+  });
+
+  it("추가한 4개는 웹과 prop 이 같다 — 누름 갈래가 없는 컴포넌트다", () => {
+    expectTypeOf<Contracts<"native">["Textarea"]>().toEqualTypeOf<Contracts<"web">["Textarea"]>();
+    expectTypeOf<Contracts<"native">["Label"]>().toEqualTypeOf<Contracts<"web">["Label"]>();
+    expectTypeOf<Contracts<"native">["Badge"]>().toEqualTypeOf<Contracts<"web">["Badge"]>();
+    expectTypeOf<Contracts<"native">["Box"]>().toEqualTypeOf<Contracts<"web">["Box"]>();
   });
 });
 
@@ -66,12 +86,14 @@ describe("전역 축과 제어 API", () => {
     expectTypeOf<Contracts<"native">["Input"]["size"]>().toEqualTypeOf<ControlSize | undefined>();
   });
 
-  it("Input 값 제어는 3종뿐이고 onChange 계열이 없다(C-12)", () => {
+  it("Input · Textarea 값 제어는 3종뿐이고 onChange 계열이 없다(C-12)", () => {
     expectTypeOf<Contracts<"native">["Input"]>().toHaveProperty("value");
     expectTypeOf<Contracts<"native">["Input"]>().toHaveProperty("defaultValue");
     expectTypeOf<Contracts<"native">["Input"]>().toHaveProperty("onValueChange");
     expectTypeOf<Contracts<"native">["Input"]>().not.toHaveProperty("onChange");
     expectTypeOf<Contracts<"native">["Input"]>().not.toHaveProperty("onChangeText");
+    expectTypeOf<Contracts<"native">["Textarea"]>().toHaveProperty("onValueChange");
+    expectTypeOf<Contracts<"native">["Textarea"]>().not.toHaveProperty("onChangeText");
   });
 
   it("ref 는 FocusHandle 이다 — 호스트 인스턴스를 그대로 열지 않는다(C-17)", () => {
@@ -116,6 +138,8 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
     assertType(<Button />);
     // @ts-expect-error label 필수
     assertType(<Input />);
+    // @ts-expect-error label 필수
+    assertType(<Textarea />);
   });
 
   it("색·크기를 임의 문자열로 못 준다", () => {
@@ -123,6 +147,10 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
     assertType(<Text tone="#333">x</Text>);
     // @ts-expect-error 컨트롤 size 는 sm | md | lg 다
     assertType(<Input label="a" size="2xl" />);
+    // @ts-expect-error Badge 는 ghost 가 없다(plan D-15)
+    assertType(<Badge variant="ghost">x</Badge>);
+    // @ts-expect-error Badge size 는 sm | md 다
+    assertType(<Badge size="lg">x</Badge>);
   });
 
   it("icon 은 큐레이션 이름만 받는다", () => {
@@ -145,5 +173,14 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
   it("컨테이너 children 에 문자열을 넣지 못한다(C-17)", () => {
     // @ts-expect-error ElementChildren 은 문자열을 제외한다
     assertType(<Stack>문자열</Stack>);
+    // @ts-expect-error Box 도 컨테이너다
+    assertType(<Box>문자열</Box>);
+  });
+
+  it("텍스트 컴포넌트 children 은 문자열뿐이다(C-17)", () => {
+    // @ts-expect-error Label 에 엘리먼트를 넣지 못한다
+    assertType(<Label>{<Text>x</Text>}</Label>);
+    // @ts-expect-error Badge 도 같다
+    assertType(<Badge>{<Text>x</Text>}</Badge>);
   });
 });

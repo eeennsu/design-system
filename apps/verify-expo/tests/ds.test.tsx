@@ -8,7 +8,7 @@
  * DS 컴포넌트에는 `testID` prop 이 없다(AC-11a: 스프레드 없음). 그래서 조회는
  * 접근성 이름·텍스트·렌더 트리로 한다 — 소비자가 실제로 쓸 수 있는 것과 같은 경로다.
  */
-import { Button, Card, Input, Stack, Text } from "@eeennsu/native";
+import { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea } from "@eeennsu/native";
 import { cleanup, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
@@ -25,6 +25,8 @@ const DS_DANGER_LIGHT = "#e7000b";
 const DS_FG_LIGHT = "#101828";
 const DS_SURFACE_LIGHT = "#fff";
 const DS_SURFACE_DARK = "#101828";
+const DS_SURFACE_MUTED_LIGHT = "#f3f4f6";
+const DS_ON_BRAND = "#fff";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -136,5 +138,85 @@ describe("AC-11 RN절 · AC-25 className 병합", () => {
       fontWeight: 600,
       color: DS_FG_LIGHT,
     });
+  });
+});
+
+describe("N-16 추가 4개 — Textarea · Label · Badge · Box", () => {
+  test("Label 이 같은 id 의 Input · Textarea 를 accessibilityLabelledBy 로 가리킨다", async () => {
+    await mount(
+      <Stack>
+        <Label htmlFor="email">이메일 주소</Label>
+        <Input id="email" label="이메일" />
+        <Label htmlFor="memo">메모 입력</Label>
+        <Textarea id="memo" label="메모" />
+      </Stack>,
+    );
+    // label 과 다른 가시 텍스트로 찾는다 — accessibilityLabel 이 아니라 연결로 찾았다는 뜻이다.
+    // 연결이 있으면 RNTL 은 ARIA 처럼 연결된 텍스트를 이름으로 삼는다(labelledby > label).
+    expect(screen.getByLabelText("이메일 주소").props.accessibilityLabel).toBe("이메일");
+    expect(screen.getByLabelText("메모 입력").props.accessibilityLabel).toBe("메모");
+  });
+
+  test("htmlFor 가 없으면 연결 없이 가시 텍스트만 남는다", async () => {
+    await mount(
+      <Stack>
+        <Label>메모</Label>
+        <Textarea label="메모 칸" />
+      </Stack>,
+    );
+    expect(screen.getByText("메모").props.nativeID).toBeUndefined();
+    expect(screen.getByLabelText("메모 칸").props.accessibilityLabelledBy).toBeUndefined();
+  });
+
+  test("Label 은 웹과 같은 text-sm · text-fg 다", async () => {
+    await mount(<Label>이메일</Label>);
+    expect(rootStyle()).toMatchObject({ fontSize: 14, lineHeight: 20, color: DS_FG_LIGHT });
+  });
+
+  test("Textarea size 가 행수로 간다 — 3 / 5 / 8 (plan D-14)", async () => {
+    await mount(
+      <Stack>
+        <Textarea label="작게" size="sm" />
+        <Textarea label="기본" />
+        <Textarea label="크게" size="lg" />
+      </Stack>,
+    );
+    expect(screen.getByLabelText("작게").props.numberOfLines).toBe(3);
+    expect(screen.getByLabelText("기본").props.numberOfLines).toBe(5);
+    expect(screen.getByLabelText("크게").props.numberOfLines).toBe(8);
+
+    const textarea = screen.getByLabelText("기본");
+    expect(textarea.props.multiline).toBe(true);
+    expect(textarea.props.textAlignVertical).toBe("top");
+  });
+
+  test("Textarea 글자 크기는 size 와 무관하게 Input md 다", async () => {
+    await mount(<Textarea label="크게" size="lg" invalid />);
+    expect(screen.getByLabelText("크게").props.style).toMatchObject({
+      fontSize: 16,
+      borderColor: DS_DANGER_LIGHT,
+    });
+  });
+
+  test("Badge 는 표면과 글자에 variant 색을 나눠 건다", async () => {
+    await mount(<Badge variant="primary">신규</Badge>);
+    expect(rootStyle()).toMatchObject({ backgroundColor: APP_BRAND_LIGHT });
+    expect(screen.getByText("신규").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });
+  });
+
+  test("Badge 기본은 secondary · sm 이다", async () => {
+    await mount(<Badge>기본</Badge>);
+    expect(rootStyle()).toMatchObject({
+      backgroundColor: DS_SURFACE_MUTED_LIGHT,
+      // react-native-css 는 px · py 를 논리 속성으로 낸다.
+      paddingInline: 8,
+      paddingBlock: 0,
+    });
+    expect(screen.getByText("기본").props.style).toMatchObject({ color: DS_FG_LIGHT });
+  });
+
+  test("Box 는 className 만 받는다", async () => {
+    await mount(<Box className="bg-danger p-8">{null}</Box>);
+    expect(rootStyle()).toMatchObject({ backgroundColor: DS_DANGER_LIGHT, padding: 32 });
   });
 });

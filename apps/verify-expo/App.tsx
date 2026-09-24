@@ -1,4 +1,4 @@
-import { Button, Card, Input, Stack, Text } from "@eeennsu/native";
+import { Box, Button, Card, Input, Label, Stack, Text } from "@eeennsu/native";
 import { useUnstableNativeVariable } from "nativewind";
 import { Appearance, Pressable, Text as RNText, ScrollView } from "react-native";
 
@@ -35,13 +35,13 @@ export default function App() {
           </Text>
 
           <Stack className="gap-1">
-            <Text size="sm">이메일</Text>
-            <Input label="이메일" kind="email" placeholder="you@example.com" />
+            <Label htmlFor="email">이메일</Label>
+            <Input id="email" label="이메일" kind="email" placeholder="you@example.com" />
           </Stack>
 
           <Stack className="gap-1">
-            <Text size="sm">비밀번호</Text>
-            <Input label="비밀번호" kind="password" />
+            <Label htmlFor="password">비밀번호</Label>
+            <Input id="password" label="비밀번호" kind="password" />
           </Stack>
 
           <Text tone="danger" size="sm">
@@ -57,8 +57,8 @@ export default function App() {
           </Stack>
 
           {/* AC-26: 재선언한 변수는 따라가고, 재선언하지 않은 변수는 그대로여야 한다. */}
-          <Stack className="bg-brand p-8">{null}</Stack>
-          <Stack className="bg-danger p-8">{null}</Stack>
+          <Box className="bg-brand p-8">{null}</Box>
+          <Box className="bg-danger p-8">{null}</Box>
 
           <Probe name="--bg-brand" />
           <Probe name="--fg-default" />

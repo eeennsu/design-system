@@ -5,6 +5,7 @@
 
 - 기준일: 2026-09-24
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
+- v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더했다(N-16). **아직 publish 하지 않았다**
 
 ## 1. 완료 상태
 
@@ -23,6 +24,7 @@
 | 5 | T-N1 ~ T-N4 native | 완료 | `packages/native` 컴포넌트 5개, 테스트 22개(타입·dist) |
 | 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
+| v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · 미배포 | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 
 수동 확인 상태:
 
@@ -167,6 +169,34 @@ T-R1 은 실제 `global.css` 를 쓴다.
 
 컴파일 기준점도 다르다 — 게이트는 존재하지 않는 base 로 자동 소스 탐지를 막아 `@source "../dist"` 만
 남기고(그래서 (3) 이 격리 판정이 된다), T-R1 은 앱 루트를 base 로 줘서 Metro 빌드와 같은 조건으로 본다.
+
+### N-16. v1 이후 RN 컴포넌트 4개를 더했다 — Textarea · Label · Badge · Box
+
+계획은 RN 을 핵심 5개(AC-20)에서 멈추고 나머지를 v2 로 넘겼다. 첫 RN 소비 앱(spendback)의 입력 폼에
+여러 줄 입력 · 가시 라벨 · 태그가 바로 필요해서, **웹에 계약이 이미 있고 누름 갈래가 없는 4개**만 먼저 옮겼다.
+오버레이 · Form · ButtonGroup 은 그대로 v2 다.
+
+계약(`Contracts<P>`)은 한 줄도 바꾸지 않았다. `nativeComponents` 목록만 9개로 늘렸고, 맵 테스트(C-17)가
+네 컴포넌트의 prop 이 웹과 같은지 함께 본다. 구현하면서 정한 것:
+
+- **Label ↔ 컨트롤 연결**: 스펙 C-13 의 "RN 은 `nativeID` / `accessibilityLabelledBy` 로 매핑" 을
+  Label `nativeID = htmlFor + "-label"`, Input · Textarea `accessibilityLabelledBy = id + "-label"` 로 구현했다.
+  컨트롤이 자기 `id` 를 이미 `nativeID` 로 쓰므로 Label 은 접미어를 붙인 다른 이름을 갖는다.
+  `accessibilityLabelledBy` 는 **Android 전용**이고 iOS 는 컨트롤의 `accessibilityLabel`(필수 `label`)만 읽는다.
+  기존 Input 도 `id` 를 주면 이 속성이 붙는다(추가적 변경)
+- **RNTL 의 이름 계산이 바뀐다**: 연결이 있으면 RNTL 은 ARIA 처럼 연결된 Label 텍스트를 접근성 이름으로 삼고
+  `accessibilityLabel` 은 무시한다. Label 텍스트와 `label` 이 다르면 `getByLabelText(label)` 이 못 찾는다
+- **라벨을 눌러도 컨트롤에 포커스되지 않는다**: 웹 `<label for>` 의 기본 동작에 해당하는 것이 RN 에 없다
+- **Textarea**: `size` → `numberOfLines` 3 / 5 / 8 (plan D-14). `numberOfLines` 는 RN 0.86 에서 iOS · Android
+  네이티브 뷰 둘 다에 넘어간다. Android 가 여러 줄 입력의 글자를 세로 가운데에 두므로 `textAlignVertical="top"` 을 준다
+- **Badge**: Button 과 같이 표면(View)과 전경(Text)으로 쪼갠다(N-12). RN 에 인라인이 없어 세로 방향 부모 안에서
+  부모 폭으로 늘어난다(웹도 Stack 안에서는 같다). 줄이려면 소비자가 `className="self-start"` 를 준다 —
+  기본값으로 넣으면 `align="center"` 인 가로 Stack 에서 세로 가운데 정렬이 깨진다
+- **Box**: `View` + `className`. RN `View` 는 원래 세로 flex 라 웹 `div` 와 달리 자식이 가로 폭으로 늘어난다
+- **게이트 (3) 음성 대조**: `rounded-full` 을 Badge 가 쓰게 되어 "생성되지 않아야 할 클래스" 목록에서
+  양성 쪽으로 옮기고 `rounded-sm` 으로 바꿨다
+- 검증 앱 화면을 웹과 같은 구성(Label + `id`, Box 색 견본)으로 바꿨다. 보이는 모양은 그대로다.
+  **기기 화면 확인은 하지 않았다** — jest 가 스타일 값과 접근성 연결을 본다
 
 ## 3. 구현 중 확인한 사실
 
@@ -321,5 +351,6 @@ T-P1 확인 때 Claude 임시 폴더(루트 157자)에서 걸렸다. 경로 길�
 - 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
   `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
+- N-16 의 RN 4개는 미배포다. 새 컴포넌트라 `0.2.0`(minor)으로 낸다
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

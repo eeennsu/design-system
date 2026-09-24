@@ -95,11 +95,13 @@ describe("(3) @source — 통과", () => {
     expect(hasClass(css, "text-fg-muted")).toBe(true); // Text tone="muted"
     expect(hasClass(css, "bg-danger")).toBe(true); // Button variant="danger"
     expect(hasClass(css, "rounded-lg")).toBe(true); // Card
+    expect(hasClass(css, "rounded-full")).toBe(true); // Badge (N-16 에서 추가)
   });
 
   test("DS 가 쓰지 않는 클래스는 생성되지 않는다", async () => {
     const css = await compileGlobalCss();
-    for (const className of ["p-24", "shadow-lg", "bg-overlay", "rounded-full"]) {
+    // rounded-full 은 N-16 의 Badge 가 쓰기 시작해 위 양성 쪽으로 옮기고 rounded-sm 으로 바꿨다.
+    for (const className of ["p-24", "shadow-lg", "bg-overlay", "rounded-sm"]) {
       expect(hasClass(css, className)).toBe(false);
     }
   });

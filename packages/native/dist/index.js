@@ -1,9 +1,13 @@
+import { Badge } from "./badge.js";
+import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Card } from "./card.js";
 import { Input } from "./input.js";
+import { Label } from "./label.js";
 import { Stack } from "./stack.js";
 import { Text } from "./text.js";
-export { Button, Card, Input, Stack, Text };
+import { Textarea } from "./textarea.js";
+export { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea };
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `nativeComponents` 와 같고
@@ -12,8 +16,12 @@ export { cn } from "./cn.js";
 export const components = {
     Button,
     Input,
+    Textarea,
+    Label,
     Card,
-    Stack,
+    Badge,
     Text,
+    Stack,
+    Box,
 };
 //# sourceMappingURL=index.js.map

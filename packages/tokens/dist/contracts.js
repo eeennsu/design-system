@@ -15,12 +15,19 @@ export const webComponents = [
     "Drawer",
     "Form",
 ];
-/** v1 RN 구현 5개(AC-20). 오버레이·Box 는 v2. */
+/**
+ * RN 구현 9개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box 를 더했다(구현 노트 N-16).
+ * 오버레이 · Form · ButtonGroup 은 v2.
+ */
 export const nativeComponents = [
     "Button",
     "Input",
+    "Textarea",
+    "Label",
     "Card",
-    "Stack",
+    "Badge",
     "Text",
+    "Stack",
+    "Box",
 ];
 //# sourceMappingURL=contracts.js.map

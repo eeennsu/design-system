@@ -1,10 +1,14 @@
+import { Badge } from "./badge.js";
+import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Card } from "./card.js";
 import { Input } from "./input.js";
+import { Label } from "./label.js";
 import { Stack } from "./stack.js";
 import { Text } from "./text.js";
+import { Textarea } from "./textarea.js";
 
-export { Button, Card, Input, Stack, Text };
+export { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea };
 export { cn } from "./cn.js";
 
 /**
@@ -14,7 +18,11 @@ export { cn } from "./cn.js";
 export const components = {
   Button,
   Input,
+  Textarea,
+  Label,
   Card,
-  Stack,
+  Badge,
   Text,
+  Stack,
+  Box,
 };

@@ -159,8 +159,11 @@ export type Contracts<P extends Platform> = {
 };
 /** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). */
 export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form"];
-/** v1 RN 구현 5개(AC-20). 오버레이·Box 는 v2. */
-export declare const nativeComponents: readonly ["Button", "Input", "Card", "Stack", "Text"];
+/**
+ * RN 구현 9개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box 를 더했다(구현 노트 N-16).
+ * 오버레이 · Form · ButtonGroup 은 v2.
+ */
+export declare const nativeComponents: readonly ["Button", "Input", "Textarea", "Label", "Card", "Badge", "Text", "Stack", "Box"];
 export type WebKey = (typeof webComponents)[number];
 export type NativeKey = (typeof nativeComponents)[number];
 export {};

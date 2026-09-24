@@ -1,9 +1,13 @@
+import { Badge } from "./badge.js";
+import { Box } from "./box.js";
 import { Button } from "./button.js";
 import { Card } from "./card.js";
 import { Input } from "./input.js";
+import { Label } from "./label.js";
 import { Stack } from "./stack.js";
 import { Text } from "./text.js";
-export { Button, Card, Input, Stack, Text };
+import { Textarea } from "./textarea.js";
+export { Badge, Box, Button, Card, Input, Label, Stack, Text, Textarea };
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `nativeComponents` 와 같고
@@ -36,8 +40,39 @@ export declare const components: {
         className?: string;
         ref?: import("react").Ref<import("@eeennsu/tokens").FocusHandle>;
     }>;
+    Textarea: import("react").FC<{
+        label: string;
+        size?: import("@eeennsu/tokens").ControlSize;
+        id?: string;
+        placeholder?: string;
+        disabled?: boolean;
+        invalid?: boolean;
+        value?: string;
+        defaultValue?: string;
+        onValueChange?: (value: string) => void;
+        className?: string;
+        ref?: import("react").Ref<import("@eeennsu/tokens").FocusHandle>;
+    }>;
+    Label: import("react").FC<{
+        children: string | string[];
+        htmlFor?: string;
+        className?: string;
+    }>;
     Card: import("react").FC<{
         children: import("@eeennsu/tokens").ElementChildren;
+        className?: string;
+    }>;
+    Badge: import("react").FC<{
+        children: string | string[];
+        variant?: Extract<import("@eeennsu/tokens").Variant, "primary" | "secondary" | "danger">;
+        size?: import("@eeennsu/tokens").BadgeSize;
+        className?: string;
+    }>;
+    Text: import("react").FC<{
+        children: string | string[];
+        tone?: import("@eeennsu/tokens").Tone;
+        size?: import("@eeennsu/tokens").TypographyStep;
+        heading?: "1" | "2" | "3";
         className?: string;
     }>;
     Stack: import("react").FC<{
@@ -48,11 +83,8 @@ export declare const components: {
         wrap?: boolean;
         className?: string;
     }>;
-    Text: import("react").FC<{
-        children: string | string[];
-        tone?: import("@eeennsu/tokens").Tone;
-        size?: import("@eeennsu/tokens").TypographyStep;
-        heading?: "1" | "2" | "3";
+    Box: import("react").FC<{
+        children: import("@eeennsu/tokens").ElementChildren;
         className?: string;
     }>;
 };
