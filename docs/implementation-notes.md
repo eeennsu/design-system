@@ -6,7 +6,7 @@
 - 기준일: 2026-09-25
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
-- v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 만들었다. **아직 publish 하지 않았다**
+- v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 
 ## 1. 완료 상태
 
@@ -26,7 +26,7 @@
 | 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
-| v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` 미배포 | tokens 67 · web 79 · native 26 · verify-expo 50 |
+| v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 
 수동 확인 상태:
 
@@ -372,6 +372,11 @@ publish 직전에 `npm login` 한다.
 (2026-09-24 에 tokens · native 가 먼저 올라가고 web 이 인증 대기로 남았다). 끊겼으면 남은 패키지만
 `pnpm --filter @eeennsu/<이름> publish --access public` 으로 낸다. 2FA 우회 토큰은 CI 용이라 로컬에 두지 않는다.
 
+2026-09-25(`0.3.0`)에는 세 패키지 모두 `PUT 202` 와 "Your package is being processed and may take a few minutes to
+become available" 로 받아졌고, 레지스트리에 보이기까지 native · web 은 약 1분, tokens 는 약 2분 걸렸다. 그 사이에는
+native · web 만 보여 `@eeennsu/tokens@0.3.0` 을 못 찾으므로 소비 앱 설치는 세 패키지가 다 보인 뒤에 한다. `npm view` 는
+캐시된 메타데이터를 보여 줘 더 늦게 바뀐다 — `npm view @eeennsu/tokens versions --prefer-online` 으로 확인한다.
+
 ### F-18. 갓 publish 한 버전은 pnpm 12 가 `minimumReleaseAgeExclude` 에 올린다
 
 레포 밖에서 corepack 이 고르는 pnpm 은 12.6.0 이다(이 레포는 `packageManager` 로 10.28.1). publish 직후
@@ -461,8 +466,7 @@ react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform �
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
   `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
 - `0.2.0`(N-16 의 RN 4개)은 2026-09-24 publish 했다
-- `0.3.0`(N-17)은 버전을 올리고 `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` 까지 통과했다. **publish 만 남았다** — 아래 순서의 `npm login` 부터 한다.
-  pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
+- `0.3.0`(N-17)은 2026-09-25 publish 했다. pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
 - 0.3.0 은 base 다크 · bakery 라이트의 글자색을 바꾼다. 릴리스 노트에 적고, AC-23 다크 스크린샷(`docs/assets/ac23-*-dark.png`)은 흰 글자로 남아 있어 다음 기기 확인 때 다시 찍는다
 - npm 패키지 페이지(README · `repository`)는 여전히 비어 있다
 - 웹 Chip · Icon 은 verify-next 화면에 없다. 브라우저 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 다음 웹 작업 때
