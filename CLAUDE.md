@@ -1,6 +1,6 @@
 # design-system
 
-React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Native(Expo) 프로젝트가 같은 토큰을 쓴다.
+React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Native(Expo, RN CLI) 프로젝트가 같은 토큰을 쓴다. Expo 없는 RN CLI 소비자의 Metro 설정은 구현 노트 F-24 에 있다.
 
 ## 목표
 
@@ -25,26 +25,27 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 
 ## 문서
 
-- 스펙: [docs/design-system-spec.md](docs/design-system-spec.md). 토큰 구조, 컴포넌트 API 계약, 수용 기준이 여기 있다. 구현 전 검증(R21), 소비 프로젝트 특화 통로(R22), 확대안 연기 결정(R23), C-19 게이트 실행(R24)까지 마쳤고 구현하면서 바뀔 수 있다
-- 2026-09-06 R24 개정이 현재 기준. 스펙 상단 "R21 개정 요약"~"R24 개정 요약"과 Constraints 아래 "알려진 동작(v1)"을 먼저 읽는다. **R24 는 게이트 실측 반영이다 — RN 다크는 hybrid 가 아니라 OS 단독이고, native 래퍼만 `@media (prefers-color-scheme: dark) { :root }` 블록을 추가로 낸다. 웹은 무변경.** R20 미결 3건은 닫혔다(1·2 종결, 3은 C-19 착수 게이트). 결정 대기 항목·보류 없음 — plan §2.3 D-31(RN line-height는 native 래퍼가 배수로 낸다)은 2026-09-06 확정
+- 스펙: [docs/design-system-spec.md](docs/design-system-spec.md). 토큰 구조, 컴포넌트 API 계약, 수용 기준이 여기 있다. 구현 전 검증(R21), 소비 프로젝트 특화 통로(R22), 확대안 연기 결정(R23), C-19 게이트 실행(R24), 첫 RN 소비 앱 반영(R25)까지 마쳤고 구현하면서 바뀔 수 있다
+- 2026-09-25 R25 개정이 현재 기준(Chip · Icon 신설, RN 보정, 글자 대비. 소비 앱 spendback 의 요구가 입력이다). 그 전 기준은 2026-09-06 R24 개정이다. 스펙 상단 "R21 개정 요약"~"R25 개정 요약"과 Constraints 아래 "알려진 동작(v1)"을 먼저 읽는다. **R24 는 게이트 실측 반영이다 — RN 다크는 hybrid 가 아니라 OS 단독이고, native 래퍼만 `@media (prefers-color-scheme: dark) { :root }` 블록을 추가로 낸다. 웹은 무변경.** R20 미결 3건은 닫혔다(1·2 종결, 3은 C-19 착수 게이트). 결정 대기 항목·보류 없음 — plan §2.3 D-31(RN line-height는 native 래퍼가 배수로 낸다)은 2026-09-06 확정
 - **앱마다 갈리는 축은 색·간격 리듬·화면 구조 셋이다**(알려진 동작 14). 컴포넌트 내부 형태와 폰트 패밀리를 앱 단위로 바꾸는 통로(C-5c)는 열지 않았다 — 소비 프로젝트 2개를 만든 뒤 판단하는 조건부 항목이며 조건은 C-5b (R23)에 있다. 그 전에 미리 열지 않는다
-- 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
+- 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md), [docs/decisions-r25.md](docs/decisions-r25.md)(첫 RN 소비 앱 반영). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
 - 구현 계획: [docs/plan.md](docs/plan.md) v2. 토큰 인벤토리·값, 컴포넌트 축 매트릭스, `Contracts<P>`, 패키지 구성, 태스크(T-0 ~ T-P1)와 AC 매핑이 여기 있다. 스펙과 어긋나는 지점은 plan.md §9에 모으고 스펙은 고치지 않는다
 - 계획 검증: [docs/plan-verification.md](docs/plan-verification.md). 2026-09-05 검증 완료(B 2·P 21·N 13, 전부 plan.md v2에 반영). 사용자 확정 4건은 plan.md D-6 · D-28 · D-29 · D-30
 - 착수 게이트는 두 단계이고 **둘 다 닫혔다** — 웹 선확인(T-W0) 2026-09-05 통과, C-19 게이트(T-G1 · T-G2) 2026-09-06 실행, 게이트 (7) 기기 화면 확인 2026-09-08 완료(Android 에뮬레이터 + Expo Go, 스크린샷은 `docs/assets/`). **Phase 5 착수 조건은 없다.** 기기 확인에서 (5) lineHeight 결함이 화면 레이아웃을 무너뜨리는 것을 봤고, T-N0 이 그것을 고쳤다
 - 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 9항목 판정과 고정한 버전이 여기 있다 — (1)(3)(6)(7)(8)(9) 통과, (2)(4) 실패(R24 개정 + T-N0 우회), (5) 부분(T-N0 배수 line-height 로 해소). T-R1 의 AC-23 웹·RN 비교도 이 문서에 있다
-- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — 2026-09-24 npm `0.1.0` publish**), 계획과 갈린 지점 16건, 구현 중 확인한 사실 20건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
+- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — 2026-09-24 npm `0.1.0` · `0.2.0` publish, `0.3.0` 미배포**), 계획과 갈린 지점 17건, 구현 중 확인한 사실 26건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
 
 ## 현재 코드 상태
 
-- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 58
-- `packages/web` — 컴포넌트 14개, Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 67(타입 테스트 포함)
-- `packages/native` — 컴포넌트 9개(Button · Input · Textarea · Label · Card · Badge · Text · Stack · Box. 뒤 4개는 v1 이후 추가, `0.2.0` 미배포, 구현 노트 N-16), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0. 테스트 24(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
+- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 67(브랜드 × 스킴 글자 대비 포함)
+- `packages/web` — 컴포넌트 16개(Chip · Icon 은 R25, `0.3.0` 미배포), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 79(타입 테스트 포함)
+- `packages/native` — 컴포넌트 11개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` 미배포), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 26(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
 - `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 18 + 5
-- `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 39(게이트 20 + DS 18 + smoke 1)
+- `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 49(게이트 20 + DS 28 + smoke 1)
 - 검증 화면 스크린샷은 `docs/assets/` 에 있다 — 게이트 (7) 기기 확인 2장, AC-23 웹·RN 비교 4장, T-P1 npm 설치 확인 2장
 - 명령: `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack`(타르볼 설치 재검증) · `pnpm version:set <v>`
 - 배포: npm `@eeennsu/{tokens,web,native}` 를 lockstep 으로 함께 낸다. publish 직전에 `npm login`, `pnpm -r publish --access public` 은 패키지마다 브라우저 2FA 인증을 요구한다(구현 노트 F-17)
 - 토큰 산출물(`packages/*/themes/*.css`, `packages/tokens/src/generated`, `src/brands`)과 `dist`는 **추적한다**. 손으로 고치지 않는다 — 빌드가 덮고 테스트가 잡는다
-- native 래퍼만 다크 블록(`@media … { :root }`)과 **배수** line-height 를 추가로 낸다(T-N0). 웹 산출물과 토큰 CSS 는 무변경이다
+- native 래퍼만 다크 블록(`@media … { :root }`), **배수** line-height(T-N0), `.tabular-nums` 의 RN 선언(N-17)을 추가로 낸다. 웹 산출물과 토큰 CSS 는 무변경이다
+- `verify-next` 의 스크린샷 테스트는 실행할 때마다 `docs/assets/ac23-web-*.png` 를 덮어쓴다(구현 노트 F-25). 다른 기기에서 돌렸으면 커밋 전에 되돌린다
 - `packages/native` 의 `react` · `react-native` devDependency 는 검증 앱과 **정확히 같은 버전**이어야 한다. 어긋나면 pnpm 격리 레이아웃에서 React 가 두 벌이 되어 검증 앱이 "Invalid hook call" 로 죽는다(구현 노트 N-11)

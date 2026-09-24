@@ -3,9 +3,10 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-24
+- 기준일: 2026-09-25
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
-- v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더하고(N-16) 버전을 `0.2.0` 으로 올렸다. **아직 publish 하지 않았다**
+- v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
+- v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 만들었다. **아직 publish 하지 않았다**
 
 ## 1. 완료 상태
 
@@ -24,7 +25,8 @@
 | 5 | T-N1 ~ T-N4 native | 완료 | `packages/native` 컴포넌트 5개, 테스트 22개(타입·dist) |
 | 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
-| v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` 미배포 | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
+| v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
+| v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` 미배포 | tokens 67 · web 79 · native 26 · verify-expo 49 |
 
 수동 확인 상태:
 
@@ -198,6 +200,40 @@ T-R1 은 실제 `global.css` 를 쓴다.
 - 검증 앱 화면을 웹과 같은 구성(Label + `id`, Box 색 견본)으로 바꿨다. 보이는 모양은 그대로다.
   **기기 화면 확인은 하지 않았다** — jest 가 스타일 값과 접근성 연결을 본다
 
+### N-17. v1 이후 두 번째 — Chip · Icon 과 RN 보정 (0.3.0)
+
+첫 RN 소비 앱 spendback 의 입력 폼과 디자인 검증에서 나온 것을 담았다. 스펙 R25, 대안 비교는
+[decisions-r25.md](decisions-r25.md) 다. N-16 과 달리 계약이 늘었다 — `Contracts<P>` 에 `Chip` · `Icon`,
+`IconName` 에 4개, 키 목록이 웹 16 · RN 11 개다. 맵 테스트(C-17)가 두 플랫폼의 대칭을 그대로 본다.
+
+- **Chip**: 웹은 Base UI Button + `aria-pressed`, RN 은 Pressable + `accessibilityState.selected`.
+  Button 처럼 표면과 전경을 쪼갠다(N-12). 크기는 하나(component 토큰 `chip`: px 4 · py 2 · text sm ·
+  radius full, 높이 38). RN 라벨은 글자 크기 설정을 1.5배까지만 따른다
+- **Icon**: 내부 아이콘을 `Glyph`(Button · Dialog · Drawer 안, 웹은 `currentColor` 상속과 `spin`)로 이름을
+  바꾸고, 공개 `Icon` 을 따로 둔다. 공개 Icon 은 색을 상속하지 않고 `tone` 으로 갖는다 — RN 에 상속이 없어서다.
+  RN 은 svg 가 루트다. 처음에는 접근성 속성을 붙이려고 View 로 감쌌는데, 배치 클래스가 안쪽 svg 에 붙어 웹과 갈렸다
+  (DS 검증 DS-001). 접근성 속성을 lucide 를 거쳐 svg 에 넘긴다. 그림 크기는 `size` prop 이 정한다(알려진 동작 20).
+  `label` 이 빈 문자열이면 꾸밈으로 본다
+- **눌림 표시**: Button · Chip 에 `active:opacity-80`. RN 은 react-native-css 가 Pressable 의 onPressIn/Out 으로 푼다.
+  처음에는 `active:bg-*-hover` 였는데 소비자가 `bg-danger` 를 준 버튼이 누를 때만 파래졌다(DS 검증 DS-003). 웹도 같은 클래스다
+- **누름 영역**: RN Button sm `hitSlop` 위아래 9, md 3, lg 없음, Chip 5. 가로는 최소 폭 `min-w-12`(DS 검증 DS-004).
+  모양(D-6 높이)은 그대로다
+- **입력 포커스 · placeholder**: RN Input · Textarea 의 `controlBase` 에 `focus:border-border-focus`(plan D-9, 0.2.0 누락).
+  `invalid` 는 `border-danger focus:border-danger` 라 포커스 중에도 danger 다. placeholder 는 DS 안의 `StyledTextInput` 이
+  `placeholderClassName="text-fg-muted"` 를 `placeholderTextColor` 로 옮긴다(N-13 해소. 0.2.0 까지 플랫폼 기본 hint 색,
+  AppCompat 라이트 흰 표면 위 약 2.7:1)
+- **고정폭 숫자**: native 래퍼 끝(`@source` 앞)에 `.tabular-nums { -rn-font-variant: tabular-nums; }`(F-21)
+- **번들 크기**: RN Icon 이 `lucide-react-native/icons/<이름>` 에서 하나씩 import 한다(F-22).
+  dist 검사 테스트가 목록 파일 import 를 막는다
+- **글자 대비**: base 다크 `fg.on-brand` · `fg.on-danger`, bakery 다크 `fg.on-danger` 를 gray-950 으로(F-23). bakery 라이트는
+  `fg.on-brand` 를 gray-950, `bg.brand-hover` 를 amber-500 으로(흰 글자 3.2:1 이었다, DS 검증 DS-002). plan §3.3 표도 고쳤다 —
+  값은 계약이 아니다(이름만 계약, C-5b). tokens `tests/contrast.test.ts` 가 브랜드 × 스킴의 글자 쌍 4.5:1, 포커스 표시 3:1 을 본다
+- 검증 앱: verify-expo 화면에 칩 3개와 아이콘 4개, 고정폭 숫자를 더했다. jest 에 10개(선택 · 눌림과 소비자 배경 · Chip 누름과
+  비활성 · 누름 영역과 최소 폭 · 포커스 · placeholder · 고정폭 · 아이콘 루트와 색 · 아이콘 이름 · 다크 on-brand)
+- 검증: 작업 과정을 모르는 검증 에이전트가 보고 전용으로 봤다. high 2(DS-001 · DS-002)와 medium 3(DS-003 눌림 색 · DS-004 가로 누름
+  영역 · DS-005 기록)을 반영했다. 반영하지 않은 polish 는 decisions-r25.md "열지 않은 것"과 알려진 동작 17~23 에 있다
+- **기기 화면 확인은 하지 않았다** — jest 가 스타일 값과 접근성 속성을 본다
+
 ## 3. 구현 중 확인한 사실
 
 ### F-1. R23 요구 (a) — 비-inline `@theme` 변수도 소비자가 덮을 수 있다
@@ -356,12 +392,62 @@ npm 에 같은 버전이 있으면 **조용히 통과한다** — `0.1.0` publis
 옮기고, 설치 뒤 lockfile 에 npm 에서 받은 `@eeennsu` 패키지가 없는지 검사를 더했다.
 검증 스크립트 문제라 소비 프로젝트의 DS 사용과는 무관하다.
 
+### F-21. react-native-css 3.0.7 은 `font-variant-numeric` 을 옮기지 않는다
+
+`tabular-nums` 는 Tailwind 가 `--tw-numeric-spacing` 변수와 `font-variant-numeric` 선언으로 내는데,
+react-native-css 3.0.7 은 이 속성을 지원하지 않는다고 경고하고 버린다(`compiler/declarations` 는 font-variant 계열 중
+`font-variant-caps` 만 처리한다). 그래서 RN 에서 `tabular-nums` 가 아무 일도 하지 않는다. `-rn-font-variant: tabular-nums` 는
+`fontVariant: "tabular-nums"` 로 컴파일되고, RN 이 네이티브로 넘길 때 `processFontVariant` 가 배열로 나눈다.
+spendback 의 디자인 검증 에이전트가 global.css 를 메모리에서 컴파일해 찾았다.
+
+### F-22. Metro 는 lucide 목록 파일 import 로 아이콘 전체를 번들에 넣는다
+
+Metro 는 tree shaking 을 하지 않는다. `import { Check } from "lucide-react-native"` 는 목록 파일을 통째로 번들에 넣는다
+(아이콘 3,616개). spendback 릴리스 번들(`react-native bundle --dev false`)에서 node_modules 의 dist 를 잠시 고쳐 잰 값이
+3,910,590 B → 2,196,347 B 다(−1.71MB, −44%). lucide-react-native 1.41.0 은 `./icons/*` 를 exports 로 공식 제공하고
+각 파일이 기본 export 다. 웹은 번들러가 tree shaking 을 하므로 목록 import 를 그대로 둔다.
+
+### F-23. base 다크의 brand · danger 위 흰 글자는 4.5:1 이 안 된다
+
+blue-500 위 흰색 3.71:1(런타임 `#3080ff`, jest `#2b7fff` 는 3.76), red-500 위 흰색 3.81:1. 버튼 라벨(text-md 400)은
+4.5:1 이 기준이다. bakery 다크는 on-brand 를 이미 gray-950 으로 두었다. 두 브랜드 모두 on-danger 까지 gray-950 으로 맞췄다
+(5.42 · 5.29). spendback 은 이 값을 앱 C-5b 재선언으로 먼저 고쳤었다.
+
+같은 종류가 bakery 라이트에도 있었다 — amber-600 위 흰 on-brand 3.20:1(0.1.0 부터). on-brand 를 gray-950(6.29)으로 바꾸고,
+더 어두운 hover(amber-700, gray-950 과 4.00)를 밝은 amber-500(9.40)으로 뒤집었다. tokens 에 대비 테스트가 없어 세 번 모두
+검사 없이 나갔다. `packages/tokens/tests/contrast.test.ts` 를 두었다.
+
+### F-24. RN CLI(Expo 없는) 소비자는 react-native-css 의 Metro 변환기를 쓸 수 없다
+
+react-native-css 3.0.7(3.1.0-rc.0 도 같다)의 `metro-transformer` 는 JS 와 CSS 를 `@expo/metro-config` 의 변환 워커에 맡긴다.
+Expo 없는 RN CLI 앱에 `@expo/metro-config` 를 넣으면 `@expo/metro` 가 Metro 0.84 를 고정해 RN 0.87(Metro 0.87)과
+변환 워커 버전이 갈린다. spendback 은 같은 일을 하는 변환기를 앱에 두었다 — JS 는 Metro 기본 워커, CSS 는
+`@tailwindcss/postcss` → `react-native-css/compiler` 의 `compile()` → `StyleCollection.inject` 코드. pnpm 이 그 peer 를 자동
+설치하지 않도록 `packageExtensions` 로 선택 peer 표시를 했고, CSS 변환 결과는 Metro 디스크 캐시에 쓰지 않는다(Tailwind 결과가
+다른 소스 파일에 달려 있어서다. Expo 는 자기 FileStore 로 같은 일을 한다). 상세는 spendback `docs/DESIGN.md` 1.4.
+DS 쪽 변경은 없다 — C-3 "import 한 줄" 은 Expo 소비자 기준이고, RN CLI 소비자의 Metro 설정은 그 앱의 몫이다.
+
+### F-25. verify-next 의 스크린샷 테스트는 실행할 때마다 `docs/assets` 를 덮어쓴다
+
+`apps/verify-next/e2e/screenshot.spec.ts` 가 `docs/assets/ac23-web-{light,dark}.png` 에 저장한다. 다른 기기(폰트 · 렌더러)에서
+`pnpm -r test` 를 돌리면 커밋된 AC-23 비교 이미지가 바뀐다. 이번 작업은 매번 되돌렸다(`git checkout -- docs/assets`).
+
+### F-26. react-native-svg 는 width · height prop 을 style 뒤에 둔다
+
+lucide-react-native 는 `size` 를 svg 의 `width` · `height` prop 으로 넘기고, react-native-svg 는 그 값을 style 배열 맨 뒤에
+붙인다(`[기본, 소비자 style, { width, height }]`). 그래서 소비자 `className` 의 `size-*` 가 style 로 들어가도 그림 크기는
+`size` prop 이 정한다. `nativeStyleMapping` 으로 width 를 `size` prop 에 옮겨도 호출부가 넘긴 `size` 가 이긴다(jest 로 확인).
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
 - 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
   `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
-- `0.2.0`(N-16 의 RN 4개)은 버전을 올리고 `pnpm -r test` · `pnpm verify:pack` 까지 통과했다. **publish 만 남았다** — 아래 순서의 `npm login` 부터 한다
+- `0.2.0`(N-16 의 RN 4개)은 2026-09-24 publish 했다
+- `0.3.0`(N-17)은 버전을 올리고 `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` 까지 통과했다. **publish 만 남았다** — 아래 순서의 `npm login` 부터 한다.
+  pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
+- 0.3.0 은 base 다크 · bakery 라이트의 글자색을 바꾼다. 릴리스 노트에 적고, AC-23 다크 스크린샷(`docs/assets/ac23-*-dark.png`)은 흰 글자로 남아 있어 다음 기기 확인 때 다시 찍는다
+- npm 패키지 페이지(README · `repository`)는 여전히 비어 있다
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

@@ -160,21 +160,22 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 | `bg.surface-muted` | `--bg-surface-muted` | `--color-surface-muted` | gray-100 | gray-800 | amber-100 | gray-800 | secondary Button · Badge secondary 배경 |
 | `bg.surface-hover` | `--bg-surface-hover` | `--color-surface-hover` | gray-200 | gray-700 | amber-200 | gray-700 | secondary · ghost hover |
 | `bg.brand` | `--bg-brand` | `--color-brand` | blue-600 | blue-500 | amber-600 | amber-500 | primary Button · Badge primary |
-| `bg.brand-hover` | `--bg-brand-hover` | `--color-brand-hover` | blue-700 | blue-400 | amber-700 | amber-400 | primary hover |
+| `bg.brand-hover` | `--bg-brand-hover` | `--color-brand-hover` | blue-700 | blue-400 | amber-500 (R25, 이전 amber-700) | amber-400 | primary hover |
 | `bg.danger` | `--bg-danger` | `--color-danger` | red-600 | red-500 | red-600 | red-500 | danger Button · Badge danger |
 | `bg.danger-hover` | `--bg-danger-hover` | `--color-danger-hover` | red-700 | red-400 | red-700 | red-400 | danger hover |
 | `bg.overlay` | `--bg-overlay` | `--color-overlay` | black / 50% | black / 60% | 동일 | 동일 | Dialog · Drawer 스크림 |
 | `fg.default` | `--fg-default` | `--color-fg` | gray-900 | gray-50 | gray-900 | gray-50 | `tone="default"` |
 | `fg.muted` | `--fg-muted` | `--color-fg-muted` | gray-500 | gray-400 | gray-600 | gray-400 | `tone="muted"`, placeholder |
 | `fg.danger` | `--fg-danger` | `--color-fg-danger` | `var(--bg-danger)` | `var(--bg-danger)` | 동일 | 동일 | `tone="danger"` |
-| `fg.on-brand` | `--fg-on-brand` | `--color-fg-on-brand` | white | white | white | gray-950 | primary Button 글자 |
-| `fg.on-danger` | `--fg-on-danger` | `--color-fg-on-danger` | white | white | 동일 | 동일 | danger Button 글자 |
+| `fg.on-brand` | `--fg-on-brand` | `--color-fg-on-brand` | white | gray-950 (R25, 이전 white) | gray-950 (R25, 이전 white) | gray-950 | primary Button 글자 |
+| `fg.on-danger` | `--fg-on-danger` | `--color-fg-on-danger` | white | gray-950 (R25, 이전 white) | white | gray-950 (R25, 이전 white) | danger Button 글자 |
 | `border.default` | `--border-default` | `--color-border` | gray-300 | gray-700 | amber-300 | gray-700 | Input · Card 테두리 |
 | `border.focus` | `--border-focus` | `--color-border-focus` | `var(--bg-brand)` | `var(--bg-brand)` | 동일 | 동일 | focus ring(§4.6) |
 
 - **`fg.danger`는 `bg.danger`의 별칭이다.** C-8은 "`variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)"이라고 못 박았고, 동시에 `tone`은 `fg.danger`와 1:1이라고 했다. 두 문장을 동시에 만족시키는 방법은 `--fg-danger: var(--bg-danger)`뿐이다. 소비자가 `--bg-danger`를 덮으면 `--fg-danger`가 따라가고, `--fg-danger`만 덮으면 글자색만 바뀐다. `border.focus`도 같은 이유로 `bg.brand` 별칭이다. 별칭 2개는 §9에 스펙 문구 보강 후보로 적었다
 - 브랜드 간 차이는 이 표의 값뿐이다. `bakery`는 brand 램프를 amber로, canvas·surface-muted·surface-hover·border를 amber 계열 저채도로 바꾼다. `base`와 실제로 다른 값이 있어야 AC-6a diff가 의미를 가진다(B-3)
 - 다크 값은 `.dark` 블록과 `@media (prefers-color-scheme: dark) { :root:not(.light) }` 블록에 **동일하게** 두 번 쓴다(C-20)
+- **(R25)** 흰 on-brand · on-danger 가 base 다크(3.7 · 3.8:1)와 bakery 라이트(3.2:1)에서 4.5:1 이 안 돼 gray-950 으로 바꿨다. bakery 라이트 hover 는 어두운 글자와 맞게 밝은 amber-500 이다. tokens 대비 테스트가 두 브랜드 × 두 스킴의 글자 쌍을 본다(구현 노트 F-23)
 
 ### 3.4 간격 · radius · shadow (전 브랜드 공유, 비-inline `@theme`)
 
@@ -321,6 +322,8 @@ type Press<P extends Platform> = P extends "web" ? { onClick?: () => void } : { 
 | Label | web | — | — | — | — | — | — | `string \| string[]` (v2 F-1) | `htmlFor?: string` |
 | Card | web · native | — | — | — | — | — | — | `ElementChildren` | — |
 | Badge | web | `Extract<Variant, "primary" \| "secondary" \| "danger">` (기본 `secondary`) | `BadgeSize` (기본 `sm`) | — | — | — | — | `string \| string[]` (v2 F-1) | — |
+| Chip (R25) | web · native | — | — (한 크기, 높이 38) | — | 필수 (가시 텍스트 겸 접근성 이름) | 웹 `onClick` / RN `onPress` | `FocusHandle` | 없음 | `selected?: boolean`(제어 전용), `disabled?: boolean` |
+| Icon (R25) | web · native | — | `ControlSize` (기본 `md`, 16 · 20 · 24) | `Tone` (기본 `default`) | 선택 (있으면 그림, 없으면 꾸밈) | — | — | 없음 | `name: IconName` |
 | Text | web · native | — | `TypographyStep` (기본 `md`) | `Tone` (기본 `default`) | — | — | — | `string \| string[]` | `heading?: "1" \| "2" \| "3"` |
 | Stack | web · native | — | — | — | — | — | — | `ElementChildren` | `direction?`, `align?`, `justify?`, `wrap?` (§4.4) |
 | Box | web (RN은 v2. v2 F-13) | — | — | — | — | — | — | `ElementChildren` | — |
@@ -345,6 +348,7 @@ type Press<P extends Platform> = P extends "web" ? { onClick?: () => void } : { 
 | `ghost` | 투명 | `text-fg` | `hover:bg-surface-hover` | `border-transparent` |
 | `danger` | `bg-danger` | `text-fg-on-danger` | `hover:bg-danger-hover` | `border-transparent` |
 
+- **(R25)** 눌림 표시는 variant 와 무관하게 `active:opacity-80` 이다. hover 색을 눌림에 쓰면 소비자가 바꾼 배경(`className="bg-danger"`)을 무시하고 누를 때만 brand-hover 로 칠해진다. RN 은 여기에 누름 영역(세로 `hitSlop` sm 9 · md 3, 최소 폭 `min-w-12`)을 더한다(구현 노트 N-17)
 - `disabled`는 `opacity-50 pointer-events-none`(정적 유틸리티, 리셋 대상 아님). `loading`은 `icon` 자리에 `loader` 아이콘을 회전시키고 `disabled`와 같은 상태로 만든다. `label`은 항상 렌더한다(알려진 동작 7·9)
 - variant별 클래스는 `Record<Variant, string>` 객체 맵으로 둔다(C-4 (2) 정적 리터럴)
 
@@ -381,6 +385,7 @@ Base UI 패키지는 `@base-ui/react`(구 `@base-ui-components/react`에서 2025
 
 - **소스: `@eeennsu/tokens`에 큐레이션한 문자열 리터럴 유니온.** lucide 전체 이름을 타입으로 파생하지 않는다 — 계약이 tokens에 있어 lucide 패키지에 의존할 수 없고, 1,500개 유니온은 타입 검사 비용만 늘리며, 웹·RN lucide 패키지 버전이 어긋나면 이름이 갈린다
 - v1 목록 24개: `check` `x` `plus` `minus` `trash` `pencil` `search` `chevron-down` `chevron-up` `chevron-left` `chevron-right` `arrow-left` `arrow-right` `menu` `settings` `user` `mail` `lock` `eye` `eye-off` `info` `alert-circle` `loader` `external-link`
+- **(R25)** 4개를 더해 28개: `home`(House) `list`(List) `chart-pie`(ChartPie) `calendar`(Calendar). 버튼 밖에서는 공개 `Icon`(`name` · `size` · `tone` · `label?`)으로 쓴다. 공개 Icon 은 색을 상속하지 않고 `tone` 으로 갖는다 — 아래 `currentColor` 는 Button 안의 아이콘(`Glyph`) 얘기다. RN 은 lucide 를 아이콘별 경로(`lucide-react-native/icons/<이름>`)로 import 한다(Metro 는 tree shaking 이 없다, 구현 노트 F-22)
 - 웹 `packages/web/src/icon.tsx`: `const icons: Record<IconName, LucideIcon> = { check: Check, trash: Trash2, "alert-circle": CircleAlert, … }` — `Record<IconName, …>`이라 목록에 있는데 매핑이 빠지면 컴파일 에러. RN도 `lucide-react-native`로 동일 맵. 이름 추가는 tokens 목록 + 양쪽 맵 3곳이며 한쪽만 고치면 타입 에러가 잡는다. 맵에는 lucide **정식 export 이름**만 쓴다(v2 F-6: lucide 1.41.0에서 `AlertCircle`은 `CircleAlert`의 별칭이며 별칭은 major에서 사라질 수 있다). 24개 전부 `lucide-react`·`lucide-react-native` 1.41.0 양쪽에 존재함을 검증에서 확인
 - 크기는 `icon.size`(§3.8)를 lucide `size` prop으로 전달(v2 F-8), 색은 `currentColor`(글자색 상속. C-7c "색은 토큰으로"의 간접 형태, §9 S-17). `size`·`color` prop 없음
 - AC-15a: `icon="nope"`·`icon={<Trash />}` 모두 타입 에러. T-W8 타입 테스트
@@ -389,7 +394,7 @@ Base UI 패키지는 `@base-ui/react`(구 `@base-ui-components/react`에서 2025
 
 - semantic `border.focus`(`--color-border-focus`, `bg.brand` 별칭) 하나로 통일한다. 별도 `ring` 토큰을 두지 않는다
 - 웹: 포커스 가능 컴포넌트(Button · Input · Textarea · Dialog 닫기 버튼)에 `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus`. `outline-2`·`outline-offset-2`는 정적 유틸리티라 리셋과 무관하고, 색은 `--color-*` 네임스페이스라 DS 어휘 안이다. `ring-*`은 `--color-ring` 같은 별도 기본값에 기대므로 쓰지 않는다
-- RN: Input에 NativeWind `focus:border-border-focus`(TextInput은 `focus:` 변형 지원). Button은 RN에서 키보드 포커스 개념이 약해 v1 무처리
+- RN: Input에 NativeWind `focus:border-border-focus`(TextInput은 `focus:` 변형 지원). Button은 RN에서 키보드 포커스 개념이 약해 v1 무처리. **(R25)** 0.2.0 구현에서 Input · Textarea 의 이 클래스가 빠져 있었고 0.3.0 에서 넣었다(Chip 도 Button 처럼 무처리)
 
 ### 4.7 Input · Label · Form 연결
 
@@ -430,6 +435,7 @@ export type NativeKey = (typeof nativeComponents)[number];
 ```
 
 - 맵 테스트(C-17): web은 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in WebKey]: FC<Contracts<"web">[K]> }>()`, native는 `NativeKey` × `Contracts<"native">`
+- 위 초안은 착수 전 모습이다. 지금 목록은 `packages/tokens/src/contracts.ts` 에 있다 — 웹 16개(Chip · Icon 추가, R25), RN 11개(N-16 의 4개와 Chip · Icon)
 - 실제로 깨지는지 확인(AC-21): T-N4에서 native Button에 임시로 prop 하나를 추가하고 `vitest --typecheck`가 실패하는 것을 기록한 뒤 되돌린다. 컴포넌트 누락도 같은 방식으로 1회 확인
 
 ---
@@ -735,6 +741,14 @@ design-system/
 - 완료 조건: jest 통과 + 수동 확인 기록(`docs/gate-c19.md` 또는 `docs/verify-rn.md`)
 - 닫는 AC: **AC-3 RN절**, **AC-11 RN절**, **AC-19 (c) RN**, **AC-22**, **AC-23**, **AC-25**, **AC-26 RN절**
 
+### v1 이후 (구현 노트 N-16 · N-17)
+
+- **T-N5** RN Textarea · Label · Badge · Box — N-16. `0.2.0` publish(2026-09-24)
+- **T-N6** Chip · Icon(웹 · RN), `IconName` 28개 — N-17, 스펙 R25. 닫는 AC: AC-7 · AC-20 목록 추가분
+- **T-N7** RN 보정 — 눌림 `active:opacity-80`, 누름 영역(hitSlop · `min-w-12`), Input · Textarea 포커스 테두리(D-9)와 placeholder 색, native 래퍼 `tabular-nums`, 아이콘별 lucide import — N-17
+- **T-T6** 글자 대비 — base 다크 · bakery 의 on-brand · on-danger, tokens 대비 테스트 — N-17, F-23
+- **T-P2** `0.3.0` publish — `pnpm version:set 0.3.0` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` → main 에 합친 뒤 `npm login` → `pnpm -r publish --access public`
+
 ### Phase 7 — publish
 
 **T-P1 publish 게이트**
@@ -855,7 +869,7 @@ design-system/
 | S-14 (v2) | C-17 children 규칙 | 텍스트 3 · 컨테이너 3 · 웹 전용 4 = 10에 ButtonGroup(children 있음)이 빠졌다 | 정합 | 계획 §4.8은 `ReactElement \| ReactElement[]`로 정했다(Button 엘리먼트만. `boolean \| null` 미포함이라 조건부 자식은 소비자가 배열 필터로 처리). 개정 시 C-17에 ButtonGroup 항목 추가 |
 | S-15 (v2) | C-5b ↔ C-6 | "semantic 변수 이름은 twMergeConfig 색 키와 1:1"은 이름이 같다는 뜻이 아니라 대응 관계다(변수 `--bg-brand` ↔ 키 `brand`) | 정합 | 계획 §3.1 `semanticVariables` 맵이 그 대응의 실체. 개정 시 "1:1 대응(이름은 다름)"으로 |
 | S-16 (v2) | C-7a · decisions-r21 B-8 ↔ C-13 · AC-7 · AC-13 | C-7a와 B-8은 ButtonGroup을 `size` 컨트롤로 열거하나 C-13 · AC-7 · AC-13에는 ButtonGroup `size`가 없다 | 정합 | D-30이 `size` 없음을 택했다(사용자 확정). 개정 시 C-7a 열거에서 ButtonGroup 제거 |
-| S-17 (v2) | C-7c · Ontology Icon | "색·크기는 토큰으로 결정"인데 계획은 색을 `currentColor`(글자색 상속)로 둔다. 글자색이 `tone`/variant 토큰에서 오므로 간접 토큰 결정이다 | 정합 | 없음. 개정 시 "색은 글자색 상속" 명시 |
+| S-17 (v2) | C-7c · Ontology Icon | "색·크기는 토큰으로 결정"인데 계획은 색을 `currentColor`(글자색 상속)로 둔다. 글자색이 `tone`/variant 토큰에서 오므로 간접 토큰 결정이다 | 정합 | 없음. 개정 시 "색은 글자색 상속" 명시. **(R25)** 공개 Icon 은 `tone` 으로 색을 직접 가진다 — 상속은 Button 안 아이콘에만 남는다 |
 | S-18 (v2) | 알려진 동작 후보 | tailwind-merge의 font-size 스케일에 `base`가 하드코딩돼 소비자 `className="text-base"`가 DS `text-md`를 밀어내고 CSS도 없어 글자 크기가 사라진다(F-27). 리셋 네임스페이스 no-op(알려진 동작 1)의 특수 사례 | 정합 | T-T5 테스트 이름에 기록. 개정 시 알려진 동작 1에 "`text-base`는 twMerge에서도 크기 그룹으로 분류돼 DS 값을 밀어낸다" 추가 |
 
 - **보류 항목 S-5는 게이트 (8)로 종결됐다(2026-09-06).** 남은 보류 태스크는 없다. 게이트 (2)·(4) 실패로 발생한 스펙 개정은 이 절과 별개이며 R24로 반영했다
