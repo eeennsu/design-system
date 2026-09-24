@@ -1,9 +1,9 @@
 import { component, type Contracts } from "@eeennsu/tokens";
 import type { FC } from "react";
-import { TextInput } from "react-native-css/components";
 import { cn } from "./cn.js";
-import { controlBase, inputSizes, invalidBorder } from "./input.js";
+import { controlBase, inputSizes, invalidBorder, placeholderColor } from "./input.js";
 import { labelNativeId } from "./label.js";
+import { StyledTextInput } from "./text-input.js";
 
 type TextareaProps = Contracts<"native">["Textarea"];
 
@@ -29,7 +29,7 @@ export const Textarea: FC<TextareaProps> = ({
   className,
   ref,
 }) => (
-  <TextInput
+  <StyledTextInput
     ref={ref as TextareaProps["ref"] & undefined}
     id={id}
     multiline
@@ -38,6 +38,7 @@ export const Textarea: FC<TextareaProps> = ({
     accessibilityLabel={label}
     accessibilityLabelledBy={id ? labelNativeId(id) : undefined}
     placeholder={placeholder}
+    placeholderClassName={placeholderColor}
     editable={!disabled}
     value={value}
     defaultValue={defaultValue}

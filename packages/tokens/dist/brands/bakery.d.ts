@@ -11,7 +11,7 @@ export declare const colors: {
             readonly "surface-muted": "oklch(96.2% 0.059 95.617)";
             readonly "surface-hover": "oklch(92.4% 0.12 95.746)";
             readonly brand: "oklch(66.6% 0.179 58.318)";
-            readonly "brand-hover": "oklch(55.5% 0.163 48.998)";
+            readonly "brand-hover": "oklch(76.9% 0.188 70.08)";
             readonly danger: "oklch(57.7% 0.245 27.325)";
             readonly "danger-hover": "oklch(50.5% 0.213 27.518)";
             readonly overlay: "oklch(0% 0 0 / 0.5)";
@@ -20,7 +20,7 @@ export declare const colors: {
             readonly default: "oklch(21% 0.034 264.665)";
             readonly muted: "oklch(44.6% 0.03 256.802)";
             readonly danger: "oklch(57.7% 0.245 27.325)";
-            readonly "on-brand": "oklch(100% 0 0)";
+            readonly "on-brand": "oklch(13% 0.028 261.692)";
             readonly "on-danger": "oklch(100% 0 0)";
         };
         readonly border: {

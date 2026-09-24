@@ -16,6 +16,7 @@ const dist = join(packageRoot, "dist");
 const interactive = [
   "button.js",
   "button-group.js",
+  "chip.js",
   "input.js",
   "textarea.js",
   "form.js",

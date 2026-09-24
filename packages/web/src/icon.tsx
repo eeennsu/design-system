@@ -105,16 +105,18 @@ const tones: Record<Tone, string> = {
 /**
  * 단독 아이콘(구현 노트 N-17). 색을 상속하지 않고 `tone` 으로 정한다 — RN 에는 글자색 상속이
  * 없으므로 두 플랫폼이 같은 결과를 내려면 색을 아이콘 자신이 가져야 한다(AC-25).
- * `label` 이 있으면 `role="img"` 과 이름을 갖는 그림이고, 없으면 꾸밈이라 `aria-hidden` 이다.
+ * `label` 이 있으면 `role="img"` 과 이름을 갖는 그림이고, 없거나 빈 문자열이면 꾸밈이라 `aria-hidden` 이다.
  */
 export const Icon: FC<Contracts<"web">["Icon"]> = ({ name, size = "md", tone = "default", label, className }) => {
   const Svg = icons[name];
+  // 빈 문자열도 꾸밈으로 본다 — 이름 없는 그림을 보조 기술에 내놓지 않는다.
+  const named = Boolean(label);
   return (
     <Svg
       size={component.icon.size[size]}
-      role={label === undefined ? undefined : "img"}
-      aria-label={label}
-      aria-hidden={label === undefined ? "true" : undefined}
+      role={named ? "img" : undefined}
+      aria-label={named ? label : undefined}
+      aria-hidden={named ? undefined : "true"}
       className={cn("shrink-0", tones[tone], className)}
     />
   );

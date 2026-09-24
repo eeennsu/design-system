@@ -29,9 +29,8 @@ const DS_SURFACE_MUTED_LIGHT = "#f3f4f6";
 const DS_ON_BRAND = "#fff";
 /** base 다크의 on-brand · on-danger 는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다(N-17). */
 const DS_ON_BRAND_DARK = "#030712";
-/** 앱이 --bg-brand-hover 는 재선언하지 않았으므로 DS base 값(blue-700)이다. */
-const DS_BRAND_HOVER_LIGHT = "#1447e6";
 const DS_FG_MUTED_LIGHT = "#6a7282";
+const DS_FG_MUTED_DARK = "#99a1af";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -243,17 +242,38 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     });
   });
 
-  test("Chip · Button 은 누르는 동안 active: 표면이다", async () => {
+  test("누르는 동안 투명도가 내려가고, 소비자가 바꾼 배경은 그대로다(알려진 동작 4)", async () => {
     await mount(<Chip label="식비" selected />);
     await fireEvent(screen.getByRole("button", { name: "식비" }), "pressIn");
     expect(screen.getByRole("button", { name: "식비" }).props.style).toMatchObject({
-      backgroundColor: DS_BRAND_HOVER_LIGHT,
+      backgroundColor: APP_BRAND_LIGHT,
+      opacity: 0.8,
     });
 
-    await mount(<Button label="저장" />);
-    await fireEvent(screen.getByRole("button", { name: "저장" }), "pressIn");
-    expect(screen.getByRole("button", { name: "저장" }).props.style).toMatchObject({
-      backgroundColor: DS_BRAND_HOVER_LIGHT,
+    await mount(<Button label="삭제" className="bg-danger" />);
+    await fireEvent(screen.getByRole("button", { name: "삭제" }), "pressIn");
+    expect(screen.getByRole("button", { name: "삭제" }).props.style).toMatchObject({
+      backgroundColor: DS_DANGER_LIGHT,
+      opacity: 0.8,
+    });
+  });
+
+  test("Chip onPress 는 인자 없이 불리고, disabled 면 막힌다", async () => {
+    const onPress = jest.fn();
+    await mount(
+      <Stack>
+        <Chip label="식비" onPress={onPress} />
+        <Chip label="배달" disabled onPress={onPress} />
+      </Stack>,
+    );
+    await fireEvent.press(screen.getByRole("button", { name: "식비" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onPress).toHaveBeenCalledWith();
+
+    await fireEvent.press(screen.getByRole("button", { name: "배달" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "배달" }).props.accessibilityState).toMatchObject({
+      disabled: true,
     });
   });
 
@@ -270,16 +290,42 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     expect(screen.getByRole("button", { name: "기본" }).props.hitSlop).toEqual({ top: 3, bottom: 3 });
     expect(screen.getByRole("button", { name: "크게" }).props.hitSlop).toBeUndefined();
     expect(screen.getByRole("button", { name: "칩" }).props.hitSlop).toEqual({ top: 5, bottom: 5 });
+    // 가로는 최소 폭 48 이다 — 짧은 라벨("예")에서도 모자라지 않다
+    for (const name of ["작게", "기본", "칩"]) {
+      expect(screen.getByRole("button", { name }).props.style).toMatchObject({ minWidth: 48 });
+    }
   });
 
   test("Input 은 포커스되면 테두리가 border-focus(= brand)다. invalid 는 danger 를 지킨다", async () => {
     await mount(<Input label="금액" />);
     await fireEvent(screen.getByLabelText("금액"), "focus");
     expect(screen.getByLabelText("금액").props.style).toMatchObject({ borderColor: APP_BRAND_LIGHT });
+    await fireEvent(screen.getByLabelText("금액"), "blur");
+    expect(screen.getByLabelText("금액").props.style).not.toMatchObject({
+      borderColor: APP_BRAND_LIGHT,
+    });
+
+    await mount(<Textarea label="메모" />);
+    await fireEvent(screen.getByLabelText("메모"), "focus");
+    expect(screen.getByLabelText("메모").props.style).toMatchObject({ borderColor: APP_BRAND_LIGHT });
 
     await mount(<Input label="금액" invalid />);
     await fireEvent(screen.getByLabelText("금액"), "focus");
     expect(screen.getByLabelText("금액").props.style).toMatchObject({ borderColor: DS_DANGER_LIGHT });
+  });
+
+  test("placeholder 는 fg-muted 색이다 — 플랫폼 기본 hint 색(흰 표면 위 약 2.7:1)을 쓰지 않는다", async () => {
+    await mount(
+      <Stack>
+        <Input label="금액" placeholder="0" />
+        <Textarea label="메모" placeholder="무엇에 썼나요" />
+      </Stack>,
+    );
+    expect(screen.getByLabelText("금액").props.placeholderTextColor).toBe(DS_FG_MUTED_LIGHT);
+    expect(screen.getByLabelText("메모").props.placeholderTextColor).toBe(DS_FG_MUTED_LIGHT);
+
+    await mount(<Input label="금액" placeholder="0" />, "dark");
+    expect(screen.getByLabelText("금액").props.placeholderTextColor).toBe(DS_FG_MUTED_DARK);
   });
 
   test("tabular-nums 가 fontVariant 로 풀린다 — native 래퍼의 RN 선언(F-21)", async () => {
@@ -287,20 +333,24 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     expect(rootStyle()).toMatchObject({ fontVariant: "tabular-nums" });
   });
 
-  test("Icon 은 tone 을 lucide 색으로 넘기고, label 이 없으면 꾸밈이라 숨는다", async () => {
-    await mount(<Icon name="home" tone="muted" />);
+  test("Icon 은 svg 가 루트다 — tone 이 색으로, 배치 클래스가 루트 style 로 간다", async () => {
+    await mount(<Icon name="home" tone="muted" className="ml-6" />);
     const tree = screen.toJSON();
     if (!tree || Array.isArray(tree)) throw new Error("루트가 하나가 아니다");
-    expect(tree.props).toMatchObject({
-      accessible: false,
-      importantForAccessibility: "no-hide-descendants",
-    });
-    const svg = tree.children?.[0];
-    if (!svg || typeof svg === "string") throw new Error("svg 가 없다");
-    expect(svg.props.stroke).toBe(DS_FG_MUTED_LIGHT);
+    // 감싸는 View 가 있으면 배치 클래스가 안쪽에 붙어 웹과 갈린다(N-17)
+    expect(tree.type).toBe("RNSVGSvgView");
+    expect(tree.props.stroke).toBe(DS_FG_MUTED_LIGHT);
+    expect(tree.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ marginLeft: 24 })]));
+    // label 이 없으면 꾸밈이라 숨는다
+    expect(tree.props).toMatchObject({ accessible: false, importantForAccessibility: "no-hide-descendants" });
+  });
 
+  test("Icon label 이 있으면 이름 있는 그림, 빈 문자열이면 꾸밈이다", async () => {
     await mount(<Icon name="calendar" label="날짜" />);
     expect(screen.getByRole("image", { name: "날짜" })).toBeTruthy();
+
+    await mount(<Icon name="calendar" label="" />);
+    expect(screen.queryByRole("image")).toBeNull();
   });
 
   test("base 다크의 on-brand 글자는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다", async () => {

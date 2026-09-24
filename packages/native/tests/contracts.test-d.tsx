@@ -187,6 +187,10 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
   it("누름 핸들러가 이벤트 인자를 받지 않는다", () => {
     // @ts-expect-error 계약은 () => void 다
     assertType(<Button label="a" onPress={(event) => event} />);
+    // @ts-expect-error Chip 도 같다
+    assertType(<Chip label="a" onPress={(event) => event} />);
+    // @ts-expect-error 아이콘에 누름 이벤트는 없다
+    assertType(<Icon name="home" onPress={() => {}} />);
   });
 
   it("웹 전용 이름은 RN 에 없다", () => {

@@ -3,17 +3,19 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cn } from "./cn.js";
 import { Glyph } from "./icon.js";
-/**
- * variant → semantic 색 매핑(§4.2). ghost 만 배경이 없다.
- * `active:` 는 누르는 동안의 표면이다 — RN 에는 hover 가 없어 눌림 표시를 이것으로 낸다(N-17).
- * 웹도 같은 클래스를 가져 두 플랫폼의 어휘가 같다(AC-25).
- */
+/** variant → semantic 색 매핑(§4.2). ghost 만 배경이 없다. */
 const variants = {
-    primary: "bg-brand text-fg-on-brand hover:bg-brand-hover active:bg-brand-hover",
-    secondary: "bg-surface-muted text-fg hover:bg-surface-hover active:bg-surface-hover",
-    ghost: "text-fg hover:bg-surface-hover active:bg-surface-hover",
-    danger: "bg-danger text-fg-on-danger hover:bg-danger-hover active:bg-danger-hover",
+    primary: "bg-brand text-fg-on-brand hover:bg-brand-hover",
+    secondary: "bg-surface-muted text-fg hover:bg-surface-hover",
+    ghost: "text-fg hover:bg-surface-hover",
+    danger: "bg-danger text-fg-on-danger hover:bg-danger-hover",
 };
+/**
+ * 누르는 동안의 표시(N-17). 색이 아니라 투명도라 소비자가 `bg-*` 로 배경을 바꿔도 따라간다 —
+ * `active:bg-brand-hover` 였다면 `className="bg-danger"` 버튼이 누를 때만 파래진다(알려진 동작 4).
+ * RN 에는 hover 가 없어 이것이 유일한 눌림 표시이고, 웹도 같은 클래스를 가져 어휘가 같다(AC-25).
+ */
+const pressed = "active:opacity-80";
 /** 높이는 고정 `h-*` 없이 `py + text + 투명 테두리` 로 만든다 — 30 / 42 / 54 (plan D-6). */
 const sizes = {
     sm: "px-3 py-1 text-sm rounded-md gap-1",
@@ -38,6 +40,6 @@ export const Button = ({ label, variant = "primary", size = "md", icon, loading 
     return (_jsxs(BaseButton, { ref: ref, type: "button", disabled: inactive, 
         // 계약은 `() => void` 다. 그대로 넘기면 이벤트 객체가 새어 나가
         // `onClick={setOpen}` 같은 코드가 이벤트를 상태로 넣는다.
-        onClick: onClick && (() => onClick()), className: cn("inline-flex items-center justify-center border border-transparent", "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus", variants[variant], sizes[size], inactive && "opacity-50 pointer-events-none", className), children: [loading ? _jsx(Glyph, { name: "loader", size: size, spin: true }) : icon ? _jsx(Glyph, { name: icon, size: size }) : null, label] }));
+        onClick: onClick && (() => onClick()), className: cn("inline-flex items-center justify-center border border-transparent", "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus", variants[variant], pressed, sizes[size], inactive && "opacity-50 pointer-events-none", className), children: [loading ? _jsx(Glyph, { name: "loader", size: size, spin: true }) : icon ? _jsx(Glyph, { name: icon, size: size }) : null, label] }));
 };
 //# sourceMappingURL=button.js.map

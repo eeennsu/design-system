@@ -245,9 +245,24 @@ describe("N-17 Chip · Icon", () => {
     expect(alert).not.toHaveClass("text-fg-danger");
   });
 
-  it("Button 은 눌림 표면 active: 를 hover 와 같은 색으로 갖는다", () => {
-    render(<Button label="저장" />);
-    expect(screen.getByRole("button", { name: "저장" })).toHaveClass("active:bg-brand-hover");
+  it("눌림 표시는 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다", () => {
+    render(
+      <Stack>
+        <Button label="저장" className="bg-danger" />
+        <Chip label="식비" selected className="bg-danger" />
+      </Stack>,
+    );
+    for (const name of ["저장", "식비"]) {
+      const element = screen.getByRole("button", { name });
+      expect(element).toHaveClass("active:opacity-80", "bg-danger");
+      expect(element.className).not.toMatch(/active:bg-/);
+    }
+  });
+
+  it("label 이 빈 문자열이면 이름 없는 그림을 만들지 않는다", () => {
+    const { container } = render(<Icon name="home" label="" />);
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.queryByRole("img")).toBeNull();
   });
 });
 

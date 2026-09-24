@@ -25,7 +25,7 @@ export declare function Glyph({ name, size, spin, className }: GlyphProps): impo
 /**
  * 단독 아이콘(구현 노트 N-17). 색을 상속하지 않고 `tone` 으로 정한다 — RN 에는 글자색 상속이
  * 없으므로 두 플랫폼이 같은 결과를 내려면 색을 아이콘 자신이 가져야 한다(AC-25).
- * `label` 이 있으면 `role="img"` 과 이름을 갖는 그림이고, 없으면 꾸밈이라 `aria-hidden` 이다.
+ * `label` 이 있으면 `role="img"` 과 이름을 갖는 그림이고, 없거나 빈 문자열이면 꾸밈이라 `aria-hidden` 이다.
  */
 export declare const Icon: FC<Contracts<"web">["Icon"]>;
 export { icons };

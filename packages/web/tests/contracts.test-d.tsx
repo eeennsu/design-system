@@ -103,6 +103,10 @@ describe("N-17 Chip · Icon 계약", () => {
     assertType(<Chip />);
     // @ts-expect-error 선택 상태를 바꾸는 콜백은 계약이 아니다 — 소비자가 onClick 에서 바꾼다
     assertType(<Chip label="식비" onValueChange={() => {}} />);
+    // @ts-expect-error 이벤트 객체를 받는 핸들러는 계약이 아니다
+    assertType(<Chip label="식비" onClick={(event: MouseEvent) => void event} />);
+    // @ts-expect-error 아이콘 크기는 컨트롤 3단이다
+    assertType(<Icon name="home" size="xl" />);
   });
 
   it("Icon 은 이름 · 크기 · tone · label 만 받고 label 은 선택이다", () => {

@@ -26,8 +26,10 @@ export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false,
       "inline-flex items-center justify-center border px-4 py-2 text-sm rounded-full",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus",
       selected
-        ? "border-brand bg-brand text-fg-on-brand hover:bg-brand-hover active:bg-brand-hover"
-        : "border-border bg-surface text-fg hover:bg-surface-hover active:bg-surface-hover",
+        ? "border-brand bg-brand text-fg-on-brand hover:bg-brand-hover"
+        : "border-border bg-surface text-fg hover:bg-surface-hover",
+      // 누르는 동안은 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다(Button 과 같다)
+      "active:opacity-80",
       disabled && "opacity-50 pointer-events-none",
       className,
     )}

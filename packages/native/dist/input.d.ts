@@ -6,12 +6,14 @@ export declare const inputSizes: Record<ControlSize, string>;
 /**
  * 테두리 1px 이 Button 과 높이를 맞춘다 — 없으면 Input 이 2px 낮다(plan D-6).
  * 포커스되면 테두리가 `border-focus` 색이 된다(plan D-9. 0.2.0 까지 빠져 있었다, N-17).
- * 웹에는 있는 `placeholder:text-fg-muted` 가 빠져 있다 — react-native-css 는
- * `placeholder:` 변형을 `placeholderTextColor` 로 옮기지 않는다. v1 은 플랫폼 기본색을 쓴다.
+ * 웹 Input 의 `placeholder:text-fg-muted` 는 react-native-css 가 옮기지 않아 0.2.0 까지 플랫폼
+ * 기본색이었다(N-13). 이제 `StyledTextInput` 이 `placeholderClassName` 으로 같은 토큰 색을 낸다(N-17).
  */
 export declare const controlBase = "w-full bg-surface text-fg border border-border focus:border-border-focus";
 /** 오류 테두리는 포커스 중에도 danger 로 둔다 — 웹은 테두리가 아니라 outline 으로 포커스를 그린다. */
 export declare const invalidBorder = "border-danger focus:border-danger";
+/** placeholder 글자색. 웹 Input 의 `placeholder:text-fg-muted` 와 같은 토큰이다. */
+export declare const placeholderColor = "text-fg-muted";
 /**
  * 한 줄 입력. `label` 은 `accessibilityLabel` 로만 간다 — 가시 라벨은 Label 조합이다(C-13).
  * `id` 를 주면 같은 `htmlFor` 의 Label 과 `accessibilityLabelledBy` 로 이어진다(Android 전용).

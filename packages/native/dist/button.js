@@ -6,14 +6,18 @@ import { Glyph } from "./icon.js";
  * 웹은 배경과 글자색을 버튼 하나에 얹지만 RN 은 View → Text 로 색이 상속되지 않는다.
  * 그래서 variant 를 표면(컨테이너)과 전경(라벨 Text) 둘로 쪼갠다. 클래스 이름 자체는
  * 웹과 같은 어휘다(AC-25). `hover:` 는 RN 에서 무동작이지만 어휘를 맞추려고 남긴다.
- * 눌림 표시는 `active:` 다 — react-native-css 가 Pressable 의 누름 상태로 푼다(N-17).
  */
 const surfaces = {
-    primary: "bg-brand hover:bg-brand-hover active:bg-brand-hover",
-    secondary: "bg-surface-muted hover:bg-surface-hover active:bg-surface-hover",
-    ghost: "hover:bg-surface-hover active:bg-surface-hover",
-    danger: "bg-danger hover:bg-danger-hover active:bg-danger-hover",
+    primary: "bg-brand hover:bg-brand-hover",
+    secondary: "bg-surface-muted hover:bg-surface-hover",
+    ghost: "hover:bg-surface-hover",
+    danger: "bg-danger hover:bg-danger-hover",
 };
+/**
+ * 누르는 동안의 표시(N-17). react-native-css 가 Pressable 의 누름 상태로 푼다.
+ * 색이 아니라 투명도라 소비자가 `bg-*` 로 배경을 바꿔도 따라간다(웹과 같은 클래스, AC-25).
+ */
+const pressed = "active:opacity-80";
 const foregrounds = {
     primary: "text-fg-on-brand",
     secondary: "text-fg",
@@ -27,8 +31,9 @@ const boxes = {
     lg: "px-6 py-3 rounded-lg gap-2",
 };
 /**
- * 누름 영역을 48dp 로 채우는 세로 여유(N-17). 높이 30 · 42 · 54 는 Input 과 맞춘 값이라(plan D-6)
- * 모양은 두고 누름 영역만 넓힌다. 가로는 라벨과 패딩으로 이미 48 을 넘는다.
+ * 누름 영역을 48dp 로 채운다(N-17). 높이 30 · 42 · 54 는 Input 과 맞춘 값이라(plan D-6) 세로는
+ * 모양을 두고 hitSlop 으로만 넓힌다. 가로는 짧은 라벨("예")에서 모자라므로 최소 폭 48(`min-w-12`)을 둔다.
+ * 세로로 쌓을 때 hitSlop 끼리 겹치지 않으려면 sm 은 18, md 는 6 이상 띄운다(알려진 동작 18).
  */
 const hitSlops = {
     sm: { top: 9, bottom: 9 },
@@ -55,6 +60,6 @@ export const Button = ({ label, variant = "primary", size = "md", icon, loading 
     const foreground = foregrounds[variant];
     return (_jsxs(Pressable, { ref: ref, accessibilityRole: "button", accessibilityLabel: label, accessibilityState: { disabled: inactive }, disabled: inactive, hitSlop: hitSlops[size], 
         // 계약은 `() => void` 다. 그대로 넘기면 누름 이벤트 객체가 새어 나간다.
-        onPress: onPress && (() => onPress()), className: cn("flex-row items-center justify-center border border-transparent", surfaces[variant], boxes[size], inactive && "opacity-50", className), children: [loading ? (_jsx(Glyph, { name: "loader", size: size, className: foreground })) : icon ? (_jsx(Glyph, { name: icon, size: size, className: foreground })) : null, _jsx(RNText, { className: cn(foreground, labels[size]), children: label })] }));
+        onPress: onPress && (() => onPress()), className: cn("flex-row items-center justify-center border border-transparent min-w-12", surfaces[variant], pressed, boxes[size], inactive && "opacity-50", className), children: [loading ? (_jsx(Glyph, { name: "loader", size: size, className: foreground })) : icon ? (_jsx(Glyph, { name: icon, size: size, className: foreground })) : null, _jsx(RNText, { className: cn(foreground, labels[size]), children: label })] }));
 };
 //# sourceMappingURL=button.js.map

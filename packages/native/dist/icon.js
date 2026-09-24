@@ -1,4 +1,3 @@
-import { jsx as _jsx } from "react/jsx-runtime";
 import { component } from "@eeennsu/tokens";
 // 아이콘마다 파일 경로로 import 한다. Metro 는 tree shaking 을 하지 않아 목록 파일("lucide-react-native")에서
 // import 하면 아이콘 3,600여 개가 모두 번들에 들어간다(약 1.7MB, 구현 노트 F-22).
@@ -30,7 +29,6 @@ import Settings from "lucide-react-native/icons/settings";
 import Trash from "lucide-react-native/icons/trash";
 import User from "lucide-react-native/icons/user";
 import X from "lucide-react-native/icons/x";
-import { View } from "react-native-css/components";
 import { cn } from "./cn.js";
 import { useCssElement } from "react-native-css";
 /**
@@ -73,9 +71,10 @@ const icons = {
 };
 /**
  * 웹은 아이콘 색을 `currentColor` 로 상속하지만 RN 에는 `currentColor` 가 없다.
- * 그래서 `className` 의 색만 뽑아 lucide 의 `color` prop 으로 넘긴다 —
+ * 그래서 `className` 의 색만 뽑아 lucide 의 `color` prop 으로 옮긴다 —
  * 호출부는 `text-fg-on-brand` 처럼 웹과 같은 클래스를 쓴다(§9 S-17, AC-25).
- * `target: false` 라 `style` 은 만들지 않는다 — svg 는 style 을 안 받는다.
+ * 색을 뺀 나머지(여백 · 배치 · 투명도)는 `style` 로 남아 lucide 가 svg 에 넘긴다.
+ * 크기는 `size` prop 이 svg 의 width · height 를 정해 className 의 크기 클래스보다 앞선다(알려진 동작 20).
  */
 const mapping = {
     className: { target: false, nativeStyleMapping: { color: "color" } },
@@ -100,8 +99,22 @@ const tones = {
 /**
  * 단독 아이콘(구현 노트 N-17). RN 에는 글자색 상속이 없어 색을 `tone` 으로 아이콘 자신이 갖는다 —
  * 웹도 같은 방식이라 같은 className 이 같은 결과를 낸다(AC-25).
- * `label` 이 있으면 이름을 가진 그림(`image`)이고, 없으면 꾸밈이라 보조 기술에서 숨긴다.
+ * `label` 이 있으면 이름을 가진 그림(`image`)이고, 없거나 빈 문자열이면 꾸밈이라 보조 기술에서 숨긴다.
+ *
+ * 감싸는 View 를 두지 않는다 — 두면 `ml-auto` · `absolute` 같은 배치 클래스가 안쪽 svg 에 붙어
+ * 웹(svg 자신이 flex 항목)과 결과가 갈린다. 접근성 속성은 lucide 를 거쳐 svg 루트에 붙는다.
  */
-export const Icon = ({ name, size = "md", tone = "default", label, className }) => (_jsx(View, { accessible: label !== undefined, accessibilityRole: label === undefined ? undefined : "image", accessibilityLabel: label, accessibilityElementsHidden: label === undefined, importantForAccessibility: label === undefined ? "no-hide-descendants" : "yes", children: _jsx(Glyph, { name: name, size: size, className: cn(tones[tone], className) }) }));
+export const Icon = ({ name, size = "md", tone = "default", label, className }) => {
+    const named = Boolean(label);
+    return useCssElement(icons[name], {
+        className: cn(tones[tone], className),
+        size: component.icon.size[size],
+        accessible: named,
+        accessibilityRole: named ? "image" : undefined,
+        accessibilityLabel: named ? label : undefined,
+        accessibilityElementsHidden: !named,
+        importantForAccessibility: named ? "yes" : "no-hide-descendants",
+    }, mapping);
+};
 export { icons };
 //# sourceMappingURL=icon.js.map

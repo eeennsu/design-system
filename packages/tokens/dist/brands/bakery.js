@@ -12,7 +12,7 @@ export const colors = {
             "surface-muted": "oklch(96.2% 0.059 95.617)",
             "surface-hover": "oklch(92.4% 0.12 95.746)",
             "brand": "oklch(66.6% 0.179 58.318)",
-            "brand-hover": "oklch(55.5% 0.163 48.998)",
+            "brand-hover": "oklch(76.9% 0.188 70.08)",
             "danger": "oklch(57.7% 0.245 27.325)",
             "danger-hover": "oklch(50.5% 0.213 27.518)",
             "overlay": "oklch(0% 0 0 / 0.5)"
@@ -21,7 +21,7 @@ export const colors = {
             "default": "oklch(21% 0.034 264.665)",
             "muted": "oklch(44.6% 0.03 256.802)",
             "danger": "oklch(57.7% 0.245 27.325)",
-            "on-brand": "oklch(100% 0 0)",
+            "on-brand": "oklch(13% 0.028 261.692)",
             "on-danger": "oklch(100% 0 0)"
         },
         "border": {

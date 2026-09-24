@@ -6,8 +6,9 @@ import { cn } from "./cn.js";
 type ChipProps = Contracts<"native">["Chip"];
 
 /**
- * 칩 높이는 38(py-2 + text-sm 20 + 테두리 2)이다. 세로 hitSlop 5 를 더해 누름 영역 48 을 채운다.
- * 칩 사이를 gap-3(12) 이상 띄우면 누름 영역이 서로 겹치지 않는다(구현 노트 N-17).
+ * 칩 높이는 38(py-2 + text-sm 20 + 테두리 2)이다. 세로 hitSlop 5 를 더해 누름 영역 48 을 채우고,
+ * 가로는 최소 폭 48(`min-w-12`)을 둔다. 칩 줄 사이를 gap-3(12) 이상 띄우면 누름 영역이 서로
+ * 겹치지 않는다(구현 노트 N-17, 알려진 동작 18).
  */
 const hitSlop = { top: 5, bottom: 5 };
 
@@ -27,10 +28,10 @@ export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false,
     // 계약은 `() => void` 다. 누름 이벤트 객체를 넘기지 않는다.
     onPress={onPress && (() => onPress())}
     className={cn(
-      "flex-row items-center justify-center border px-4 py-2 rounded-full",
-      selected
-        ? "border-brand bg-brand hover:bg-brand-hover active:bg-brand-hover"
-        : "border-border bg-surface hover:bg-surface-hover active:bg-surface-hover",
+      "flex-row items-center justify-center border px-4 py-2 rounded-full min-w-12",
+      selected ? "border-brand bg-brand hover:bg-brand-hover" : "border-border bg-surface hover:bg-surface-hover",
+      // 누르는 동안은 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다(Button 과 같다)
+      "active:opacity-80",
       disabled && "opacity-50",
       className,
     )}

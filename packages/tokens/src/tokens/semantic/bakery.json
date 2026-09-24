@@ -25,7 +25,7 @@
         },
         "brand-hover": {
           "$type": "color",
-          "$value": "{primitive.color.amber.700}"
+          "$value": "{primitive.color.amber.500}"
         },
         "danger": {
           "$type": "color",
@@ -55,7 +55,7 @@
         },
         "on-brand": {
           "$type": "color",
-          "$value": "{primitive.color.white}"
+          "$value": "{primitive.color.gray.950}"
         },
         "on-danger": {
           "$type": "color",
