@@ -345,6 +345,17 @@ pnpm 가상 스토어 경로와 web `dist` 의 가장 긴 파일명이 루트 �
 약 126자를 넘으면** 걸린다. 보통 경로(`C:\Users\<이름>\Documents\GitHub\<프로젝트>`)는 해당 없다.
 T-P1 확인 때 Claude 임시 폴더(루트 157자)에서 걸렸다. 경로 길이는 소비 환경 문제라 DS 쪽 대응은 없다.
 
+### F-20. pnpm 11+ 는 package.json 의 `pnpm` 필드를 읽지 않는다
+
+레포 밖에서 corepack 이 고르는 pnpm(12.x, F-18)은 `The "pnpm" field in package.json is no longer read by pnpm`
+경고를 내고 `pnpm.overrides` 를 버린다. `verify:pack` 은 앱 사본 package.json 의 `pnpm.overrides` 로
+web · native 타르볼 안의 `@eeennsu/tokens@<버전>` 을 로컬 타르볼로 돌렸는데, 그게 무시되어 npm 에서 찾았다.
+
+npm 에 같은 버전이 있으면 **조용히 통과한다** — `0.1.0` publish 뒤의 실행이 그랬다. 아직 올리지 않은
+`0.2.0` 에서 `ERR_PNPM_NO_MATCHING_VERSION` 으로 드러났다. override 를 사본의 `pnpm-workspace.yaml` 로
+옮기고, 설치 뒤 lockfile 에 npm 에서 받은 `@eeennsu` 패키지가 없는지 검사를 더했다.
+검증 스크립트 문제라 소비 프로젝트의 DS 사용과는 무관하다.
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)

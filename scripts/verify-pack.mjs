@@ -125,11 +125,27 @@ for (const app of targets) {
   if (manifest.devDependencies?.["@eeennsu/tokens"]) {
     manifest.devDependencies["@eeennsu/tokens"] = `file:${slash(tarballs.tokens)}`;
   }
-  // web 타르볼 안의 `@eeennsu/tokens@<버전>` 도 타르볼로 풀어준다.
-  manifest.pnpm = { ...manifest.pnpm, overrides: { "@eeennsu/tokens": `file:${slash(tarballs.tokens)}` } };
   writeFileSync(join(copy, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 
-  run("pnpm", ["install", "--ignore-workspace"], copy);
+  // web · native 타르볼 안의 `@eeennsu/tokens@<버전>` 도 타르볼로 풀어준다.
+  // override 는 `pnpm-workspace.yaml` 에 둔다 — 레포 밖에서 corepack 이 고르는 pnpm 11+ 는
+  // package.json 의 `pnpm` 필드를 읽지 않는다(구현 노트 F-20). 이 파일이 사본을 워크스페이스
+  // 루트로 만들어 상위 디렉터리 탐색도 막으므로 `--ignore-workspace` 는 필요 없다.
+  writeFileSync(
+    join(copy, "pnpm-workspace.yaml"),
+    `overrides:\n  "@eeennsu/tokens": "file:${slash(tarballs.tokens)}"\n`,
+  );
+
+  run("pnpm", ["install"], copy);
+
+  // override 가 안 걸리면 이미 publish 된 버전을 npm 에서 조용히 받아 통과한다.
+  const lock = readFileSync(join(copy, "pnpm-lock.yaml"), "utf8");
+  check(/@eeennsu\/tokens@file:/.test(lock), `${app}: @eeennsu/tokens 가 타르볼에서 설치됐다`);
+  check(
+    !/@eeennsu\/(tokens|web|native)@\d/.test(lock),
+    `${app}: npm 레지스트리에서 받은 @eeennsu 패키지가 없다`,
+  );
+
   run("pnpm", ["test"], copy);
   console.log(`  ok   ${app}: 타르볼 설치 상태에서 통과`);
 }
