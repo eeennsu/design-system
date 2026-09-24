@@ -3,8 +3,8 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-08
-- 진행: **Phase 0 ~ Phase 6 완료.** 남은 것은 Phase 7(publish)뿐이고 npm 계정 준비를 기다린다
+- 기준일: 2026-09-24
+- 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 
 ## 1. 완료 상태
 
@@ -21,14 +21,19 @@
 | 4 | T-G2 게이트 실행 | 완료 | jest + [gate-c19.md](gate-c19.md) 9항목. (7) 기기 확인 2026-09-08 |
 | 5 | T-N0 native 래퍼 다크 · 배수 line-height | 완료 | `packages/native/themes/*.css`, tokens 테스트 58개 |
 | 5 | T-N1 ~ T-N4 native | 완료 | `packages/native` 컴포넌트 5개, 테스트 22개(타입·dist) |
-| 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 30개(게이트 20 + DS 9 + smoke 1) + 화면 비교 |
-| 7 | T-P1 publish | 미착수 | npm 계정 준비 중 |
+| 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
+| 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
 
 수동 확인 상태:
 
 1. AC-16 의 "비밀번호 자동완성 제안 UI"(브라우저 크롬이라 자동 단언 불가) — **남아 있다.** DOM 쪽 근거(`<form>` + `autocomplete="current-password"`)는 Playwright 가 본다
 2. ~~게이트 (7) 기기 화면 확인~~ — **완료(2026-09-08).** [gate-c19.md](gate-c19.md) (7) 절
 3. ~~AC-23 웹·RN 화면 비교~~ — **완료(2026-09-08).** `docs/assets/ac23-{web,rn}-{light,dark}.png` 네 장. 색(브랜드 초록 · danger 빨강) · 카드 표면 · 간격 순서가 같고, `mt-6` 를 준 버튼만 양쪽에서 같은 만큼 내려간다
+4. ~~T-P1 npm 설치 화면 확인~~ — **완료(2026-09-24).** `create-next-app@16.3.6`(Tailwind) 빈 프로젝트에 `pnpm add @eeennsu/web` 으로 npm 에서 설치하고,
+   전역 CSS 를 `@import "@eeennsu/web/themes/base.css"` 한 줄로 바꾼 뒤 AC-16 로그인 화면을 작성했다.
+   `next build`(타입 검사 포함) 통과, `postcss.config.mjs` · `next.config.ts` 는 생성 원본과 diff 0.
+   Playwright 로 `<form>` · `autocomplete` · `type="button"` · Enter 무동작 · `onClick` 오류 표시를 확인했고
+   화면은 `docs/assets/ac16-npm-{light,dark}.png` 두 장이다
 
 ## 2. 계획과 갈린 지점
 
@@ -281,8 +286,40 @@ T-N0 전 기기 확인에서 `text-2xl` Text 하나가 화면 끝까지(768dp) �
 `#2b7fff` 로 준다. 둘 다 blue-500 이고 육안 차이는 없다. 자동 단언은 jest 값을 쓰고, 기기 확인은
 probe 텍스트를 눈으로 본다.
 
+### F-17. npm publish 는 2FA 가 필수고, 패키지마다 인증한다
+
+2FA 가 꺼진 계정은 `E403 … Two-factor authentication or granular access token with bypass 2fa enabled
+is required to publish packages` 로 막힌다. 2026-09-12 에 받은 로그인 토큰은 2026-09-24 에 `E401` 이었다 —
+publish 직전에 `npm login` 한다.
+
+패스키 2FA 에서 `pnpm -r publish` 는 **패키지마다** 브라우저 인증을 한 번씩 요구한다. lockstep 3패키지라
+릴리스마다 3번이다. 인증을 기다리는 패키지는 아직 안 올라간 상태라, 도중에 끊기면 일부만 올라간다
+(2026-09-24 에 tokens · native 가 먼저 올라가고 web 이 인증 대기로 남았다). 끊겼으면 남은 패키지만
+`pnpm --filter @eeennsu/<이름> publish --access public` 으로 낸다. 2FA 우회 토큰은 CI 용이라 로컬에 두지 않는다.
+
+### F-18. 갓 publish 한 버전은 pnpm 12 가 `minimumReleaseAgeExclude` 에 올린다
+
+레포 밖에서 corepack 이 고르는 pnpm 은 12.6.0 이다(이 레포는 `packageManager` 로 10.28.1). publish 직후
+소비 프로젝트에서 `pnpm add @eeennsu/web` 을 하면 설치는 성공하고, `pnpm-workspace.yaml` 의
+`minimumReleaseAgeExclude` 에 `@eeennsu/web@0.1.0` · `@eeennsu/tokens@0.1.0` 이 자동으로 추가된다.
+pnpm 공급망 정책이라 DS 쪽 문제가 아니고, AC-16 이 금지하는 설정 편집(`tailwind.config` · PostCSS)과도 무관하다.
+
+### F-19. Windows 에서 소비 프로젝트 경로가 깊으면 Turbopack 빌드가 깨진다
+
+`Cannot depend on path (\\?\C:\…\node_modules\.pnpm\@eeennsu+web@0.1.0_…\dist\card.js.map) outside of
+root directory` 로 `globals.css` 처리가 실패한다. 래퍼의 `@source "../dist"` 가 스캔하는 dist 파일 경로가
+260자를 넘으면 `\\?\` 접두어가 붙어 넘어오고, Turbopack 이 이를 루트 밖으로 판정한다. 같은 프로젝트를
+짧은 경로로 옮기면 그대로 빌드된다.
+
+pnpm 가상 스토어 경로와 web `dist` 의 가장 긴 파일명이 루트 뒤에 132자를 붙이므로, **프로젝트 루트가
+약 126자를 넘으면** 걸린다. 보통 경로(`C:\Users\<이름>\Documents\GitHub\<프로젝트>`)는 해당 없다.
+T-P1 확인 때 Claude 임시 폴더(루트 157자)에서 걸렸다. 경로 길이는 소비 환경 문제라 DS 쪽 대응은 없다.
+
 ## 4. 다음
 
-- **Phase 7 publish 만 남았다.** npm 계정이 준비되면 `pnpm -r publish --dry-run` → `pnpm -r publish --access public`. 3패키지 lockstep(§5.3)이라 `@eeennsu/tokens` · `web` · `native` 를 같은 버전으로 함께 낸다
-- publish 전 체크: 전체 테스트 + `pnpm verify:pack`(3앱) 재실행. 둘 다 2026-09-08 기준 통과
-- publish 후 T-P1 완료 조건으로 "새 빈 프로젝트에서 npm 설치로 AC-16 화면이 뜬다" 수동 1회가 남는다
+- **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
+- 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
+- npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
+  `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
+- 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
+  `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
