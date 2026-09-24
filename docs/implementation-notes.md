@@ -5,7 +5,7 @@
 
 - 기준일: 2026-09-24
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
-- v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더했다(N-16). **아직 publish 하지 않았다**
+- v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더하고(N-16) 버전을 `0.2.0` 으로 올렸다. **아직 publish 하지 않았다**
 
 ## 1. 완료 상태
 
@@ -24,7 +24,7 @@
 | 5 | T-N1 ~ T-N4 native | 완료 | `packages/native` 컴포넌트 5개, 테스트 22개(타입·dist) |
 | 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
-| v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · 미배포 | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
+| v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` 미배포 | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 
 수동 확인 상태:
 
@@ -362,6 +362,6 @@ npm 에 같은 버전이 있으면 **조용히 통과한다** — `0.1.0` publis
 - 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
   `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
-- N-16 의 RN 4개는 미배포다. 새 컴포넌트라 `0.2.0`(minor)으로 낸다
+- `0.2.0`(N-16 의 RN 4개)은 버전을 올리고 `pnpm -r test` · `pnpm verify:pack` 까지 통과했다. **publish 만 남았다** — 아래 순서의 `npm login` 부터 한다
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
