@@ -64,7 +64,7 @@ spendback 입력 폼은 카테고리 11개, 날짜, 지출/수입, 이유 태그
 |---|---|
 | **`active:opacity-80`** — react-native-css가 Pressable의 누름 상태로 푼다. 색과 무관해 소비자가 바꾼 배경을 따라간다 | **채택** |
 | `active:bg-*-hover` — 이미 있는 hover 토큰 | 탈락. 처음 구현이 이것이었는데, `<Button className="bg-danger">`가 누르는 동안만 brand-hover(파랑)로 칠해졌다(DS 검증 DS-003). 소비자 `bg-*`는 `active:` 그룹을 덮지 못한다(C-15 승리 범위) |
-| `android_ripple` | 탈락 — JS 색을 받는데, 소비자의 C-5b 재선언은 JS에 닿지 않는다(알려진 동작 11) |
+| `android_ripple` | 탈락 — 색을 주면 JS 값이라 소비자의 C-5b 재선언이 닿지 않는다(알려진 동작 11). 색을 빼면 테마의 중립색(`colorControlHighlight`)이라 쓸 수는 있지만(spendback 디자인 검증 3차 008), Android에만 있어 웹과 눌림 어휘가 갈리고(AC-25) 소비자 `className`으로 바꿀 수 없다 |
 | Reanimated 눌림 크기 변화 | 탈락 — 의존성과 움직임 정책이 DS에 들어온다 |
 
 웹 Button · Chip에도 같은 클래스를 넣어 두 플랫폼의 어휘를 맞춘다(AC-25). 누르는 동안 라벨 대비가 내려간다 — canvas 위에 합성해 primary 3.75(base 라이트) · 3.76(base 다크), danger 3.63(두 브랜드 다크)이다(DS 재검증 DS-005). 0.9로 올려도 4.39~4.46이라 기준을 채우지 못하고 눌림이 덜 보인다. 손을 떼면 돌아오는 순간 상태라 받아들였다.
