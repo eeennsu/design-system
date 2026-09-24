@@ -21,7 +21,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # 검증 앱(Playwright)이 쓰는 브라우저. packages/* 테스트에는 필요 없다.
-      - run: pnpm exec playwright install --with-deps chromium
+      # playwright 는 검증 앱의 의존성이라 루트에서는 명령을 못 찾는다. verify-next · verify-vite 는 같은 버전이다.
+      - run: pnpm --filter verify-next exec playwright install --with-deps chromium
 
       # tokens -> web -> native -> apps 순서는 pnpm 이 의존성 그래프로 정한다.
       - run: pnpm -r build
