@@ -26,7 +26,7 @@
 | 6 | T-R1 verify-expo 화면 · 테스트 | 완료 | jest 31개(게이트 20 + DS 10 + smoke 1) + 화면 비교 |
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
-| v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` 미배포 | tokens 67 · web 79 · native 26 · verify-expo 49 |
+| v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` 미배포 | tokens 67 · web 79 · native 26 · verify-expo 50 |
 
 수동 확인 상태:
 
@@ -208,11 +208,14 @@ T-R1 은 실제 `global.css` 를 쓴다.
 
 - **Chip**: 웹은 Base UI Button + `aria-pressed`, RN 은 Pressable + `accessibilityState.selected`.
   Button 처럼 표면과 전경을 쪼갠다(N-12). 크기는 하나(component 토큰 `chip`: px 4 · py 2 · text sm ·
-  radius full, 높이 38). RN 라벨은 글자 크기 설정을 1.5배까지만 따른다
+  radius full, 높이 38). RN 라벨은 글자 크기 설정을 끝까지 따른다 — 처음에는 1.5배에서 잘랐는데 WCAG 1.4.4 에 못 미치고
+  Button 과 어긋나 뺐다(DS 재검증 DS-002)
 - **Icon**: 내부 아이콘을 `Glyph`(Button · Dialog · Drawer 안, 웹은 `currentColor` 상속과 `spin`)로 이름을
   바꾸고, 공개 `Icon` 을 따로 둔다. 공개 Icon 은 색을 상속하지 않고 `tone` 으로 갖는다 — RN 에 상속이 없어서다.
-  RN 은 svg 가 루트다. 처음에는 접근성 속성을 붙이려고 View 로 감쌌는데, 배치 클래스가 안쪽 svg 에 붙어 웹과 갈렸다
-  (DS 검증 DS-001). 접근성 속성을 lucide 를 거쳐 svg 에 넘긴다. 그림 크기는 `size` prop 이 정한다(알려진 동작 20).
+  RN 은 `Frame`(View 하나)이 svg 를 감싸고 `className` 을 View 에 붙인다 — 배치 · 변형 · 투명도는 View 에 한 번, 색만 lucide
+  `color` 로 간다(`nativeStyleMapping`). 두 번 고쳤다. 처음에는 클래스를 안쪽 svg 에 붙여 배치가 웹과 갈렸고(DS 검증 DS-001),
+  View 를 없애고 svg 에 붙이자 lucide 가 style 을 도형마다 펼쳐 `rotate-*` 가 렌더 중 던지고 `opacity-*` 가 세 번 곱해졌다
+  (DS 재검증 DS-001, F-27). 접근성 속성도 View 에만 있다. 그림 크기는 `size` prop 이 정한다(알려진 동작 20).
   `label` 이 빈 문자열이면 꾸밈으로 본다
 - **눌림 표시**: Button · Chip 에 `active:opacity-80`. RN 은 react-native-css 가 Pressable 의 onPressIn/Out 으로 푼다.
   처음에는 `active:bg-*-hover` 였는데 소비자가 `bg-danger` 를 준 버튼이 누를 때만 파래졌다(DS 검증 DS-003). 웹도 같은 클래스다
@@ -227,11 +230,17 @@ T-R1 은 실제 `global.css` 를 쓴다.
   dist 검사 테스트가 목록 파일 import 를 막는다
 - **글자 대비**: base 다크 `fg.on-brand` · `fg.on-danger`, bakery 다크 `fg.on-danger` 를 gray-950 으로(F-23). bakery 라이트는
   `fg.on-brand` 를 gray-950, `bg.brand-hover` 를 amber-500 으로(흰 글자 3.2:1 이었다, DS 검증 DS-002). plan §3.3 표도 고쳤다 —
-  값은 계약이 아니다(이름만 계약, C-5b). tokens `tests/contrast.test.ts` 가 브랜드 × 스킴의 글자 쌍 4.5:1, 포커스 표시 3:1 을 본다
-- 검증 앱: verify-expo 화면에 칩 3개와 아이콘 4개, 고정폭 숫자를 더했다. jest 에 10개(선택 · 눌림과 소비자 배경 · Chip 누름과
-  비활성 · 누름 영역과 최소 폭 · 포커스 · placeholder · 고정폭 · 아이콘 루트와 색 · 아이콘 이름 · 다크 on-brand)
+  값은 계약이 아니다(이름만 계약, C-5b). tokens `tests/contrast.test.ts` 가 브랜드 × 스킴의 글자 쌍 4.5:1, 포커스 표시와 고른 칩
+  채움 3:1 을 본다
+- 검증 앱: verify-expo 화면에 칩 3개와 아이콘 4개, 고정폭 숫자를 더했다. jest 에 11개(선택과 칩 패딩 · 눌림과 소비자 배경 ·
+  Chip 누름과 비활성 · 누름 영역과 최소 폭 · 포커스 · placeholder · 고정폭 · 아이콘 변형 · 투명도 · 아이콘 색 덮기 · 아이콘 이름 ·
+  다크 on-brand(Badge · 고른 칩 · danger 버튼))
 - 검증: 작업 과정을 모르는 검증 에이전트가 보고 전용으로 봤다. high 2(DS-001 · DS-002)와 medium 3(DS-003 눌림 색 · DS-004 가로 누름
   영역 · DS-005 기록)을 반영했다. 반영하지 않은 polish 는 decisions-r25.md "열지 않은 것"과 알려진 동작 17~23 에 있다
+- 재검증: 새 검증 에이전트(보고 전용)가 high 1(DS-001 RN Icon 변형 · 투명도)과 medium 3(DS-002 Chip 글자 상한 · DS-003 RN
+  Input 누름 영역 기록 없음 · DS-004 CLAUDE.md 의 "보류 없음")을 냈고 모두 반영했다. polish 는 스펙 문구(DS-006) · 결정 표(DS-007) ·
+  plan 포커스 목록(DS-008) · 웹 고른 칩 hover 테두리(DS-010)를 반영했고, 눌림 대비(DS-005) · RN 비선택 알림(DS-009) · RN 포커스
+  굵기(DS-011) · 웹 닫기 버튼(DS-012) · `cursor-pointer` 는 decisions-r25.md 에 이유를 적었다. 재검증 뒤 다시 검증하지는 않았다
 - **기기 화면 확인은 하지 않았다** — jest 가 스타일 값과 접근성 속성을 본다
 
 ## 3. 구현 중 확인한 사실
@@ -438,6 +447,13 @@ lucide-react-native 는 `size` 를 svg 의 `width` · `height` prop 으로 넘�
 붙인다(`[기본, 소비자 style, { width, height }]`). 그래서 소비자 `className` 의 `size-*` 가 style 로 들어가도 그림 크기는
 `size` prop 이 정한다. `nativeStyleMapping` 으로 width 를 `size` prop 에 옮겨도 호출부가 넘긴 `size` 가 이긴다(jest 로 확인).
 
+### F-27. lucide-react-native 는 style 을 자식 도형마다 펼친다
+
+lucide-react-native 의 `Icon` 은 받은 props 의 나머지(`...rest`, style · 접근성 속성 포함)를 svg 루트와 **자식 도형마다** 넘긴다.
+react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform 을 다시 읽는다. 그래서 svg 에 준 `rotate-180` 은
+`transformToMatrix` 에서 `TypeError`, `scale-75` 는 파서 오류로 렌더 중 던지고, `opacity-50` 은 루트 · G · Path 에 세 번 걸린다
+(jest 로 재현). 아이콘에 스타일을 줄 때는 lucide 밖의 View 에 준다(N-17 Icon).
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -449,5 +465,10 @@ lucide-react-native 는 `size` 를 svg 의 `width` · `height` prop 으로 넘�
   pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
 - 0.3.0 은 base 다크 · bakery 라이트의 글자색을 바꾼다. 릴리스 노트에 적고, AC-23 다크 스크린샷(`docs/assets/ac23-*-dark.png`)은 흰 글자로 남아 있어 다음 기기 확인 때 다시 찍는다
 - npm 패키지 페이지(README · `repository`)는 여전히 비어 있다
+- 웹 Chip · Icon 은 verify-next 화면에 없다. 브라우저 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 다음 웹 작업 때
+  화면에 올려 확인한다(DS 재검증 테스트 공백 6)
+- 기기에서 볼 것(N-17): RN Icon 이름 한 번 읽기 · 꾸밈 건너뛰기, `rotate-180` · `ml-auto` 배치, hitSlop 48 과 칩 줄 간격 10 미만의 겹침,
+  `tabular-nums`, placeholder 색(라이트 · 다크), 하드웨어 키보드 포커스 테두리, bakery 라이트 포커스 · 고른 칩 채움 약 3.1:1,
+  글자 크기 200% 의 칩 줄, AC-23 다크 재촬영
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

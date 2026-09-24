@@ -393,7 +393,7 @@ Base UI 패키지는 `@base-ui/react`(구 `@base-ui-components/react`에서 2025
 ### 4.6 focus ring
 
 - semantic `border.focus`(`--color-border-focus`, `bg.brand` 별칭) 하나로 통일한다. 별도 `ring` 토큰을 두지 않는다
-- 웹: 포커스 가능 컴포넌트(Button · Input · Textarea · Dialog 닫기 버튼)에 `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus`. `outline-2`·`outline-offset-2`는 정적 유틸리티라 리셋과 무관하고, 색은 `--color-*` 네임스페이스라 DS 어휘 안이다. `ring-*`은 `--color-ring` 같은 별도 기본값에 기대므로 쓰지 않는다
+- 웹: 포커스 가능 컴포넌트(Button · Chip(R25) · Input · Textarea · Dialog 닫기 버튼)에 `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus`. `outline-2`·`outline-offset-2`는 정적 유틸리티라 리셋과 무관하고, 색은 `--color-*` 네임스페이스라 DS 어휘 안이다. `ring-*`은 `--color-ring` 같은 별도 기본값에 기대므로 쓰지 않는다
 - RN: Input에 NativeWind `focus:border-border-focus`(TextInput은 `focus:` 변형 지원). Button은 RN에서 키보드 포커스 개념이 약해 v1 무처리. **(R25)** 0.2.0 구현에서 Input · Textarea 의 이 클래스가 빠져 있었고 0.3.0 에서 넣었다(Chip 도 Button 처럼 무처리)
 
 ### 4.7 Input · Label · Form 연결

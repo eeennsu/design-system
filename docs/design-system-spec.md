@@ -7,8 +7,8 @@
 - 2026-09-05 R21 개정. 구현 전 검증 결과 반영. C-20·C-21 신설, AC-19 재작성, "알려진 동작(v1)" 신설. 결정 근거는 [decisions-r21.md](decisions-r21.md)
 - 2026-09-05 R22 개정. 소비 프로젝트 로컬 semantic 오버라이드 통로 신설(C-5b). C-19 게이트 (6) 추가, AC-26 신설, 알려진 동작 11~13 추가. 결정 근거는 [decisions-r22.md](decisions-r22.md)
 - 2026-09-05 R23 개정. 오버라이드 대상 확대(C-5c)를 트리거 조건부로 연기. C-5b에 트리거 기록, 알려진 동작 14 추가, Non-Goal 문구 구분. 계약·동작 변경 없음. 결정 근거는 [decisions-r23.md](decisions-r23.md)
-- 2026-09-25 R25 개정. v1 이후 첫 RN 소비 앱(spendback) 반영. Chip · Icon 신설, `IconName` 28개, RN 눌림 표시 · 누름 영역 · 입력 포커스 · placeholder 색 · 고정폭 숫자, 글자 대비(base 다크 · bakery). C-5b · C-7c · C-11 · C-12 · C-13 · C-17 보강, AC-7 · AC-20 목록, 알려진 동작 17~23 추가. 결정 근거는 [decisions-r25.md](decisions-r25.md)
 - 2026-09-06 R24 개정. C-19 착수 게이트 실행 결과 반영. 게이트 (2)·(4) 실패에 따라 RN 다크 경로를 `@media` 단일 셀렉터로 확정 — C-20 RN 항목, C-6 산출물, C-5b RN 항목, AC-19 (c), AC-26 RN절 수정, 알려진 동작 15~16 추가. 웹은 무변경. 측정 기록은 [gate-c19.md](gate-c19.md)
+- 2026-09-25 R25 개정. v1 이후 첫 RN 소비 앱(spendback) 반영. Chip · Icon 신설, `IconName` 28개, RN 눌림 표시 · 누름 영역 · 입력 포커스 · placeholder 색 · 고정폭 숫자, 글자 대비(base 다크 · bakery). C-5b · C-6 · C-7c · C-11 · C-12 · C-13 · C-17 보강, AC-7 · AC-13 · AC-20, Ontology `Icon`, 알려진 동작 17~23 추가. 결정 근거는 [decisions-r25.md](decisions-r25.md)
 - 본문의 `R{n}`은 인터뷰 라운드 번호. 결정 근거는 문서 끝 트랜스크립트에서 추적
 - 패키지명의 npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05). R21 보류 항목이었고 문자열 치환을 마쳤다
 
@@ -97,7 +97,7 @@ v1 이후 첫 RN 소비 앱(spendback)을 연동하고 디자인을 검증하면
 - **눌림 표시**: Button · Chip이 누르는 동안 `active:opacity-80`이다(웹 · RN 같은 클래스). 색이 아니라 투명도라 소비자가 `bg-*`로 바꾼 배경을 따라간다(알려진 동작 21)
 - **RN 보정(계약 무변경)**: Button sm · md와 Chip의 누름 영역 48dp(세로 `hitSlop` + 최소 폭 `min-w-12`), Input · Textarea 포커스 테두리(계획 D-9 구현), placeholder 색 `fg-muted`(0.2.0까지 플랫폼 기본색, 흰 표면 위 약 2.7:1), native 래퍼의 `tabular-nums` RN 선언, native Icon의 아이콘별 lucide import(목록 import는 Metro가 아이콘 전체를 번들에 넣는다)
 - **글자 대비**: base 다크 `fg.on-brand` · `fg.on-danger`, bakery 다크 `fg.on-danger`를 gray-950으로(흰 글자 3.7 · 3.8:1 → 5.4 · 5.3:1). bakery 라이트는 `fg.on-brand`를 gray-950(3.2 → 6.3:1), `bg.brand-hover`를 amber-500으로 바꿨다. 변수 이름은 그대로라 C-5b 계약 변경이 아니다. tokens 테스트가 브랜드 × 스킴마다 글자 쌍 4.5:1 · 포커스 표시 3:1을 확인한다
-- C-5b(재선언할 때 짝 대비), C-7c, C-11, C-12, C-13, C-17 보강, AC-7 · AC-20 목록, 알려진 동작 17~23 추가. 번호 유지, 삭제·재번호 없음
+- C-5b(재선언할 때 짝 대비), C-6(native 래퍼 산출물), C-7c, C-11, C-12, C-13, C-17 보강, AC-7 · AC-20 목록, AC-13 문구, Ontology `Icon`, 알려진 동작 17~23 추가. 번호 유지, 삭제·재번호 없음
 
 R25 보류: 사용률 막대(Progress)와 텍스트 줄 수(`numberOfLines`)는 number prop을 받아야 해 C-14 · AC-15와 부딪힌다. 데이터 값 prop을 열지는 사용자 판단으로 남긴다([decisions-r25.md](decisions-r25.md) "열지 않은 것").
 
@@ -196,7 +196,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - `@eeennsu/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
   - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
   - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
-  - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다
+  - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다. native 래퍼는 이 밖에 타이포 줄 높이를 배수로 다시 내고(R24, 계획 D-31), **(R25)** `.tabular-nums`에 RN 선언(`-rn-font-variant`)을 더한다(알려진 동작 17)
   - RN 런타임용 JS 객체
   - `twMergeConfig` — 색 키, spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
   - `Contracts` 타입 맵(`Size` / `TypographyStep` / `ControlSize` / `Tone` / `Variant` 포함)과 `webComponents` / `nativeComponents` 키 목록(C-17)
@@ -245,7 +245,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
 - C-16. 헤드리스 프리미티브는 **Base UI** (Radix 아님). DOM 전용이므로 `@eeennsu/web`에만 적용. shadcn 코드는 참고 자료로만 쓰고 API는 따르지 않는다
 - C-17. **(R21 강제 수단 확정)** `@eeennsu/web`과 `@eeennsu/native`는 **동일한 prop 시그니처**를 갖되 구현을 공유하지 않는다. 계약 타입은 `@eeennsu/tokens`에 단일 정의(`Contracts<P>` 타입 맵 + `webComponents` / `nativeComponents` 키 목록)로 두고 양쪽이 그것을 구현한다. 사람 규율에 맡기지 않는다. 강제 수단:
   - 각 패키지가 export 맵 전체를 타입 동등성 테스트 1개로 검사한다 — web은 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in WebKeys]: FC<Contracts<'web'>[K]> }>()`, native는 `Contracts<'native'>`와 `NativeKeys`. 추가·제거·누락 컴포넌트가 전부 걸린다. CI에 `vitest --typecheck`
-  - **플랫폼 매개변수(R21 후속)**: `Contracts<P extends 'web' | 'native'>`. 대부분의 prop은 `P`와 무관하게 동일하고, 플랫폼 관용 이름이 갈리는 prop만 `P`로 분기한다 — v1에서는 Button 누름 이벤트 하나(`P extends 'web' ? { onClick?: () => void } : { onPress?: () => void }`, C-12). 이름 매핑은 계약 파일 이 한 곳에만 존재하고 어댑터가 자체 별칭을 두지 않는다. "동일한 prop 시그니처"는 "계약이 정의한 매핑 제외 동일"로 읽는다
+  - **플랫폼 매개변수(R21 후속)**: `Contracts<P extends 'web' | 'native'>`. 대부분의 prop은 `P`와 무관하게 동일하고, 플랫폼 관용 이름이 갈리는 prop만 `P`로 분기한다 — v1에서는 Button 누름 이벤트 하나(`P extends 'web' ? { onClick?: () => void } : { onPress?: () => void }`, C-12)이고, R25에서 Chip이 같은 분기(`Press<P>`)를 쓴다. 이름 매핑은 계약 파일 이 한 곳에만 존재하고 어댑터가 자체 별칭을 두지 않는다. "동일한 prop 시그니처"는 "계약이 정의한 매핑 제외 동일"로 읽는다
   - `ref`는 플랫폼별 엘리먼트 대신 `Ref<{ focus(): void; blur(): void }>` 핸들로 계약에 포함한다. 핸들에서 DOM 노출로 넓히는 변경은 소비자 무영향(추가적)이고 반대는 파괴적이다. 대상은 포커스 가능한 Button · Input · Textarea뿐(R21 후속)이고 R25에서 Chip이 더해졌다. Card · Stack · Box · Text · Badge · Label · Icon엔 `ref` 없음
   - **`children` 타입 규칙(R21 후속)**: 텍스트 컴포넌트(Text · Badge · Label)는 `string | string[]`. 컨테이너(Card · Stack · Box)는 **문자열을 제외한 엘리먼트 노드** — `ReactElement | boolean | null | undefined | 그 배열`. RN `View` 안의 원시 문자열 자식은 크래시하므로 타입으로 막는다. 웹 전용(Dialog · Drawer · Tooltip · Form)만 `ReactNode`. ReactNode로 넓히는 변경은 추가적. Chip · Icon(R25)은 `children`이 없다
   - 플랫폼 전용 prop은 0개. 웹·RN 차이는 계약의 열거형 교차 어휘로 흡수한다(Input `kind`, C-11). 플랫폼 매개변수 분기는 같은 prop의 이름 차이일 뿐 전용 prop이 아니다
@@ -307,9 +307,9 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 15. **(R24)** RN 로컬 오버라이드(C-5b)의 다크 블록은 웹과 형태가 다르다 — 웹은 3블록(`:root` / `.dark` / `@media … :root:not(.light)`), RN은 2블록(`:root` / `@media … :root`). 웹 3블록을 RN에 그대로 붙여넣으면 다크에서 소비자 **라이트** 값이 나온다(다크 블록 둘 다 죽는다). 에러가 아니라 무효이며, 같은 소비자 CSS를 웹·RN에 복사할 때의 유일한 차이점이다. 근거는 [gate-c19.md](gate-c19.md) (2)·(4)·(6).
 16. **(R24)** RN의 `text-<step>` line-height는 `px` 값을 그대로 쓰지 않는다. react-native-css가 line-height를 단위 없는 배수로 읽어 `--text-xl--line-height: 28px`이 `fontSize 20 × 28 = 560`이 된다(`rem`도 같은 방식으로 틀린다). fontSize·fontWeight는 정상이다. C-19 (5)의 두 경로 중 **native 산출물이 이 값을 단위 없는 배수로 내는 쪽**으로 확정했다(2026-09-06 사용자 확정, 계획 §2.3 D-31). Text 어댑터는 두지 않으므로 소비자 `className="text-lg"`도 RN에서 세 값이 다 적용된다.
 17. **(R25)** RN의 `font-variant-numeric` 유틸리티 중 `tabular-nums`만 동작한다. react-native-css가 이 속성을 옮기지 않아 native 래퍼가 `tabular-nums`에 RN 선언을 더했다. `oldstyle-nums` · `slashed-zero` 등은 RN에서 무효다.
-18. **(R25)** RN Button sm · md와 Chip의 누름 영역은 세로 `hitSlop`(sm 9 · md 3 · Chip 5)과 최소 폭 48(`min-w-12`)로 48dp를 채운다. 모양(높이 30 · 42 · 38)은 그대로다. 세로로 쌓을 때 hitSlop끼리 겹치지 않으려면 sm은 18, md는 6, Chip 줄은 10 이상 띄운다. 겹치면 뒤 형제가 누름을 가져간다. hitSlop은 부모 경계를 넘지 못한다.
+18. **(R25)** RN Button sm · md와 Chip의 누름 영역은 세로 `hitSlop`(sm 9 · md 3 · Chip 5)과 최소 폭 48(`min-w-12`)로 48dp를 채운다. 모양(높이 30 · 42 · 38)은 그대로다. 세로로 쌓을 때 hitSlop끼리 겹치지 않으려면 sm은 18, md는 6, Chip 줄은 10 이상 띄운다. 겹치면 뒤 형제가 누름을 가져간다. hitSlop은 부모 경계를 넘지 못한다. RN Input · Textarea에는 hitSlop이 없다 — 누름 영역이 보이는 높이 그대로라 sm · md는 48dp에 못 미친다. 터치 폼은 `lg`를 권한다(RN `TextInput`의 hitSlop은 기기 동작을 확인하지 못해 넣지 않았다).
 19. **(R25)** Chip은 토글 하나다. 묶음 의미(라디오 그룹, "몇 개 중 몇 번째")가 없고, 하나만 고르기 · 여럿 고르기 · 다시 눌러 풀기는 소비자 상태다. 스크린 리더는 칩마다 선택 상태만 읽는다. RN에서 세로 부모 안에 두면 부모 폭으로 늘어난다(Badge와 같다, `self-start`로 줄인다).
-20. **(R25)** RN Icon의 그림 크기는 `size` prop만 정한다. `className`의 `size-*` · `w-*` · `h-*`는 svg 크기를 바꾸지 못한다(웹은 CSS가 이긴다). 배치 클래스(`ml-*`, `absolute`, `self-*`)는 svg 루트에 그대로 붙는다.
+20. **(R25)** RN Icon의 그림 크기는 `size` prop만 정한다. `className`의 `size-*` · `w-*` · `h-*`는 svg 크기를 바꾸지 못한다(웹은 CSS가 이긴다). 배치 · 변형 · 투명도 클래스(`ml-*`, `absolute`, `self-*`, `rotate-*`, `opacity-*`)는 svg를 감싼 루트 View에 한 번 걸린다 — svg에 주면 lucide가 style을 도형마다 펼쳐 `rotate-*`는 예외를 던지고 `opacity-*`는 겹쳐 곱해진다. 색 클래스(`text-*`)만 svg 색으로 간다.
 21. **(R25)** 눌림 표시는 `active:opacity-80`이다. 웹 hover는 여전히 `hover:bg-*-hover` 색이다. 소비자가 배경을 바꾸면 hover 색은 따라가지 않지만(알려진 동작 4) 눌림 표시는 투명도라 따라간다. 소비자가 `active:`를 주면 같은 그룹만 덮는다.
 22. **(R25)** RN Button · Chip의 `className`은 표면(Pressable)에 붙는다. 글자 클래스(`text-*`, `tabular-nums`)는 RN 라벨에 닿지 않는다(N-12의 연장). 웹은 버튼 하나라 라벨까지 적용된다.
 23. **(R25)** RN Input · Textarea의 포커스 표시는 1px 테두리 색 변화다(`border-focus`). `invalid`면 포커스 중에도 danger 테두리라 캐럿만 포커스를 알린다(WCAG 2.4.7은 캐럿으로 충족). 테두리를 굵히면 컨트롤 높이(계획 D-6)가 흔들려 그대로 둔다.
@@ -358,7 +358,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-11. **(R20 반전, R21 수정)** 전 컴포넌트가 `className?: string`을 받고, 소비자 클래스가 DS 기본 클래스와 충돌하면 소비자가 이긴다 (예: `variant="primary"`에 `className="bg-danger"`를 주면 배경이 danger). 승리 범위는 같은 유틸리티 그룹·같은 변형(C-15). 웹·RN 동일 동작은 정지 상태에 한정. 검증 3계층 — 단위: 병합 문자열 · `toHaveClass`. 웹 통합: Playwright computed style을 토큰 JS 값과 비교. RN: NativeWind가 테스트 환경에서 className을 style로 해석하면 `toHaveStyle`, 안 되면 className prop 스냅샷으로 격하(AC-25)
 - [ ] AC-11a. **(R21 수정)** 어떤 컴포넌트도 `style` prop을 받지 않고, `{...rest}` 스프레드로 미지 prop을 통과시키지 않는다 (타입 테스트로 검증). `className`이 유일한 커스텀 채널
 - [ ] AC-12. 어떤 컴포넌트도 `as` / `render` / `asChild`를 공개 prop으로 노출하지 않는다
-- [ ] AC-13. **(R21 재작성)** 제어 API가 두 갈래로 고정된다. 값 입력 컴포넌트(Input · Textarea)는 `value` / `defaultValue` / `onValueChange`만, 오버레이(Dialog · Drawer · Tooltip)는 `open` / `defaultOpen` / `onOpenChange`만 노출한다. Button 누름 이벤트는 웹 `onClick` / RN `onPress` 하나씩만 — 웹에 `onPress` 없고 RN에 `onClick` 없다(R21 후속). 시그니처는 양쪽 `() => void`. ButtonGroup 자체는 누름 이벤트 없음(자식 Button이 가짐). `onChange` / `onToggle` 같은 이름은 어디에도 없다. Form은 값이 없어 대상 밖. 검증 = C-17 맵 테스트
+- [ ] AC-13. **(R21 재작성)** 제어 API가 두 갈래로 고정된다. 값 입력 컴포넌트(Input · Textarea)는 `value` / `defaultValue` / `onValueChange`만, 오버레이(Dialog · Drawer · Tooltip)는 `open` / `defaultOpen` / `onOpenChange`만 노출한다. Button 누름 이벤트는 웹 `onClick` / RN `onPress` 하나씩만 — 웹에 `onPress` 없고 RN에 `onClick` 없다(R21 후속). **(R25)** Chip도 같다 — `selected`는 제어 전용이고 `onSelectedChange` 같은 변경 콜백이 없다. 시그니처는 양쪽 `() => void`. ButtonGroup 자체는 누름 이벤트 없음(자식 Button이 가짐). `onChange` / `onToggle` 같은 이름은 어디에도 없다. Form은 값이 없어 대상 밖. 검증 = C-17 맵 테스트
 - [ ] AC-14. 인터랙티브 컴포넌트에서 `label` 누락 시 타입 에러가 난다
 - [ ] AC-15. **(R21 재정의)** 계약 전체에 `number` 타입 prop이 없고, 색 의도를 받는 prop(`variant`, `tone`)은 enum 키만 받는다 (`tone="#333"`은 타입 에러). mapped type 테스트 1개로 검증. `className` 문자열 내부는 검사 대상이 아니다
   - 이전: "`padding={16}`, `color="#333"`이 타입 에러". 해당 prop이 존재하지 않는 쪽으로 재정의(C-14)
@@ -483,7 +483,7 @@ Inter가 양쪽 공통이지만 **한글 글리프가 없어** 현재 웹 프로
 | Theme | supporting | brand × (light \| dark) | rebinds semantic DesignToken; composed of Brand and color scheme; dark resolved by hybrid rule (C-20) |
 | Brand | core domain | name, semantic 색 오버라이드. v1: `base`, `bakery` (R21). 주입 위치 2곳 (R22): DS 브랜드 파일(이름 있는 프리셋) / 소비자 로컬 오버라이드(앱 전용, C-5b) | injects into semantic tier only; 간격·타이포·component 계층은 불변; preset selected at build time by import path, one per app; local override cascades over the preset in consumer global CSS |
 | SemanticVariable | supporting (R22) | `:root` semantic 색 변수 이름(예: `--bg-brand`. 실제 이름은 토큰 인벤토리), 3블록(light / `.dark` / `@media`) | public override contract (C-5b); referenced by ClassVocabulary via `@theme inline` `var()`; 1:1 with `twMergeConfig` 색 키; renaming or removal is breaking(major), addition is additive; not mirrored into RN JS token object (알려진 동작 11); (R23) 확대 후보 변수군 `--radius-*`·폰트 패밀리는 계약 밖이나 토큰 인벤토리에서 계약 후보로 명명한다 |
-| Icon | supporting | name (문자열), size 토큰, color 토큰 | referenced by Component via name only; DS가 플랫폼별 lucide 패키지로 분기 |
+| Icon | supporting | name (문자열, `IconName` 28개), size 토큰(컨트롤 3단), `tone` (R25), `label?` (R25) | referenced by Component via name only; DS가 플랫폼별 lucide 패키지로 분기; (R25) 공개 컴포넌트 `Icon`으로도 쓴다 — 색은 상속하지 않고 `tone`으로 갖는다 |
 | DesignLanguage | supporting | 차용 층위(토큰 아키텍처, 크로스플랫폼 분리) | derived from Seed(당근). WDS · Bezier는 R5에서 거론됐으나 차용한 결정 없음 |
 | AgentContract | external system | 조회 인터페이스 | v2 보류. v1에서는 `.d.ts`가 대체 |
 
