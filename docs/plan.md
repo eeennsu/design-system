@@ -144,35 +144,39 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 | `blue` | 동일 11단 | Tailwind v4 `--color-blue-*` 복사 |
 | `red` | 동일 11단 | Tailwind v4 `--color-red-*` 복사 |
 | `amber` | 동일 11단 | Tailwind v4 `--color-amber-*` 복사 |
+| `zinc` | 동일 11단 | Tailwind v4 `--color-zinc-*` 복사 (R26, base 다크 중립색) |
+| DS 반 단계 | `gray-550` · `blue-550` · `blue-650` | R26. `gray-550`은 gray-500 · 600의 oklch 중간값, `blue-550` = `#206FEA` · `blue-650` = `#1B64DA`(decisions-r26 4 · 6) |
 | `white` · `black` | — | `oklch(100% 0 0)` · `oklch(0% 0 0)` |
 
-- 4램프만 둔다. `bakery`가 amber를 쓰고 `base`가 쓰지 않아도 primitive는 공유 계층이라 두 브랜드 파일에 똑같이 들어간다(AC-6a diff에서 primitive 블록은 동일해야 한다)
+- 5램프 + 반 단계 3개를 둔다(R26 전에는 4램프). `bakery`가 amber를 쓰고 `base`가 쓰지 않아도 primitive는 공유 계층이라 두 브랜드 파일에 똑같이 들어간다(AC-6a diff에서 primitive 블록은 동일해야 한다)
 - 값은 Tailwind v4 기본 팔레트를 출발점으로 복사한다. 자체 팔레트 설계는 v1 범위 밖이며, 값 조정은 primitive라 minor다
 
 ### 3.3 semantic 색 (브랜드 주입점, 공개 계약)
 
-16개. `:root` 변수 이름 열이 C-5b 계약이다. 빌드는 `:root`에 primitive 참조가 아니라 **해석된 값**을 쓴다 — 소비자가 primitive를 모른 채 값을 덮을 수 있어야 하고, RN JS 객체도 해석값이어야 하기 때문이다. 별칭 2개(`fg.danger`, `border.focus`)만 `var()` 참조로 남긴다.
+17개(R26에서 `fg.brand` 추가). `:root` 변수 이름 열이 C-5b 계약이다. 빌드는 `:root`에 primitive 참조가 아니라 **해석된 값**을 쓴다 — 소비자가 primitive를 모른 채 값을 덮을 수 있어야 하고, RN JS 객체도 해석값이어야 하기 때문이다. 별칭 `border.focus` 하나만 `var()` 참조로 남긴다(R26 전에는 `fg.danger`도 별칭).
 
 | 토큰 경로 | `:root` 변수 | `@theme inline` 키 | base light | base dark | bakery light | bakery dark | 용도 |
 |---|---|---|---|---|---|---|---|
-| `bg.canvas` | `--bg-canvas` | `--color-canvas` | white | gray-950 | amber-50 | gray-950 | 페이지 배경 |
-| `bg.surface` | `--bg-surface` | `--color-surface` | white | gray-900 | white | gray-900 | Card · Dialog · Drawer · Input 배경 |
-| `bg.surface-muted` | `--bg-surface-muted` | `--color-surface-muted` | gray-100 | gray-800 | amber-100 | gray-800 | secondary Button · Badge secondary 배경 |
-| `bg.surface-hover` | `--bg-surface-hover` | `--color-surface-hover` | gray-200 | gray-700 | amber-200 | gray-700 | secondary · ghost hover |
-| `bg.brand` | `--bg-brand` | `--color-brand` | blue-600 | blue-500 | amber-600 | amber-500 | primary Button · Badge primary |
-| `bg.brand-hover` | `--bg-brand-hover` | `--color-brand-hover` | blue-700 | blue-400 | amber-500 (R25, 이전 amber-700) | amber-400 | primary hover |
-| `bg.danger` | `--bg-danger` | `--color-danger` | red-600 | red-500 | red-600 | red-500 | danger Button · Badge danger |
-| `bg.danger-hover` | `--bg-danger-hover` | `--color-danger-hover` | red-700 | red-400 | red-700 | red-400 | danger hover |
+| `bg.canvas` | `--bg-canvas` | `--color-canvas` | gray-100 (R26, 이전 white) | zinc-950 (R26, 이전 gray-950) | amber-50 | gray-950 | 페이지 배경 |
+| `bg.surface` | `--bg-surface` | `--color-surface` | white | zinc-900 (R26) | white | gray-900 | Card · Dialog · Drawer 배경 |
+| `bg.surface-muted` | `--bg-surface-muted` | `--color-surface-muted` | gray-200 (R26) | zinc-800 (R26) | amber-100 | gray-800 | 채움 — Input · Textarea · 고르지 않은 Chip(R26), secondary Button · Badge |
+| `bg.surface-hover` | `--bg-surface-hover` | `--color-surface-hover` | gray-300 (R26) | zinc-700 (R26) | amber-200 | gray-700 | secondary · ghost · Chip hover |
+| `bg.brand` | `--bg-brand` | `--color-brand` | blue-550 (R26) | blue-550 (R26) | amber-600 | amber-500 | primary Button · Badge primary · 고른 Chip |
+| `bg.brand-hover` | `--bg-brand-hover` | `--color-brand-hover` | blue-650 (R26) | blue-650 (R26) | amber-500 (R25, 이전 amber-700) | amber-400 | primary hover |
+| `bg.danger` | `--bg-danger` | `--color-danger` | red-600 | red-600 (R26) | red-600 | red-500 | danger Button · Badge danger |
+| `bg.danger-hover` | `--bg-danger-hover` | `--color-danger-hover` | red-700 | red-700 (R26) | red-700 | red-400 | danger hover |
 | `bg.overlay` | `--bg-overlay` | `--color-overlay` | black / 50% | black / 60% | 동일 | 동일 | Dialog · Drawer 스크림 |
-| `fg.default` | `--fg-default` | `--color-fg` | gray-900 | gray-50 | gray-900 | gray-50 | `tone="default"` |
-| `fg.muted` | `--fg-muted` | `--color-fg-muted` | gray-500 | gray-400 | gray-600 | gray-400 | `tone="muted"`, placeholder |
-| `fg.danger` | `--fg-danger` | `--color-fg-danger` | `var(--bg-danger)` | `var(--bg-danger)` | 동일 | 동일 | `tone="danger"` |
-| `fg.on-brand` | `--fg-on-brand` | `--color-fg-on-brand` | white | gray-950 (R25, 이전 white) | gray-950 (R25, 이전 white) | gray-950 | primary Button 글자 |
-| `fg.on-danger` | `--fg-on-danger` | `--color-fg-on-danger` | white | gray-950 (R25, 이전 white) | white | gray-950 (R25, 이전 white) | danger Button 글자 |
-| `border.default` | `--border-default` | `--color-border` | gray-300 | gray-700 | amber-300 | gray-700 | Input · Card 테두리 |
+| `fg.default` | `--fg-default` | `--color-fg` | gray-900 | zinc-100 (R26) | gray-900 | gray-50 | `tone="default"` |
+| `fg.muted` | `--fg-muted` | `--color-fg-muted` | gray-550 (R26) | zinc-400 (R26) | gray-600 | gray-400 | `tone="muted"`, placeholder |
+| `fg.brand` | `--fg-brand` | `--color-fg-brand` | blue-650 (R26 신설) | blue-400 | amber-700 | amber-400 | 브랜드 색 글자(`text-fg-brand`) |
+| `fg.danger` | `--fg-danger` | `--color-fg-danger` | red-700 (R26, 이전 `var(--bg-danger)`) | red-400 (R26) | red-600 | red-500 | `tone="danger"` |
+| `fg.on-brand` | `--fg-on-brand` | `--color-fg-on-brand` | white | white (R26, 이전 gray-950) | gray-950 (R25, 이전 white) | gray-950 | primary Button 글자 |
+| `fg.on-danger` | `--fg-on-danger` | `--color-fg-on-danger` | white | white (R26, 이전 gray-950) | white | gray-950 (R25, 이전 white) | danger Button 글자 |
+| `border.default` | `--border-default` | `--color-border` | gray-200 (R26) | zinc-800 (R26) | amber-300 | gray-700 | 소비자 구분선 · Card 경계(DS 컴포넌트는 R26부터 쓰지 않는다) |
 | `border.focus` | `--border-focus` | `--color-border-focus` | `var(--bg-brand)` | `var(--bg-brand)` | 동일 | 동일 | focus ring(§4.6) |
 
-- **`fg.danger`는 `bg.danger`의 별칭이다.** C-8은 "`variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)"이라고 못 박았고, 동시에 `tone`은 `fg.danger`와 1:1이라고 했다. 두 문장을 동시에 만족시키는 방법은 `--fg-danger: var(--bg-danger)`뿐이다. 소비자가 `--bg-danger`를 덮으면 `--fg-danger`가 따라가고, `--fg-danger`만 덮으면 글자색만 바뀐다. `border.focus`도 같은 이유로 `bg.brand` 별칭이다. 별칭 2개는 §9에 스펙 문구 보강 후보로 적었다
+- **(R26) `fg.danger`는 더 이상 별칭이 아니다.** 진한 채움 위 흰 글자와 표면 위 글자를 한 값으로 맞출 수 없어 `fg.brand`와 함께 글자용 값을 따로 둔다(decisions-r26 5). 아래는 R26 전의 근거다.
+- **(R26 전) `fg.danger`는 `bg.danger`의 별칭이다.** C-8은 "`variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)"이라고 못 박았고, 동시에 `tone`은 `fg.danger`와 1:1이라고 했다. 두 문장을 동시에 만족시키는 방법은 `--fg-danger: var(--bg-danger)`뿐이다. 소비자가 `--bg-danger`를 덮으면 `--fg-danger`가 따라가고, `--fg-danger`만 덮으면 글자색만 바뀐다. `border.focus`도 같은 이유로 `bg.brand` 별칭이다. 별칭 2개는 §9에 스펙 문구 보강 후보로 적었다
 - 브랜드 간 차이는 이 표의 값뿐이다. `bakery`는 brand 램프를 amber로, canvas·surface-muted·surface-hover·border를 amber 계열 저채도로 바꾼다. `base`와 실제로 다른 값이 있어야 AC-6a diff가 의미를 가진다(B-3)
 - 다크 값은 `.dark` 블록과 `@media (prefers-color-scheme: dark) { :root:not(.light) }` 블록에 **동일하게** 두 번 쓴다(C-20)
 - **(R25)** 흰 on-brand · on-danger 가 base 다크(3.7 · 3.8:1)와 bakery 라이트(3.2:1)에서 4.5:1 이 안 돼 gray-950 으로 바꿨다. bakery 라이트 hover 는 어두운 글자와 맞게 밝은 amber-500 이다. tokens 대비 테스트가 두 브랜드 × 두 스킴의 글자 쌍을 본다(구현 노트 F-23)
@@ -182,7 +186,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 | 네임스페이스 | 키 | 값 | 비고 |
 |---|---|---|---|
 | `--spacing-*` | `0` · `1` · `2` · `3` · `4` · `6` · `8` · `12` · `16` · `20` · `24` | `0` · `4px` · `8px` · `12px` · `16px` · `24px` · `32px` · `48px` · `64px` · `80px` · `96px` | C-7a 희소 열거 + 영점. `--spacing-*: initial` 리셋 뒤 선언. 단독 `--spacing: initial`도 함께 쓴다 — 검증 probe(tailwindcss 4.3.3)에서는 `--spacing-*: initial`만으로 `mt-5`·`w-64`가 안 나와 불필요했으나 peer 하한 4.1과의 차이 가능성으로 유지하고 T-T4 (4)가 재확인한다(v2 F-26) |
-| `--radius-*` | `sm` · `md` · `lg` · `full` | `4px` · `8px` · `12px` · `9999px` | `--radius-*: initial` 리셋 뒤 선언. R23 요구 (b): 나중에 C-5c 계약이 돼도 되는 이름이라 Tailwind 관용 이름을 그대로 쓴다 |
+| `--radius-*` | `sm` · `md` · `lg` · `xl` · `full` | `8px` · `12px` · `16px` · `20px` · `9999px` (R26, 이전 `4px` · `8px` · `12px`, `xl` 없음) | `--radius-*: initial` 리셋 뒤 선언. R23 요구 (b): 나중에 C-5c 계약이 돼도 되는 이름이라 Tailwind 관용 이름을 그대로 쓴다 |
 | `--shadow-*` | `sm` · `md` · `lg` | `0 1px 2px oklch(0 0 0 / 0.05)` · `0 4px 8px oklch(0 0 0 / 0.08)` · `0 12px 24px oklch(0 0 0 / 0.12)` | `--shadow-*: initial` 리셋 뒤 선언. RN은 NativeWind가 `boxShadow`로 해석하며(RN 0.81+), 안 되면 Card·Dialog에서만 쓰므로 영향이 작다 |
 
 ### 3.5 타이포 (component 계층 `text.<step>`, 비-inline `@theme`)
@@ -191,9 +195,9 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 |---|---|---|---|
 | `sm` | `14px` | `20px` | `400` |
 | `md` | `16px` | `24px` | `400` |
-| `lg` | `18px` | `28px` | `500` |
-| `xl` | `20px` | `28px` | `600` |
-| `2xl` | `24px` | `32px` | `700` |
+| `lg` | `18px` | `26px` (R26, 이전 28) | `600` (R26, 이전 500) |
+| `xl` | `22px` (R26, 이전 20) | `30px` (R26, 이전 28) | `700` (R26, 이전 600) |
+| `2xl` | `28px` (R26, 이전 24) | `36px` (R26, 이전 32) | `700` |
 
 - `--text-*: initial`과 `--font-weight-*: initial` 리셋 뒤 선언. `text-base`·`font-bold`는 무효(알려진 동작 1)
 - RN은 게이트 (5) 결과에 따라 `text-<step>` 클래스 또는 JS 객체 `text.<step>` 폴백(§2)
@@ -202,7 +206,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 
 | 키 | 웹 값 | RN 값 | 비고 |
 |---|---|---|---|
-| `--font-sans` | `"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` | `Pretendard` | **사용자 확정(2026-09-05, §8 D-1)**. 로딩은 소비자 책임(웹 `next/font/local` 또는 `@font-face`, RN `expo-font`). 폰트 파일 미동봉(AC-6c). RN 값은 `expo-font`로 등록하는 패밀리 이름과 일치해야 하며, RN에서 무게별 정적 폰트를 쓸 경우 무게별 이름 등록까지 소비자 책임 |
+| `--font-sans` | `"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` | `Pretendard` | **사용자 확정(2026-09-05, §8 D-1)**. 로딩은 소비자 책임(웹 `next/font/local` 또는 `@font-face`, RN `expo-font`). 폰트 파일 미동봉(AC-6c). RN 값은 `expo-font`로 등록하는 패밀리 이름과 일치해야 하며, RN에서 무게별 정적 폰트를 쓸 경우 무게별 이름 등록까지 소비자 책임. **(R26)** native 래퍼가 `--font-sans`를 RN 값 하나로 다시 내고 native 텍스트 컴포넌트가 `font-sans`를 쓴다 |
 
 - `--font-*`는 리셋하지 않고 `--font-sans`만 덮어쓴다(C-6). `--font-mono`·`--font-serif`는 v1에서 선언하지 않으므로 Tailwind 기본값이 남는다. 어휘 봉쇄의 예외이며 §9에 적었다
 - R23 요구 (b): 이름은 Tailwind 관용 `--font-sans` 그대로 둔다. 나중에 C-5c 계약이 돼도 바꿀 이유가 없다
@@ -217,17 +221,17 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 
 component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 스텝(§3.5)뿐이다. 나머지는 컴포넌트 구현이 **정적 클래스 문자열**로 옮겨 쓰고(C-4 (2)), 단위 테스트가 JS 객체와 클래스 문자열의 일치를 검사한다(T-W8). 그 JS 객체는 `@eeennsu/tokens`가 `component`로 export한다(§3.10, v2 F-2). 값은 전부 §3.4·3.5의 열거 키로만 구성한다 — 열거에 없는 40px 같은 높이는 고정 `h-*`가 아니라 `py-* + text-*` 조합으로 만든다.
 
-**테두리와 높이(v2 F-7, 사용자 확정)**: Input은 `border border-border`(1px)를 갖고 Button·Badge는 `border border-transparent`를 갖는다. 컨트롤 셋이 같은 `py + text` 조합에서 같은 높이가 되게 하기 위해서다(테두리 없이 두면 Input이 2px 높다). 결과 높이는 `2 × py + line-height + 2` = **sm 30 / md 42 / lg 54**. `border`·`border-transparent`는 정적 유틸리티라 리셋 대상이 아니다.
+**테두리와 높이(v2 F-7, 사용자 확정)**: Input은 `border border-border`(1px)를 갖고 Button·Badge는 `border border-transparent`를 갖는다. 컨트롤 셋이 같은 `py + text` 조합에서 같은 높이가 되게 하기 위해서다(테두리 없이 두면 Input이 2px 높다). 결과 높이는 `2 × py + line-height + 2` = **sm 30 / md 42 / lg 52**(R26, 이전 lg 54). **(R26)** Input · Textarea는 `border-transparent` + `bg-surface-muted` 채움이다 — 테두리 1px은 투명으로 남아 높이를 맞추고 포커스 · 오류 때만 색이 생긴다. `border`·`border-transparent`는 정적 유틸리티라 리셋 대상이 아니다.
 
 | 컴포넌트 | 토큰 경로 | sm | md | lg |
 |---|---|---|---|---|
-| Button | `button.paddingX` / `paddingY` / `text` / `radius` / `gap` | `3` / `1` / `sm` / `md` / `1` (높이 30) | `4` / `2` / `md` / `md` / `2` (높이 42) | `6` / `3` / `lg` / `lg` / `2` (높이 54) |
-| Input | `input.paddingX` / `paddingY` / `text` / `radius` | `3` / `1` / `sm` / `md` (높이 30) | `3` / `2` / `md` / `md` (높이 42) | `4` / `3` / `lg` / `md` (높이 54) |
+| Button | `button.paddingX` / `paddingY` / `text` / `radius` / `gap` | `3` / `1` / `sm` / `md` / `1` (높이 30) | `4` / `2` / `md` / `md` / `2` (높이 42) | `6` / `3` / `lg` / `lg` / `2` (높이 52) |
+| Input | `input.paddingX` / `paddingY` / `text` / `radius` | `3` / `1` / `sm` / `md` (높이 30) | `3` / `2` / `md` / `md` (높이 42) | `4` / `3` / `lg` / `md` (높이 52) |
 | Textarea | `textarea.rows` (+ Input md 패딩·`md` 텍스트 고정) | `3` | `5` | `8` |
 | Badge | `badge.paddingX` / `paddingY` / `text` / `radius` | `2` / `0` / `sm` / `full` | `3` / `1` / `sm` / `full` | — (Badge는 `sm` · `md`) |
 | Icon | `icon.size` (px) | `16` | `20` | `24` |
-| Card | `card.padding` / `radius` / `shadow` | `4` / `lg` / `sm` (size 없음) | | |
-| Dialog | `dialog.padding` / `radius` / `shadow` / `maxWidth` | `6` / `lg` / `lg` / `max-w-md`(container 네임스페이스, 리셋 대상 아님) | | |
+| Card | `card.padding` / `radius` | `6` / `xl` (size 없음. R26, 이전 `4` / `lg` + `shadow` `sm` + 테두리) | | |
+| Dialog | `dialog.padding` / `radius` / `shadow` / `maxWidth` | `6` / `xl`(R26, 이전 `lg`) / `lg` / `max-w-md`(container 네임스페이스, 리셋 대상 아님) | | |
 | Drawer | `drawer.padding` / `width` | `6` / `max-w-sm w-full` | | |
 | Tooltip | `tooltip.paddingX` / `paddingY` / `text` / `radius` | `2` / `1` / `sm` / `sm` | | |
 
@@ -239,9 +243,9 @@ component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 �
 ```ts
 {
   color:   ["canvas","surface","surface-muted","surface-hover","brand","brand-hover","danger","danger-hover","overlay",
-            "fg","fg-muted","fg-danger","fg-on-brand","fg-on-danger","border","border-focus"],
+            "fg","fg-muted","fg-brand","fg-danger","fg-on-brand","fg-on-danger","border","border-focus"],
   spacing: ["0","1","2","3","4","6","8","12","16","20","24"],
-  radius:  ["sm","md","lg","full"],
+  radius:  ["sm","md","lg","xl","full"],
   shadow:  ["sm","md","lg"],
   text:    ["sm","md","lg","xl","2xl"],
 }
@@ -278,7 +282,7 @@ export const colors = { light: { bg: {…}, fg: {…}, border: {…} }, dark: {�
   --radius-*: initial; --shadow-*: initial; --text-*: initial; --font-weight-*: initial;
   /* spacing, radius, shadow, text, font-sans 선언 */
 }
-@theme inline { /* --color-<이름>: var(--<그룹>-<이름>) 16개 */ }
+@theme inline { /* --color-<이름>: var(--<그룹>-<이름>) 17개(R26) */ }
 ```
 
 - 레이어를 쓰지 않는다. 소비자 무레이어 `:root` 재선언이 "같은 셀렉터·같은 특이성·뒤가 이김"으로 덮인다(C-5b). Tailwind가 `@theme` 변수를 `@layer theme`에 넣는 것은 Tailwind 몫이고 semantic `:root` 블록은 DS가 레이어 밖에 직접 쓴다
@@ -815,10 +819,10 @@ design-system/
 |---|---|---|---|---|
 | **D-1** | **`fontFamily.sans` 값** | **사용자 확정(2026-09-05): Pretendard**(웹 `"Pretendard Variable", Pretendard, …`, RN `Pretendard`) | 스펙 R18 실측에서 Inter가 다수였으나 한글 글리프가 없어 라틴·한글이 섞여 렌더된다. 소비 프로젝트 도메인이 전부 한국어 UI(빵집 · 운세 · 사진 · 블로그 · 이력서)다. Pretendard는 한글·라틴을 한 패밀리로 덮고 가변 폰트 배포가 있어 웹 `@font-face` 1개로 끝난다. 폰트 파일은 동봉하지 않으므로(C-7b) DS가 갖는 건 이름뿐이다 | 중. 이름만 바꾸면 DS는 minor지만 소비자는 로딩 코드를 바꿔야 한다 |
 | D-2 | semantic 변수 이름 체계 | §3.1 · §3.3 (`--<그룹>-<이름>`, 16개) | 스펙 예시 `--bg-brand` · `fg.default`와 일치. `@theme` 키에서 `bg` 그룹만 생략해 `bg-brand` 클래스 유지 | 상(공개 계약, major) |
-| D-3 | `fg.danger` · `border.focus`는 별칭 | `var(--bg-danger)` · `var(--bg-brand)` | C-8 "같은 semantic 색" 문장을 문자 그대로 만족 | 하(별칭 해제는 값 변경) |
+| D-3 | `border.focus`는 별칭 | `var(--bg-brand)`. **(R26)** `fg.danger`는 별칭을 풀고 자기 값을 갖는다(이전 `var(--bg-danger)`) | 채움 위 흰 글자와 표면 위 글자를 한 값으로 맞출 수 없다(decisions-r26 5) | 하(별칭 해제는 값 변경) |
 | D-4 | `@theme inline` 범위 | 색만 inline, 나머지 비-inline | C-5b 메커니즘에 필요한 최소. R23 요구 (a) 답을 T-T4가 기록 | 하 |
 | D-5 | primitive 팔레트 | Tailwind v4 gray · blue · red · amber 4램프 복사 | 자체 팔레트는 v1 범위 밖. primitive는 계약 밖 | 하 |
-| D-6 | 컨트롤 높이 | 고정 `h-*` 없이 `py-* + text-*` 조합. Input은 `border-border` 1px, Button·Badge는 `border-transparent`로 테두리 두께를 맞춰 **30 / 42 / 54**(v2 F-7, 사용자 확정) | spacing 열거에 40px(키 10)이 없다. 열거를 넓히지 않고 조합으로 만든다. 투명 테두리가 없으면 Input이 Button보다 2px 높다 | 하 |
+| D-6 | 컨트롤 높이 | 고정 `h-*` 없이 `py-* + text-*` 조합. Input은 `border-border` 1px, Button·Badge는 `border-transparent`로 테두리 두께를 맞춰 **30 / 42 / 54**(v2 F-7, 사용자 확정). **(R26)** lg 스텝 line-height 26으로 **30 / 42 / 52**, Input 테두리는 투명 + 채움 | spacing 열거에 40px(키 10)이 없다. 열거를 넓히지 않고 조합으로 만든다. 투명 테두리가 없으면 Input이 Button보다 2px 높다 | 하 |
 | D-7 | Stack · Box 역할 | Stack만 4 prop, Box는 `children` + `className` | 둘 다 같은 prop이면 하나가 죽은 코드 | 하(Box에 prop 추가는 추가적) |
 | D-8 | `IconName` 소스 | tokens의 큐레이션 유니온 24개 + 플랫폼별 `Record` 맵 | 계약이 tokens에 있어 lucide 의존 불가. 이름 추가는 추가적 | 하 |
 | D-9 | focus ring | `border.focus` 하나, 웹 `outline-*`, RN `focus:border-*` | 별도 ring 토큰은 유지보수 표면만 늘림 | 하 |

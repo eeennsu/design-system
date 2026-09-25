@@ -9,6 +9,7 @@
 - 2026-09-05 R23 개정. 오버라이드 대상 확대(C-5c)를 트리거 조건부로 연기. C-5b에 트리거 기록, 알려진 동작 14 추가, Non-Goal 문구 구분. 계약·동작 변경 없음. 결정 근거는 [decisions-r23.md](decisions-r23.md)
 - 2026-09-06 R24 개정. C-19 착수 게이트 실행 결과 반영. 게이트 (2)·(4) 실패에 따라 RN 다크 경로를 `@media` 단일 셀렉터로 확정 — C-20 RN 항목, C-6 산출물, C-5b RN 항목, AC-19 (c), AC-26 RN절 수정, 알려진 동작 15~16 추가. 웹은 무변경. 측정 기록은 [gate-c19.md](gate-c19.md)
 - 2026-09-25 R25 개정. v1 이후 첫 RN 소비 앱(spendback) 반영. Chip · Icon 신설, `IconName` 28개, RN 눌림 표시 · 누름 영역 · 입력 포커스 · placeholder 색 · 고정폭 숫자, 글자 대비(base 다크 · bakery). C-5b · C-6 · C-7c · C-11 · C-12 · C-13 · C-17 보강, AC-7 · AC-13 · AC-20, Ontology `Icon`, 알려진 동작 17~23 추가. 결정 근거는 [decisions-r25.md](decisions-r25.md)
+- 2026-09-25 R26 개정. base를 토스 앱 인상을 참고한 값으로 바꿨다(회색 canvas · 흰 surface · 채움 입력 칸 · 글자 스텝 · 모서리 · RN 글꼴). `fg.brand` 신설, `fg.danger` 별칭 해제, radius `xl` 추가. C-5b · C-6 · C-7b · C-8 보강, 알려진 동작 24~27 추가. 결정 근거는 [decisions-r26.md](decisions-r26.md)
 - 본문의 `R{n}`은 인터뷰 라운드 번호. 결정 근거는 문서 끝 트랜스크립트에서 추적
 - 패키지명의 npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05). R21 보류 항목이었고 문자열 치환을 마쳤다
 
@@ -101,6 +102,21 @@ v1 이후 첫 RN 소비 앱(spendback)을 연동하고 디자인을 검증하면
 
 R25 보류: 사용률 막대(Progress)와 텍스트 줄 수(`numberOfLines`)는 number prop을 받아야 해 C-14 · AC-15와 부딪힌다. 데이터 값 prop을 열지는 사용자 판단으로 남긴다([decisions-r25.md](decisions-r25.md) "열지 않은 것").
 
+### R26 개정 요약 (2026-09-25)
+
+spendback을 에뮬레이터로 본 사용자가 인상이 애매하다고 했고, 앱 실험 브랜치에서 토스 앱의 인상을 참고해 바꾼 결과를 채택했다. 그 실험을 base로 옮긴다. 토스는 인상의 참고일 뿐 API · 컴포넌트 · 이름을 가져오지 않는다(Non-Goals). 대안 비교는 [decisions-r26.md](decisions-r26.md)이고 이 절은 결과만 싣는다. 닫힌 결정(R21~R25)과 C-5c는 열지 않았다. 스케일 **구조**(간격 열거, `size` 5단)는 그대로이고 **값**만 바뀐다.
+
+- **토스풍은 base 자체에 넣는다(사용자 결정).** 앱은 메인 색(brand 짝)만 C-5b로 지정한다. 새 계약 채널은 없다
+- **색**: 라이트 canvas gray-100 · surface 흰색 · surface-muted gray-200(입력 칸 · 칩 채움) · brand `blue-550`(흰 글자 4.64:1) · muted `gray-550`. 다크 중립색은 zinc 램프, brand는 라이트와 같은 진한 파랑 + 흰 글자(사용자 결정). primitive에 `blue-550` · `blue-650` · `gray-550`(DS 반 단계)과 zinc 램프(Tailwind 복사)를 더했다
+- **`fg.brand` 신설 · `fg.danger` 별칭 해제**: 진한 채움 위 흰 글자 4.5:1과 어두운 · 회색 표면 위 글자 4.5:1을 한 값으로 맞출 수 없다. 글자는 `text-fg-brand` · `tone="danger"`가 채움과 다른 값을 쓴다. `@theme inline` 색 17개. C-8 문구 보강(같은 개념, 두 값)
+- **글자 스텝 값**: lg 18/26/600 · xl 22/30/700 · 2xl 28/36/700(sm · md 그대로). 컨트롤 높이 lg 54 → 52
+- **모서리**: sm 8 · md 12 · lg 16, `xl` 20 추가(twMerge radius 키 포함). Card · Dialog가 xl
+- **모양**: Card는 테두리 · 그림자 없이 `bg-surface rounded-xl p-6`. Input · Textarea · 고르지 않은 Chip은 테두리를 투명으로 두고 `surface-muted` 채움(높이 유지)
+- **RN 글꼴**: native 텍스트 컴포넌트가 `font-sans`를 갖고, native 래퍼가 `--font-sans`를 RN 패밀리 이름 하나(`Pretendard`)로 다시 낸다. 소비 앱이 그 이름으로 글꼴을 등록해야 한다(C-7b)
+- C-5b(짝 대비에 `fg.brand` · `fg.danger`), C-6(native 래퍼 산출물), C-7b(RN 글꼴 적용), C-8(danger 두 값) 보강, 알려진 동작 24~27 추가. 번호 유지, 삭제 · 재번호 없음. 계약 타입 · 컴포넌트 API 변경 없음
+
+R26 보류: 없음.
+
 ## Topology
 
 최상위 컴포넌트 6개 중 4개 활성. docs·agent-native는 v2 보류. platform-adapter는 R6에서 보류됐다가 R11에서 축소 범위로 복귀.
@@ -185,6 +201,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - **공개 계약은 semantic 변수 이름**이다. 지원 목록은 토큰 빌드가 내는 semantic 색 키(C-6 `twMergeConfig` 색 키와 1:1)이며 별도 문서를 두지 않는다. 이름 변경·삭제는 소비자 CSS를 무효화하므로 파괴적 변경(major)이다. 추가는 추가적
   - **RN**: 같은 채널이며 게이트 (6)이 last-wins를 확인했다. **(R24) 다만 블록이 웹과 다르다 — `:root` + `@media (prefers-color-scheme: dark) { :root { … } }` 2블록**이다. `.dark`와 `:root:not(.light)`은 RN에서 죽으므로 쓰지 않는다(C-20 RN 항목, 알려진 동작 15). 값은 빌드 시점 캐스케이드로 굳으며 런타임 CSS 변수로 남지 않는다. NativeWind의 런타임 오버라이드(`VariableContextProvider`, `vars()`)는 DS 채널이 아니다 — 런타임 브랜드 전환은 범위 밖(C-5a). 소비자가 직접 써도 막지 않지만 지원하지 않는다. import 뒤 `:root` 재선언이 last-wins인지는 C-19 게이트 (6)
   - **(R25) 짝 대비**: `--bg-brand`를 덮으면 그 위 글자인 `--fg-on-brand`도 함께 본다(`--bg-danger` · `--fg-on-danger`도 같다). DS는 자기 브랜드의 짝만 4.5:1을 보장한다(tokens 대비 테스트). R25에서 base 다크의 on-brand · on-danger가 흰색에서 gray-950으로 바뀌었으므로, 흰 글자를 전제로 다크 brand를 어둡게 재선언한 소비자는 on-brand도 재선언한다
+  - **(R26) 글자용 색이 따로 있다.** `--fg-brand`(신설)와 `--fg-danger`(별칭 해제)는 채움 색과 다른 값이다. 앱의 메인 색은 `--bg-brand` · `--bg-brand-hover` · `--fg-on-brand` · `--fg-brand` 네 개를 짝으로 재선언한다. `--bg-danger`만 덮으면 글자 빨강(`tone="danger"`)은 따라가지 않는다. R26에서 base 다크의 on-brand · on-danger가 다시 흰색이 됐다(진한 채움)
   - **JS 토큰 객체에는 닿지 않는다**(알려진 동작 11). v1 DS 코드가 JS 객체를 읽는 곳은 RN Text 폰트 폴백(C-19 (5), 타이포라 오버라이드 대상 아님)뿐이므로 DS 컴포넌트에는 영향 없음
   - **어휘 봉쇄 유지**: 이 채널은 값만 바꾸고 클래스를 만들지 않는다. C-15 "className이 유일한 커스텀 채널"은 컴포넌트 단위 커스텀에 대한 말이고, C-5b는 앱 단위 브랜드 주입이라 층위가 다르다. 소비자 `@theme` 확장으로 새 클래스를 만드는 것은 Non-Goal
   - **되돌리기**: 채널 자체는 CSS 캐스케이드라 닫을 수 없고, 계약에서 빼는 것만 가능하다. 그래서 여는 비용은 "이름 안정성 의무" 하나다. 탈락한 대안(B 소비자 `@theme` 확장, C 간격·타이포 브랜드 분리)은 [decisions-r22.md](decisions-r22.md)
@@ -196,7 +213,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - `@eeennsu/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
   - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
   - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
-  - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다. native 래퍼는 이 밖에 타이포 줄 높이를 배수로 다시 내고(R24, 계획 D-31), **(R25)** `.tabular-nums`에 RN 선언(`-rn-font-variant`)을 더한다(알려진 동작 17)
+  - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다. native 래퍼는 이 밖에 타이포 줄 높이를 배수로 다시 내고(R24, 계획 D-31), **(R25)** `.tabular-nums`에 RN 선언(`-rn-font-variant`)을 더한다(알려진 동작 17). **(R26)** `--font-sans`를 토큰 소스의 RN 패밀리 이름 하나(`Pretendard`)로 다시 낸다 — react-native-css가 목록의 첫 이름만 쓰기 때문이다(C-7b)
   - RN 런타임용 JS 객체
   - `twMergeConfig` — 색 키, spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
   - `Contracts` 타입 맵(`Size` / `TypographyStep` / `ControlSize` / `Tone` / `Variant` 포함)과 `webComponents` / `nativeComponents` 키 목록(C-17)
@@ -205,10 +222,11 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
 - C-7a. **(R21 재작성) 스케일 어휘**: 간격은 4px 배수 숫자 키의 **희소 열거** `1,2,3,4,6,8,12,16,20,24`(= `4,8,12,16,24,32,48,64,80,96px`) + 영점 `0`. 간격 키는 `className` 어휘 전용이며 간격 값을 받는 prop은 없다(C-14). 열거 외 키는 클래스가 생성되지 않는 무효다(알려진 동작 1). 좁게 시작하고 밀집 단계는 나중에 추가한다. 컴포넌트 `size`는 t-shirt — 전역 `sm | md | lg | xl | 2xl`, 컨트롤(Button · Input · Textarea · Badge · ButtonGroup 등)은 `sm | md | lg` 부분집합, Text는 5단 전부를 타이포 스텝으로 쓴다(C-7b). 두 어휘를 의도적으로 분리한다 — 간격을 t-shirt로 두면 단계가 모자랄 때 `md-plus` 같은 이름이 생겨 무너지고, `size`를 숫자로 두면 무엇이 큰지 직관적이지 않다
   - 이전: "숫자 스케일(`1,2,3,4,6,8,12`…)". 열린 스케일을 희소 열거로 닫음(R21 B-2)
 - C-7b. **폰트는 이름·스케일만 소유.** `fontFamily` 토큰과 크기·행간·무게 스케일은 DS가 갖되 실제 폰트 로딩은 소비 프로젝트 책임(웹 `next/font`, RN `expo-font`). 폰트 파일을 패키지에 동봉하지 않는다 — 무게와 라이선스가 따라온다. **(R21)** 크기·행간·무게 스케일은 Text의 타이포 스텝 하나로 묶여 소비된다 — component 계층 토큰 `text.<step> = { fontSize, lineHeight, fontWeight }`, `step = sm | md | lg | xl | 2xl`. 독립 `weight` prop은 없다. 소비자 `className="text-lg"`도 같은 스텝 의미를 갖는다
+  - **(R26) RN 컴포넌트가 글꼴을 쓴다.** 웹은 preflight가 `html`에 `--font-sans`를 걸어 상속되지만 RN에는 상속이 없다. native 텍스트 컴포넌트(Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea)가 `font-sans`를 갖는다. 소비 앱은 native 래퍼가 내는 패밀리 이름(`Pretendard`)으로 글꼴을 등록한다 — 무게는 글자 스텝이 쓰는 400 · 600 · 700. 등록 절차는 구현 노트에 있다. 등록하지 않으면 플랫폼 기본 글꼴로 떨어진다(알려진 동작 26)
 - C-7c. **아이콘은 이름 문자열로만 받는다.** `<Button icon="trash">`. DS가 내부에서 `lucide-react`(웹) / `lucide-react-native`(RN)로 분기하고, 색·크기는 토큰으로 결정한다. 아이콘 노드를 받으면 웹·RN 패키지 분기가 소비자에게 새어 나가고 계약 타입이 플랫폼별로 갈린다. R20에서 `className`을 열었지만 이 규칙은 유지 — 근거가 드리프트가 아니라 플랫폼 분기 은닉이기 때문. **(R25)** 버튼 밖의 아이콘은 공개 `Icon`(`name` 문자열)으로 쓴다. 색은 `tone`(Text와 같은 축)이고 상속하지 않는다 — RN에 글자색 상속이 없어 두 플랫폼이 같은 결과를 내려면 아이콘이 색을 가져야 한다
 
 ### 컴포넌트 API 계약 (8개 강제 규칙)
-- C-8. **(R21 확장) variant / size / tone 어휘 전역 통일.** 전역 축은 3개 — `variant = primary | secondary | ghost | danger`(4개 고정), `size = sm | md | lg | xl | 2xl`, `tone = default | muted | danger`(3개 확정, R21 후속. Text의 강조 위계 축이자 전역 어휘. semantic 전경색 토큰 `fg.default` / `fg.muted` / `fg.danger`와 1:1라 매핑표가 필요 없다. `subtle` · `success` · `brand`는 넣지 않는다 — 추가는 추가적이고, 지금 넣으면 semantic 토큰이 늘어 `bakery`에서 값을 전부 정해야 한다). 모든 컴포넌트가 동일한 집합에서만 고름. 안 쓰는 값은 빼되 이름은 절대 다르게 짓지 않는다 — 부분집합은 `Extract`로 타입 고정한다(`ControlSize = Extract<Size, 'sm' | 'md' | 'lg'>`, `TypographyStep = Size`). 반대로 **다른 개념에 같은 이름을 강요하지 않는다**. `variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)을 가리키는 같은 개념이라 의도적으로 이름을 공유한다. 비활성 텍스트는 `tone`이 아니라 상태(`disabled`)다. 단 간격(spacing)은 C-7a에 따라 별도 숫자 어휘를 쓴다 — 통일 대상이 아니다
+- C-8. **(R21 확장) variant / size / tone 어휘 전역 통일.** 전역 축은 3개 — `variant = primary | secondary | ghost | danger`(4개 고정), `size = sm | md | lg | xl | 2xl`, `tone = default | muted | danger`(3개 확정, R21 후속. Text의 강조 위계 축이자 전역 어휘. semantic 전경색 토큰 `fg.default` / `fg.muted` / `fg.danger`와 1:1라 매핑표가 필요 없다. `subtle` · `success` · `brand`는 넣지 않는다 — 추가는 추가적이고, 지금 넣으면 semantic 토큰이 늘어 `bakery`에서 값을 전부 정해야 한다). 모든 컴포넌트가 동일한 집합에서만 고름. 안 쓰는 값은 빼되 이름은 절대 다르게 짓지 않는다 — 부분집합은 `Extract`로 타입 고정한다(`ControlSize = Extract<Size, 'sm' | 'md' | 'lg'>`, `TypographyStep = Size`). 반대로 **다른 개념에 같은 이름을 강요하지 않는다**. `variant`와 `tone`의 `danger`는 같은 semantic 색(`color.danger`)을 가리키는 같은 개념이라 의도적으로 이름을 공유한다. **(R26)** 같은 개념이되 값은 둘이다 — 채움(`bg.danger`, 흰 글자를 얹는다)과 글자(`fg.danger`, 표면 위에 쓴다). 진한 채움 위 흰 글자와 표면 위 글자를 한 값으로 동시에 4.5:1로 맞출 수 없어 별칭을 풀었다(decisions-r26 5). 비활성 텍스트는 `tone`이 아니라 상태(`disabled`)다. 단 간격(spacing)은 C-7a에 따라 별도 숫자 어휘를 쓴다 — 통일 대상이 아니다
 - C-9. **semantic 토큰만 참조** (C-7과 동일 규칙의 컴포넌트 측 표현)
 - C-10. **다형성 prop 금지.** `as` / `render` / `asChild`를 core 계약에 노출하지 않는다. RN에 대응물이 없다. Base UI의 `render`는 `@eeennsu/web` 내부 구현 디테일로만 사용
 - C-11. **불리언 prop 대신 열거형.** `isPrimary`, `isDanger` 금지 → `variant`. 불리언은 조합 폭발을 만들고 두 플랫폼에서 우선순위가 갈린다. **(R21)** 예외는 `disabled` / `loading` 같은 기능 불리언뿐(`invalid` 계획 D-16, Chip `selected` R25가 같은 부류다). 웹·RN 교차 어휘는 열거형으로 은닉하며, 열거형이라 예외가 아니다 — Input `kind = text | password | email | number`. 계약은 이 열거형 4값뿐이고 아래 매핑은 어댑터 구현 세부다. 스펙에 두는 이유(R21 후속) — AC-16 자동완성 확인 항목과 알려진 동작 8이 이 파생 규칙을 참조하므로 계획 문서로 내리면 AC 근거가 사라진다:
@@ -313,6 +331,10 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 21. **(R25)** 눌림 표시는 `active:opacity-80`이다. 웹 hover는 여전히 `hover:bg-*-hover` 색이다. 소비자가 배경을 바꾸면 hover 색은 따라가지 않지만(알려진 동작 4) 눌림 표시는 투명도라 따라간다. 소비자가 `active:`를 주면 같은 그룹만 덮는다.
 22. **(R25)** RN Button · Chip의 `className`은 표면(Pressable)에 붙는다. 글자 클래스(`text-*`, `tabular-nums`)는 RN 라벨에 닿지 않는다(N-12의 연장). 웹은 버튼 하나라 라벨까지 적용된다.
 23. **(R25)** RN Input · Textarea의 포커스 표시는 1px 테두리 색 변화다(`border-focus`). `invalid`면 포커스 중에도 danger 테두리라 캐럿만 포커스를 알린다(WCAG 2.4.7은 캐럿으로 충족). 테두리를 굵히면 컨트롤 높이(계획 D-6)가 흔들려 그대로 둔다.
+24. **(R26)** Card는 테두리 · 그림자 없이 canvas와의 명도 차이(라이트 1.10, 다크 1.12)로만 구분된다. 소비자가 `--bg-canvas`를 surface와 같은 값으로 재선언하면 Card 경계가 사라진다. 그때는 `className="border border-border"`를 준다. bakery는 canvas(amber-50)와 surface가 1.05:1이라 Card가 흐리다.
+25. **(R26)** Input · Textarea · 고르지 않은 Chip은 테두리 대신 `surface-muted` 채움으로 보인다(canvas 위 1.12, surface 위 1.24). 채움은 비텍스트 3:1 대상으로 보지 않는다 — 라벨로 식별되고 포커스 때 brand 테두리가 생긴다. 테두리는 투명으로 남아 높이를 맞춘다. 소비자가 `--bg-surface-muted`를 canvas나 surface와 같은 값으로 재선언하면 채움이 보이지 않는다.
+26. **(R26)** RN DS 컴포넌트는 `Pretendard` 패밀리를 요청한다. 소비 앱이 등록하지 않으면 Android는 기본 글꼴로 조용히 떨어진다. iOS는 "Unrecognized font family" 메시지를 낸다고 알려져 있으나 기기에서 확인하지 못했다. 등록한 글꼴에 없는 무게는 가까운 무게로 그려진다.
+27. **(R26)** `text-brand`는 채움 색(`bg.brand`)이다. 글자로 쓰면 다크 surface 위 3.57:1이라 기준에 못 미친다. 브랜드 색 글자는 `text-fg-brand`를 쓴다. `text-brand`는 0.3.0 소비자 호환을 위해 남아 있다(색 키는 `@theme inline` 하나에서 `bg-` · `text-` · `border-`를 함께 만든다).
 
 ## Non-Goals
 
