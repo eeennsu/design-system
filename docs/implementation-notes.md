@@ -7,6 +7,7 @@
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
+- v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` — 구현 · 테스트 완료, **publish 전**
 
 ## 1. 완료 상태
 
@@ -27,6 +28,7 @@
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
+| v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish 전 | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
 
 수동 확인 상태:
 
@@ -242,6 +244,34 @@ T-R1 은 실제 `global.css` 를 쓴다.
   plan 포커스 목록(DS-008) · 웹 고른 칩 hover 테두리(DS-010)를 반영했고, 눌림 대비(DS-005) · RN 비선택 알림(DS-009) · RN 포커스
   굵기(DS-011) · 웹 닫기 버튼(DS-012) · `cursor-pointer` 는 decisions-r25.md 에 이유를 적었다. 재검증 뒤 다시 검증하지는 않았다
 - **기기 화면 확인은 하지 않았다** — jest 가 스타일 값과 접근성 속성을 본다
+
+### N-18. v1 이후 세 번째 — base 토스풍 (0.4.0)
+
+spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용자가 채택한 인상을 base 로 옮겼다. 스펙 R26, 대안 비교는
+[decisions-r26.md](decisions-r26.md) 다. 계약 타입 · 컴포넌트 API 는 그대로이고 semantic 변수 하나(`--fg-brand`)와 radius 키 하나(`xl`)가 늘었다.
+
+- **토큰 값**: primitive 에 zinc 램프(Tailwind 4.3.3 `theme.css` 복사)와 반 단계 `gray-550` · `blue-550` · `blue-650`. semantic 은 plan §3.3 표.
+  base 다크의 on-brand · on-danger 가 다시 흰색이다(진한 채움). `fg.danger` 는 별칭이 아니다 — 토큰 CSS 의 `var()` 는 `border.focus` 하나다
+- **글자 스텝 · 모서리**: lg 18/26/600 · xl 22/30/700 · 2xl 28/36/700, radius 8/12/16 + xl 20. native 래퍼의 배수 line-height 는 빌드가 다시 낸다
+  (xl 30/22 는 나누어떨어지지 않아 배수가 `1.3636…` 이고 RN 이 30 으로 그린다)
+- **Card**: `bg-surface rounded-xl p-6`(테두리 · 그림자 제거, `card.shadow` 토큰 삭제). Dialog 는 `rounded-xl`
+- **입력 칸 · 칩**: 웹 · RN `controlBase` 가 `bg-surface-muted border-transparent`, 고르지 않은 Chip 이 `border-transparent bg-surface-muted`.
+  테두리 1px 은 남아 높이(D-6)를 맞춘다. 이때 F-28 이 드러났다
+- **RN 글꼴**: native 래퍼가 `@theme { --font-sans: Pretendard; }` 를 더 낸다(값은 토큰 `$extensions["ds.native"]`).
+  native Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea 가 `font-sans` 를 갖는다. spendback 실험은 같은 내용을 pnpm patch 로 먼저 해 봤다
+- **소비 앱의 RN 글꼴 등록**(C-7b, 폰트 파일 미동봉): 패밀리 이름 `Pretendard`, 무게 400 · 600 · 700(500 도 넣으면 소비자 `className` 에 안전하다).
+  Pretendard 는 SIL OFL 1.1 이다(npm `pretendard` 의 `dist/public/static/*.otf`)
+  - RN CLI Android: `android/app/src/main/res/font/` 에 `pretendard_regular.otf` 같은 소문자 이름으로 넣고, 같은 폴더의 `pretendard.xml` 에
+    `<font-family xmlns:app="http://schemas.android.com/apk/res-auto">` + 무게별 `<font app:fontStyle="normal" app:fontWeight="400" app:font="@font/pretendard_regular" />`.
+    `MainApplication.onCreate` 에서 `ReactFontManager.getInstance().addCustomFont(this, "Pretendard", R.font.pretendard)`
+    (`com.facebook.react.common.assets.ReactFontManager`). RN 이 `fontWeight` 로 무게를 고른다. spendback 에서 에뮬레이터로 확인했다
+  - Expo: `expo-font` 로 같은 이름을 등록한다. 무게별 등록 방법은 SDK 문서를 따른다 — **확인하지 않았다**. verify-expo 는 글꼴을 등록하지 않아
+    기기에서는 시스템 글꼴로 떨어진다(jest 는 `fontFamily: "Pretendard"` 스타일 값만 본다)
+- **검증**: tokens 69(대비 쌍 3개 · native 글꼴 줄 · twMerge 정적 색 추가), web 79, native 26, verify-expo 50, verify-next 18, verify-vite 5.
+  verify-expo 게이트 테스트의 색 · 크기 값을 R26 으로 바꿨다(게이트의 메커니즘 판정은 그대로)
+- 테스트는 Node 22 에서 돌린다. Node 20 으로 web 테스트를 돌리면 jsdom 30 이 쓰는 undici 가 `webidl.util.markAsUncloneable` 없이 죽어 79 개 중 18 개만 돈다
+  (루트 `engines` 가 `>=22.12.0` 이다)
+- **기기 화면 확인은 하지 않았다** — 같은 값을 spendback 실험에서 에뮬레이터로 봤다(라이트 · 다크). 0.4.0 을 spendback 에 올린 뒤 다시 본다
 
 ## 3. 구현 중 확인한 사실
 
@@ -459,6 +489,14 @@ react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform �
 `transformToMatrix` 에서 `TypeError`, `scale-75` 는 파서 오류로 렌더 중 던지고, `opacity-50` 은 루트 · G · Path 에 세 번 걸린다
 (jest 로 재현). 아이콘에 스타일을 줄 때는 lucide 밖의 View 에 준다(N-17 Icon).
 
+### F-28. tailwind-merge 는 `border-transparent` 를 DS 색 그룹으로 보지 않았다
+
+`twMergeConfig.color` 를 `override` 로 DS semantic 키만 두면(plan §3.9) Tailwind 정적 색(`inherit` · `current` · `transparent`)이 색
+그룹 밖이 된다. `cn("border-transparent", "border-danger")` 가 둘 다 남기고, Tailwind 가 같은 속성 유틸리티를 이름순으로 내어 `transparent` 가
+이긴다. 0.3.0 까지는 Button 의 `border-transparent` 에 소비자가 테두리 색을 줄 일이 드물어 드러나지 않았다. R26 에서 입력 칸이
+`border-transparent` 가 되자 `invalid` 의 `border-danger` 가 사라졌다(verify-expo jest 가 잡았다). 빌드가 색 키 끝에 정적 색 3개를 붙인다.
+C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 계약은 그대로다.
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -484,5 +522,8 @@ react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform �
 - 기기에서 남은 것(N-17): RN Icon 이름 한 번 읽기 · 꾸밈 건너뛰기, `rotate-180` · `ml-auto` 배치(spendback 은 단독 Icon 을 아직 안 쓴다),
   hitSlop 48 과 칩 줄 간격 10 미만의 겹침, `tabular-nums`(에뮬레이터 Roboto 는 숫자가 원래 고정폭이라 판별 불가), bakery 라이트 포커스 · 고른 칩
   채움 약 3.1:1, AC-23 다크 재촬영
+- `0.4.0`(N-18, R26)은 구현 · 테스트까지 했고 publish 전이다. 브랜치 `feat/r26-toss-look` 을 main 에 합친 뒤 낸다. 0.4.0 은 base 모양 전체를
+  바꾸고 RN 소비 앱에 글꼴 등록을 요구한다 — 릴리스 노트에 적는다. AC-23 스크린샷 네 장은 옛 모양이다(웹을 새로 찍으면 RN 과 짝이 안 맞아 되돌렸다, F-25).
+  RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다. 검증 앱의 앱 색(초록)은 다크에서 흰 on-brand 와 대비가 낮다 — 검증 앱은 C-5b 짝 대비를 따르지 않는다
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

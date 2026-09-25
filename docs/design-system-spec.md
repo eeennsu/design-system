@@ -113,7 +113,8 @@ spendback을 에뮬레이터로 본 사용자가 인상이 애매하다고 했�
 - **모서리**: sm 8 · md 12 · lg 16, `xl` 20 추가(twMerge radius 키 포함). Card · Dialog가 xl
 - **모양**: Card는 테두리 · 그림자 없이 `bg-surface rounded-xl p-6`. Input · Textarea · 고르지 않은 Chip은 테두리를 투명으로 두고 `surface-muted` 채움(높이 유지)
 - **RN 글꼴**: native 텍스트 컴포넌트가 `font-sans`를 갖고, native 래퍼가 `--font-sans`를 RN 패밀리 이름 하나(`Pretendard`)로 다시 낸다. 소비 앱이 그 이름으로 글꼴을 등록해야 한다(C-7b)
-- C-5b(짝 대비에 `fg.brand` · `fg.danger`), C-6(native 래퍼 산출물), C-7b(RN 글꼴 적용), C-8(danger 두 값) 보강, 알려진 동작 24~27 추가. 번호 유지, 삭제 · 재번호 없음. 계약 타입 · 컴포넌트 API 변경 없음
+- **twMerge 정적 색**: 색 키 끝에 Tailwind 정적 색 `inherit` · `current` · `transparent`를 둔다. 입력 칸이 `border-transparent`가 되자 `invalid`의 `border-danger`가 병합되지 않고 사라지는 결함이 드러났다(구현 노트 F-28)
+- C-5b(짝 대비에 `fg.brand` · `fg.danger`), C-6(native 래퍼 산출물, twMerge 정적 색), C-7b(RN 글꼴 적용), C-8(danger 두 값) 보강, 알려진 동작 24~27 추가. 번호 유지, 삭제 · 재번호 없음. 계약 타입 · 컴포넌트 API 변경 없음
 
 R26 보류: 없음.
 
@@ -198,7 +199,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   ```
   - **대상**: `:root`의 semantic 색 변수만(`@theme inline`이 `var()`로 참조하는 그 변수. 위 `--bg-brand`는 예시 이름이며 실제 이름은 계획 태스크 "토큰 인벤토리"가 정한다). 간격·타이포·radius·shadow는 대상이 아니다 — C-5a 불변 계층. `@theme` 네임스페이스 변수(`--color-brand` 등)는 `inline`이라 CSS 변수로 남지 않으므로 오버라이드 대상이 아니다. primitive 변수 재선언은 기술적으로 동작하나 계약 밖(알려진 동작 13)
   - **다크**: 3블록 전부 재선언한다 — `:root`, `.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`. 하나만 쓰면 hybrid 4조합 중 일부만 바뀐다(알려진 동작 12)
-  - **공개 계약은 semantic 변수 이름**이다. 지원 목록은 토큰 빌드가 내는 semantic 색 키(C-6 `twMergeConfig` 색 키와 1:1)이며 별도 문서를 두지 않는다. 이름 변경·삭제는 소비자 CSS를 무효화하므로 파괴적 변경(major)이다. 추가는 추가적
+  - **공개 계약은 semantic 변수 이름**이다. 지원 목록은 토큰 빌드가 내는 semantic 색 키(C-6 `twMergeConfig` 색 키와 1:1. **(R26)** 색 키 끝의 Tailwind 정적 색 `inherit` · `current` · `transparent` 3개는 변수가 아니라 병합용이다)이며 별도 문서를 두지 않는다. 이름 변경·삭제는 소비자 CSS를 무효화하므로 파괴적 변경(major)이다. 추가는 추가적
   - **RN**: 같은 채널이며 게이트 (6)이 last-wins를 확인했다. **(R24) 다만 블록이 웹과 다르다 — `:root` + `@media (prefers-color-scheme: dark) { :root { … } }` 2블록**이다. `.dark`와 `:root:not(.light)`은 RN에서 죽으므로 쓰지 않는다(C-20 RN 항목, 알려진 동작 15). 값은 빌드 시점 캐스케이드로 굳으며 런타임 CSS 변수로 남지 않는다. NativeWind의 런타임 오버라이드(`VariableContextProvider`, `vars()`)는 DS 채널이 아니다 — 런타임 브랜드 전환은 범위 밖(C-5a). 소비자가 직접 써도 막지 않지만 지원하지 않는다. import 뒤 `:root` 재선언이 last-wins인지는 C-19 게이트 (6)
   - **(R25) 짝 대비**: `--bg-brand`를 덮으면 그 위 글자인 `--fg-on-brand`도 함께 본다(`--bg-danger` · `--fg-on-danger`도 같다). DS는 자기 브랜드의 짝만 4.5:1을 보장한다(tokens 대비 테스트). R25에서 base 다크의 on-brand · on-danger가 흰색에서 gray-950으로 바뀌었으므로, 흰 글자를 전제로 다크 brand를 어둡게 재선언한 소비자는 on-brand도 재선언한다
   - **(R26) 글자용 색이 따로 있다.** `--fg-brand`(신설)와 `--fg-danger`(별칭 해제)는 채움 색과 다른 값이다. 앱의 메인 색은 `--bg-brand` · `--bg-brand-hover` · `--fg-on-brand` · `--fg-brand` 네 개를 짝으로 재선언한다. `--bg-danger`만 덮으면 글자 빨강(`tone="danger"`)은 따라가지 않는다. R26에서 base 다크의 on-brand · on-danger가 다시 흰색이 됐다(진한 채움)
@@ -215,7 +216,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
   - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다. native 래퍼는 이 밖에 타이포 줄 높이를 배수로 다시 내고(R24, 계획 D-31), **(R25)** `.tabular-nums`에 RN 선언(`-rn-font-variant`)을 더한다(알려진 동작 17). **(R26)** `--font-sans`를 토큰 소스의 RN 패밀리 이름 하나(`Pretendard`)로 다시 낸다 — react-native-css가 목록의 첫 이름만 쓰기 때문이다(C-7b)
   - RN 런타임용 JS 객체
-  - `twMergeConfig` — 색 키, spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
+  - `twMergeConfig` — 색 키(**(R26)** semantic 키 + Tailwind 정적 색 `inherit` · `current` · `transparent`. 정적 색이 없으면 `border-transparent`가 `border-danger`와 병합되지 않는다), spacing 키(열거 10개 + `0`), radius 키, text 크기 키, shadow 키. 웹·RN 양쪽이 `extendTailwindMerge(twMergeConfig)`로 병합한다(C-15). text 크기 키와 색 키 이름은 겹치면 안 된다
   - `Contracts` 타입 맵(`Size` / `TypographyStep` / `ControlSize` / `Tone` / `Variant` 포함)과 `webComponents` / `nativeComponents` 키 목록(C-17)
   - 타이포 스텝은 Tailwind v4 복합 폰트 크기 변수로 낸다 — `--text-<step>`, `--text-<step>--line-height`, `--text-<step>--font-weight`. `text-xl` 유틸리티 하나가 세 속성을 함께 적용한다. Tailwind 기본 `text-base`는 DS에서 `text-md`다
 - C-7. 컴포넌트 구현은 **semantic 이상 계층만 참조**. primitive 직접 참조 금지 — 테마 교체가 깨지지 않도록. **(R21) 구조 강제**: primitive는 `:root` 변수로만 존재하고 `@theme`에 넣지 않는다. `bg-blue-500` 같은 클래스가 애초에 생성되지 않으므로 lint 없이 구조로 강제된다(AC-6)

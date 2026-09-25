@@ -243,7 +243,8 @@ component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 �
 ```ts
 {
   color:   ["canvas","surface","surface-muted","surface-hover","brand","brand-hover","danger","danger-hover","overlay",
-            "fg","fg-muted","fg-brand","fg-danger","fg-on-brand","fg-on-danger","border","border-focus"],
+            "fg","fg-muted","fg-brand","fg-danger","fg-on-brand","fg-on-danger","border","border-focus",
+            "inherit","current","transparent"],   // R26: Tailwind 정적 색(구현 노트 F-28)
   spacing: ["0","1","2","3","4","6","8","12","16","20","24"],
   radius:  ["sm","md","lg","xl","full"],
   shadow:  ["sm","md","lg"],
