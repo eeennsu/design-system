@@ -16,12 +16,12 @@ import { Text, View } from "react-native-css/components";
 import { setColorScheme } from "./color-scheme";
 import { compileGlobalCss, hasClass } from "./gate-css";
 
-/** :root 의 --bg-brand = oklch(54.6% 0.245 262.881) */
-const BRAND_LIGHT = "#155dfc";
-/** @media 다크의 --bg-brand = oklch(62.3% 0.214 259.815) */
-const BRAND_DARK = "#2b7fff";
-/** @media 다크의 --bg-danger = oklch(63.7% 0.237 25.331) */
-const DANGER_DARK = "#fb2c36";
+/** :root 의 --bg-brand = blue-550 oklch(56.8% 0.201 259.681) (R26) */
+const BRAND_LIGHT = "#206fea";
+/** @media 다크의 --bg-brand. R26 부터 라이트와 같은 blue-550 이다 */
+const BRAND_DARK = "#206fea";
+/** @media 다크의 --bg-danger = red-600 oklch(57.7% 0.245 27.325) (R26) */
+const DANGER_DARK = "#e7000b";
 
 async function styleOf(
   className: string,
@@ -41,10 +41,10 @@ describe("(1) @theme inline — 통과", () => {
   });
 
   test("간격 · radius 도 토큰 값 그대로 들어온다", async () => {
-    // Card recipe 의 클래스라 DS dist 에 있다(아래 (3) 참조).
-    expect(await styleOf("p-4 rounded-lg")).toEqual({
-      padding: 16,
-      borderRadius: 12,
+    // Card recipe 의 클래스라 DS dist 에 있다(아래 (3) 참조). R26: p-4 rounded-lg → p-6 rounded-xl
+    expect(await styleOf("p-6 rounded-xl")).toEqual({
+      padding: 24,
+      borderRadius: 20,
     });
   });
 });
@@ -81,8 +81,8 @@ describe("T-N0 native 래퍼 다크 블록 — (2)·(4) 실패의 우회", () =>
 
   test("surface · fg 도 함께 다크 값이 된다", async () => {
     expect(await styleOf("bg-surface text-fg", { scheme: "dark" })).toEqual({
-      backgroundColor: "#101828",
-      color: "#f9fafb",
+      backgroundColor: "#18181b", // zinc-900 (R26)
+      color: "#f4f4f5", // zinc-100
     });
   });
 });
@@ -94,7 +94,7 @@ describe("(3) @source — 통과", () => {
     const css = await compileGlobalCss();
     expect(hasClass(css, "text-fg-muted")).toBe(true); // Text tone="muted"
     expect(hasClass(css, "bg-danger")).toBe(true); // Button variant="danger"
-    expect(hasClass(css, "rounded-lg")).toBe(true); // Card
+    expect(hasClass(css, "rounded-xl")).toBe(true); // Card (R26, 이전 rounded-lg)
     expect(hasClass(css, "rounded-full")).toBe(true); // Badge (N-16 에서 추가)
   });
 
@@ -135,11 +135,11 @@ describe("(5) 복합 폰트 변수 — T-N0 배수 처리 후 통과", () => {
         x
       </Text>,
     );
-    // T-N0 이 native 래퍼에서 배수(1.4)로 다시 내므로 20 * 1.4 = 28 이 된다(plan D-31).
+    // T-N0 이 native 래퍼에서 배수(30 / 22)로 다시 내므로 22 * 1.36… = 30 이 된다(plan D-31, R26 값).
     expect(screen.getByTestId("probe").props.style).toEqual({
-      fontSize: 20,
-      lineHeight: 28,
-      fontWeight: 600,
+      fontSize: 22,
+      lineHeight: 30,
+      fontWeight: 700,
     });
   });
 
@@ -150,10 +150,11 @@ describe("(5) 복합 폰트 변수 — T-N0 배수 처리 후 통과", () => {
         x
       </Text>,
     );
+    // 1.4 배수를 직접 주면 22 * 1.4 = 30.8 이다 — 단위 없는 배수가 fontSize 에 곱해진다
     expect(screen.getByTestId("probe").props.style).toEqual({
-      fontSize: 20,
-      lineHeight: 28,
-      fontWeight: 600,
+      fontSize: 22,
+      lineHeight: 30.8,
+      fontWeight: 700,
     });
   });
 });

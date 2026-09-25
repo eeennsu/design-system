@@ -14,7 +14,7 @@ const cn = extendTailwindMerge({ override: { theme: twMergeConfig } });
 const cnExtend = extendTailwindMerge({ extend: { theme: twMergeConfig } });
 
 describe("설정이 빌드 산출물에서 나온다", () => {
-  it("색 키가 semantic 16개와 같다", () => {
+  it("색 키가 semantic 17개 + Tailwind 정적 색 3개다 (R26)", () => {
     expect(twMergeConfig.color).toEqual([
       "canvas",
       "surface",
@@ -27,11 +27,15 @@ describe("설정이 빌드 산출물에서 나온다", () => {
       "overlay",
       "fg",
       "fg-muted",
+      "fg-brand",
       "fg-danger",
       "fg-on-brand",
       "fg-on-danger",
       "border",
       "border-focus",
+      "inherit",
+      "current",
+      "transparent",
     ]);
   });
 
@@ -63,8 +67,16 @@ describe("병합 규칙", () => {
     expect(cn("hover:bg-brand-hover", "bg-danger")).toBe("hover:bg-brand-hover bg-danger");
   });
 
+  it("정적 색 transparent 도 같은 그룹이라 뒤가 이긴다 (R26 입력 칸 · 칩의 투명 테두리)", () => {
+    expect(cn("border border-transparent", "border-danger")).toBe("border border-danger");
+    expect(cn("border-transparent", "border-border")).toBe("border-border");
+    expect(cn("bg-transparent", "bg-brand")).toBe("bg-brand");
+  });
+
   it("미등록 radius 키도 DS 기본값을 밀어내지 않는다", () => {
-    expect(cn("rounded-md", "rounded-xl")).toBe("rounded-md rounded-xl");
+    expect(cn("rounded-md", "rounded-2xl")).toBe("rounded-md rounded-2xl");
+    // xl 은 R26 에서 DS 키가 됐다 — 같은 그룹이라 뒤가 이긴다
+    expect(cn("rounded-md", "rounded-xl")).toBe("rounded-xl");
   });
 
   it("알려진 동작: text-base 는 tailwind-merge 에 하드코딩돼 DS 크기를 밀어낸다 (§9 S-18)", () => {

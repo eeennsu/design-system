@@ -38,7 +38,7 @@ export const Text: FC<TextProps> = ({
 }) => (
   <RNText
     accessibilityRole={heading ? "header" : undefined}
-    className={cn(tones[tone], steps[size], className)}
+    className={cn("font-sans", tones[tone], steps[size], className)}
   >
     {children}
   </RNText>

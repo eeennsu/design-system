@@ -43,6 +43,6 @@ export const Badge: FC<BadgeProps> = ({ children, variant = "secondary", size = 
       className,
     )}
   >
-    <RNText className={cn(foregrounds[variant], "text-sm")}>{children}</RNText>
+    <RNText className={cn("font-sans", foregrounds[variant], "text-sm")}>{children}</RNText>
   </View>
 );

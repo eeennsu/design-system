@@ -14,9 +14,10 @@ export declare const spacing: {
 };
 /** 모서리 반경 스케일. */
 export declare const radius: {
-    readonly sm: "4px";
-    readonly md: "8px";
-    readonly lg: "12px";
+    readonly sm: "8px";
+    readonly md: "12px";
+    readonly lg: "16px";
+    readonly xl: "20px";
     readonly full: "9999px";
 };
 /** 그림자 스케일. */
@@ -39,17 +40,17 @@ export declare const text: {
     };
     readonly lg: {
         readonly fontSize: "18px";
-        readonly lineHeight: "28px";
-        readonly fontWeight: 500;
-    };
-    readonly xl: {
-        readonly fontSize: "20px";
-        readonly lineHeight: "28px";
+        readonly lineHeight: "26px";
         readonly fontWeight: 600;
     };
+    readonly xl: {
+        readonly fontSize: "22px";
+        readonly lineHeight: "30px";
+        readonly fontWeight: 700;
+    };
     readonly "2xl": {
-        readonly fontSize: "24px";
-        readonly lineHeight: "32px";
+        readonly fontSize: "28px";
+        readonly lineHeight: "36px";
         readonly fontWeight: 700;
     };
 };
@@ -85,6 +86,7 @@ export declare const semanticVariables: {
     readonly overlay: "--bg-overlay";
     readonly fg: "--fg-default";
     readonly "fg-muted": "--fg-muted";
+    readonly "fg-brand": "--fg-brand";
     readonly "fg-danger": "--fg-danger";
     readonly "fg-on-brand": "--fg-on-brand";
     readonly "fg-on-danger": "--fg-on-danger";
@@ -134,9 +136,8 @@ export declare const component: {
         };
     };
     readonly card: {
-        readonly padding: "4";
-        readonly radius: "lg";
-        readonly shadow: "sm";
+        readonly padding: "6";
+        readonly radius: "xl";
     };
     readonly chip: {
         readonly paddingX: "4";
@@ -146,7 +147,7 @@ export declare const component: {
     };
     readonly dialog: {
         readonly padding: "6";
-        readonly radius: "lg";
+        readonly radius: "xl";
         readonly shadow: "lg";
         readonly maxWidth: "max-w-md";
     };

@@ -22,23 +22,23 @@
         "$type": "typography",
         "$value": {
           "fontSize": "{primitive.typography.fontSize.18}",
-          "lineHeight": "{primitive.typography.lineHeight.28}",
-          "fontWeight": "{primitive.typography.fontWeight.medium}"
+          "lineHeight": "{primitive.typography.lineHeight.26}",
+          "fontWeight": "{primitive.typography.fontWeight.semibold}"
         }
       },
       "xl": {
         "$type": "typography",
         "$value": {
-          "fontSize": "{primitive.typography.fontSize.20}",
-          "lineHeight": "{primitive.typography.lineHeight.28}",
-          "fontWeight": "{primitive.typography.fontWeight.semibold}"
+          "fontSize": "{primitive.typography.fontSize.22}",
+          "lineHeight": "{primitive.typography.lineHeight.30}",
+          "fontWeight": "{primitive.typography.fontWeight.bold}"
         }
       },
       "2xl": {
         "$type": "typography",
         "$value": {
-          "fontSize": "{primitive.typography.fontSize.24}",
-          "lineHeight": "{primitive.typography.lineHeight.32}",
+          "fontSize": "{primitive.typography.fontSize.28}",
+          "lineHeight": "{primitive.typography.lineHeight.36}",
           "fontWeight": "{primitive.typography.fontWeight.bold}"
         }
       }

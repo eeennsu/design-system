@@ -101,7 +101,7 @@ describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {
         .split("\n")
         .filter((line) => line.trim().startsWith("--ds-"));
     expect(primitiveBlock("bakery")).toEqual(primitiveBlock("base"));
-    expect(primitiveBlock("base").length).toBe(48); // 4램프 x 11단 + white + black + 검정 알파 2
+    expect(primitiveBlock("base").length).toBe(62); // 5램프 x 11단 + 반 단계 3 + white + black + 검정 알파 2 (R26)
   });
 });
 

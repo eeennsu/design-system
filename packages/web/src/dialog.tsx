@@ -31,7 +31,7 @@ export const Dialog: FC<Contracts<"web">["Dialog"]> = ({
       <BaseDialog.Popup
         className={cn(
           "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-          "bg-surface text-fg max-w-md w-full p-6 rounded-lg shadow-lg",
+          "bg-surface text-fg max-w-md w-full p-6 rounded-xl shadow-lg",
           className,
         )}
       >

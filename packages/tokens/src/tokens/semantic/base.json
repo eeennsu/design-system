@@ -5,7 +5,7 @@
       "bg": {
         "canvas": {
           "$type": "color",
-          "$value": "{primitive.color.white}"
+          "$value": "{primitive.color.gray.100}"
         },
         "surface": {
           "$type": "color",
@@ -13,19 +13,19 @@
         },
         "surface-muted": {
           "$type": "color",
-          "$value": "{primitive.color.gray.100}"
+          "$value": "{primitive.color.gray.200}"
         },
         "surface-hover": {
           "$type": "color",
-          "$value": "{primitive.color.gray.200}"
+          "$value": "{primitive.color.gray.300}"
         },
         "brand": {
           "$type": "color",
-          "$value": "{primitive.color.blue.600}"
+          "$value": "{primitive.color.blue.550}"
         },
         "brand-hover": {
           "$type": "color",
-          "$value": "{primitive.color.blue.700}"
+          "$value": "{primitive.color.blue.650}"
         },
         "danger": {
           "$type": "color",
@@ -47,11 +47,15 @@
         },
         "muted": {
           "$type": "color",
-          "$value": "{primitive.color.gray.500}"
+          "$value": "{primitive.color.gray.550}"
+        },
+        "brand": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.650}"
         },
         "danger": {
           "$type": "color",
-          "$value": "{semantic.light.bg.danger}"
+          "$value": "{primitive.color.red.700}"
         },
         "on-brand": {
           "$type": "color",
@@ -65,7 +69,7 @@
       "border": {
         "default": {
           "$type": "color",
-          "$value": "{primitive.color.gray.300}"
+          "$value": "{primitive.color.gray.200}"
         },
         "focus": {
           "$type": "color",
@@ -77,35 +81,35 @@
       "bg": {
         "canvas": {
           "$type": "color",
-          "$value": "{primitive.color.gray.950}"
+          "$value": "{primitive.color.zinc.950}"
         },
         "surface": {
           "$type": "color",
-          "$value": "{primitive.color.gray.900}"
+          "$value": "{primitive.color.zinc.900}"
         },
         "surface-muted": {
           "$type": "color",
-          "$value": "{primitive.color.gray.800}"
+          "$value": "{primitive.color.zinc.800}"
         },
         "surface-hover": {
           "$type": "color",
-          "$value": "{primitive.color.gray.700}"
+          "$value": "{primitive.color.zinc.700}"
         },
         "brand": {
           "$type": "color",
-          "$value": "{primitive.color.blue.500}"
+          "$value": "{primitive.color.blue.550}"
         },
         "brand-hover": {
           "$type": "color",
-          "$value": "{primitive.color.blue.400}"
+          "$value": "{primitive.color.blue.650}"
         },
         "danger": {
           "$type": "color",
-          "$value": "{primitive.color.red.500}"
+          "$value": "{primitive.color.red.600}"
         },
         "danger-hover": {
           "$type": "color",
-          "$value": "{primitive.color.red.400}"
+          "$value": "{primitive.color.red.700}"
         },
         "overlay": {
           "$type": "color",
@@ -115,29 +119,33 @@
       "fg": {
         "default": {
           "$type": "color",
-          "$value": "{primitive.color.gray.50}"
+          "$value": "{primitive.color.zinc.100}"
         },
         "muted": {
           "$type": "color",
-          "$value": "{primitive.color.gray.400}"
+          "$value": "{primitive.color.zinc.400}"
+        },
+        "brand": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.400}"
         },
         "danger": {
           "$type": "color",
-          "$value": "{semantic.dark.bg.danger}"
+          "$value": "{primitive.color.red.400}"
         },
         "on-brand": {
           "$type": "color",
-          "$value": "{primitive.color.gray.950}"
+          "$value": "{primitive.color.white}"
         },
         "on-danger": {
           "$type": "color",
-          "$value": "{primitive.color.gray.950}"
+          "$value": "{primitive.color.white}"
         }
       },
       "border": {
         "default": {
           "$type": "color",
-          "$value": "{primitive.color.gray.700}"
+          "$value": "{primitive.color.zinc.800}"
         },
         "focus": {
           "$type": "color",

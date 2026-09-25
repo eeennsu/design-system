@@ -2,10 +2,26 @@
   "$description": "모서리 반경 스케일. Tailwind 관용 이름을 그대로 쓴다(R23 요구 (b)).",
   "primitive": {
     "radius": {
-      "sm": { "$type": "dimension", "$value": "4px" },
-      "md": { "$type": "dimension", "$value": "8px" },
-      "lg": { "$type": "dimension", "$value": "12px" },
-      "full": { "$type": "dimension", "$value": "9999px" }
+      "sm": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "full": {
+        "$type": "dimension",
+        "$value": "9999px"
+      }
     }
   }
 }

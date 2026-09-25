@@ -15,5 +15,5 @@ export const labelNativeId = (id) => id + "-label";
  * Android 전용 속성이고 iOS 는 컨트롤의 `accessibilityLabel`(필수 `label`)만 읽는다.
  * 웹처럼 라벨을 눌러 컨트롤에 포커스하는 동작은 없다(구현 노트 N-16).
  */
-export const Label = ({ children, htmlFor, className }) => (_jsx(RNText, { nativeID: htmlFor ? labelNativeId(htmlFor) : undefined, className: cn("text-sm text-fg", className), children: children }));
+export const Label = ({ children, htmlFor, className }) => (_jsx(RNText, { nativeID: htmlFor ? labelNativeId(htmlFor) : undefined, className: cn("font-sans text-sm text-fg", className), children: children }));
 //# sourceMappingURL=label.js.map

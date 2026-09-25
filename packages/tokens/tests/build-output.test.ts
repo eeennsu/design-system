@@ -104,7 +104,7 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
       const nativeDarkMedia = /^ {2}:root \{\n([\s\S]*?)^ {2}\}/m.exec(native)?.[1] ?? "";
 
       const fromClass = declarations(tokenDarkClass);
-      expect(Object.keys(fromClass)).toHaveLength(16);
+      expect(Object.keys(fromClass)).toHaveLength(17);
       expect(declarations(tokenDarkMedia)).toEqual(fromClass);
       expect(declarations(nativeDarkMedia)).toEqual(fromClass);
     });
@@ -123,12 +123,18 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
       expect(matched, `${step} 배수가 없다`).not.toBeNull();
       const ratio = Number(matched![1]);
       expect(ratio).toBeGreaterThan(1);
-      expect(Number.parseFloat(value.fontSize) * ratio).toBe(Number.parseFloat(value.lineHeight));
+      // xl 30 / 22 는 나누어떨어지지 않아 곱하면 29.999… 다. RN 이 그리는 값은 같다
+      expect(Number.parseFloat(value.fontSize) * ratio).toBeCloseTo(Number.parseFloat(value.lineHeight), 10);
     }
   });
 
+  it("native 래퍼는 --font-sans 를 RN 패밀리 이름 하나로 다시 낸다 (C-7b R26)", () => {
+    expect(output("native/themes/base.css")).toContain("--font-sans: Pretendard;");
+    expect(output("web/themes/base.css")).not.toContain("--font-sans");
+  });
+
   it("토큰 CSS 와 web 래퍼는 무변경이다 — 배수는 native 래퍼에만 있다", () => {
-    expect(output("tokens/themes/base.css")).toContain("--text-xl--line-height: 28px;");
+    expect(output("tokens/themes/base.css")).toContain("--text-xl--line-height: 30px;");
     expect(output("web/themes/base.css")).not.toContain("line-height");
   });
 });
@@ -164,31 +170,31 @@ describe("토큰 CSS 구조 (§3.11)", () => {
     expect(css).toContain("--font-sans: ");
   });
 
-  it("inline 은 색 16개뿐이다 (§3.7)", () => {
+  it("inline 은 색 17개뿐이다 (§3.7, R26 fg-brand)", () => {
     const inline = /@theme inline \{\n([\s\S]*?)^\}/m.exec(css)?.[1] ?? "";
     const lines = inline.trim().split("\n");
-    expect(lines).toHaveLength(16);
+    expect(lines).toHaveLength(17);
     for (const line of lines) expect(line.trim()).toMatch(/^--color-[a-z-]+: var\(--(bg|fg|border)-[a-z-]+\);$/);
   });
 
   it("타이포 스텝을 복합 폰트 변수 3종으로 낸다 (C-6)", () => {
-    expect(css).toContain("--text-xl: 20px;");
-    expect(css).toContain("--text-xl--line-height: 28px;");
-    expect(css).toContain("--text-xl--font-weight: 600;");
+    expect(css).toContain("--text-xl: 22px;");
+    expect(css).toContain("--text-xl--line-height: 30px;");
+    expect(css).toContain("--text-xl--font-weight: 700;");
   });
 
-  it("별칭 2개만 var() 로 남는다 (plan D-3)", () => {
-    expect(css).toContain("--fg-danger: var(--bg-danger);");
+  it("별칭 1개만 var() 로 남는다 (plan D-3, R26 fg-danger 별칭 해제)", () => {
+    expect(css).not.toContain("--fg-danger: var(");
     expect(css).toContain("--border-focus: var(--bg-brand);");
     const varRefs = css.match(/^\s+--(bg|fg|border)-[a-z-]+: var\(/gm) ?? [];
-    expect(varRefs).toHaveLength(6); // 별칭 2개 x (:root · .dark · @media)
+    expect(varRefs).toHaveLength(3); // 별칭 1개 x (:root · .dark · @media)
   });
 });
 
 describe("AC-4 RN JS 객체", () => {
   it("브랜드 파일이 light · dark 해석값을 갖는다", () => {
     const ts = output("tokens/src/brands/base.ts");
-    expect(ts).toContain('"brand": "oklch(54.6% 0.245 262.881)"'); // blue-600
+    expect(ts).toContain('"brand": "oklch(56.8% 0.201 259.681)"'); // blue-550 (R26)
     expect(ts).toContain('"danger": "oklch(57.7% 0.245 27.325)"'); // red-600
     expect(ts).not.toContain("var(--"); // RN 은 var() 를 쓸 수 없다
   });
@@ -219,22 +225,22 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
       md: { paddingX: "3", paddingY: "1", text: "sm", radius: "full" },
     });
     expect(component.icon).toEqual({ size: { sm: 16, md: 20, lg: 24 } });
-    expect(component.card).toEqual({ padding: "4", radius: "lg", shadow: "sm" });
-    expect(component.dialog).toEqual({ padding: "6", radius: "lg", shadow: "lg", maxWidth: "max-w-md" });
+    expect(component.card).toEqual({ padding: "6", radius: "xl" });
+    expect(component.dialog).toEqual({ padding: "6", radius: "xl", shadow: "lg", maxWidth: "max-w-md" });
     expect(component.drawer).toEqual({ padding: "6", width: "max-w-sm w-full" });
     expect(component.tooltip).toEqual({ paddingX: "2", paddingY: "1", text: "sm", radius: "sm" });
   });
 
-  it("컨트롤 높이는 2 x paddingY + lineHeight + 2 = 30 / 42 / 54 다 (plan D-6)", () => {
+  it("컨트롤 높이는 2 x paddingY + lineHeight + 2 = 30 / 42 / 52 다 (plan D-6, R26 lg)", () => {
     const spacingPx = { "0": 0, "1": 4, "2": 8, "3": 12, "4": 16, "6": 24 } as const;
-    const linePx = { sm: 20, md: 24, lg: 28 } as const;
+    const linePx = { sm: 20, md: 24, lg: 26 } as const;
     const height = (recipe: { paddingY: string; text: string }): number =>
       2 * spacingPx[recipe.paddingY as keyof typeof spacingPx] + linePx[recipe.text as keyof typeof linePx] + 2;
     expect([height(component.button.sm), height(component.button.md), height(component.button.lg)]).toEqual([
-      30, 42, 54,
+      30, 42, 52,
     ]);
     expect([height(component.input.sm), height(component.input.md), height(component.input.lg)]).toEqual([
-      30, 42, 54,
+      30, 42, 52,
     ]);
   });
 });
@@ -249,7 +255,7 @@ describe("AC-5 semantic 한 줄 변경이 CSS 와 JS 에 동시 전파", () => {
     const before = readFileSync(semanticPath, "utf8");
     writeFileSync(
       semanticPath,
-      before.replace('"{primitive.color.blue.600}"', '"{primitive.color.red.600}"'),
+      before.replace('"{primitive.color.blue.550}"', '"{primitive.color.red.600}"'),
       "utf8",
     );
 
@@ -260,7 +266,8 @@ describe("AC-5 semantic 한 줄 변경이 CSS 와 JS 에 동시 전파", () => {
 
     expect(css).toContain(`--bg-brand: ${red600};`);
     expect(js).toContain(`"brand": "${red600}"`);
-    // 소스 한 줄만 바뀌었으므로 원본 값은 light brand 자리에서 사라진다.
-    expect(css).not.toContain("--bg-brand: oklch(54.6% 0.245 262.881);");
+    // 소스 한 줄만 바뀌었으므로 원본 값은 light brand 자리에서만 사라진다. R26 부터 다크 brand 도 같은
+    // blue-550 이라 다크 두 블록(.dark · @media)에는 남는다.
+    expect(css.match(/--bg-brand: oklch\(56\.8% 0\.201 259\.681\);/g)).toHaveLength(2);
   });
 });

@@ -19,7 +19,8 @@
     --bg-overlay: oklch(0% 0 0 / 0.6);
     --fg-default: oklch(98.5% 0.002 247.839);
     --fg-muted: oklch(70.7% 0.022 261.325);
-    --fg-danger: var(--bg-danger);
+    --fg-brand: oklch(82.8% 0.189 84.429);
+    --fg-danger: oklch(63.7% 0.237 25.331);
     --fg-on-brand: oklch(13% 0.028 261.692);
     --fg-on-danger: oklch(13% 0.028 261.692);
     --border-default: oklch(37.3% 0.034 259.733);
@@ -31,9 +32,14 @@
 @theme {
   --text-sm--line-height: 1.4285714285714286;
   --text-md--line-height: 1.5;
-  --text-lg--line-height: 1.5555555555555556;
-  --text-xl--line-height: 1.4;
-  --text-2xl--line-height: 1.3333333333333333;
+  --text-lg--line-height: 1.4444444444444444;
+  --text-xl--line-height: 1.3636363636363635;
+  --text-2xl--line-height: 1.2857142857142858;
+}
+
+/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */
+@theme {
+  --font-sans: Pretendard;
 }
 
 /* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */

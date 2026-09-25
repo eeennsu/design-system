@@ -60,6 +60,6 @@ export const Button = ({ label, variant = "primary", size = "md", icon, loading 
     const foreground = foregrounds[variant];
     return (_jsxs(Pressable, { ref: ref, accessibilityRole: "button", accessibilityLabel: label, accessibilityState: { disabled: inactive }, disabled: inactive, hitSlop: hitSlops[size], 
         // 계약은 `() => void` 다. 그대로 넘기면 누름 이벤트 객체가 새어 나간다.
-        onPress: onPress && (() => onPress()), className: cn("flex-row items-center justify-center border border-transparent min-w-12", surfaces[variant], pressed, boxes[size], inactive && "opacity-50", className), children: [loading ? (_jsx(Glyph, { name: "loader", size: size, className: foreground })) : icon ? (_jsx(Glyph, { name: icon, size: size, className: foreground })) : null, _jsx(RNText, { className: cn(foreground, labels[size]), children: label })] }));
+        onPress: onPress && (() => onPress()), className: cn("flex-row items-center justify-center border border-transparent min-w-12", surfaces[variant], pressed, boxes[size], inactive && "opacity-50", className), children: [loading ? (_jsx(Glyph, { name: "loader", size: size, className: foreground })) : icon ? (_jsx(Glyph, { name: icon, size: size, className: foreground })) : null, _jsx(RNText, { className: cn("font-sans", foreground, labels[size]), children: label })] }));
 };
 //# sourceMappingURL=button.js.map

@@ -104,7 +104,7 @@ export const Button: FC<ButtonProps> = ({
       ) : icon ? (
         <Glyph name={icon} size={size} className={foreground} />
       ) : null}
-      <RNText className={cn(foreground, labels[size])}>{label}</RNText>
+      <RNText className={cn("font-sans", foreground, labels[size])}>{label}</RNText>
     </Pressable>
   );
 };

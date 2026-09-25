@@ -107,7 +107,7 @@ describe("AC-1 단일 소스와 참조 해석", () => {
     }
   });
 
-  it("별칭은 2개다 — fg.danger 와 border.focus (plan D-3)", () => {
+  it("별칭은 border.focus 하나다 (plan D-3, R26 fg.danger 별칭 해제)", () => {
     for (const brand of BRANDS) {
       const tree = source.trees.get(brand)!;
       for (const mode of MODES) {
@@ -117,7 +117,7 @@ describe("AC-1 단일 소스와 참조 해석", () => {
             return refTarget(isRecord(node) ? node["$value"] : undefined)?.startsWith("semantic.") ?? false;
           })
           .map(({ group, name }) => `${group}.${name}`);
-        expect(aliases).toEqual(["fg.danger", "border.focus"]);
+        expect(aliases).toEqual(["border.focus"]);
       }
     }
   });
@@ -130,9 +130,9 @@ describe("AC-1 단일 소스와 참조 해석", () => {
     expect(signature("bakery")).toEqual(signature("base"));
   });
 
-  it("semantic 색은 그룹 3개 · 16개다", () => {
+  it("semantic 색은 그룹 3개 · 17개다 (R26 fg.brand)", () => {
     const entries = semanticEntries(source, "base", "light");
-    expect(entries).toHaveLength(16);
+    expect(entries).toHaveLength(17);
     expect([...new Set(entries.map((entry) => entry.group))]).toEqual([...SEMANTIC_GROUPS]);
   });
 });

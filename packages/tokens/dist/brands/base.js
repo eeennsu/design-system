@@ -7,50 +7,52 @@
 export const colors = {
     "light": {
         "bg": {
-            "canvas": "oklch(100% 0 0)",
+            "canvas": "oklch(96.7% 0.003 264.542)",
             "surface": "oklch(100% 0 0)",
-            "surface-muted": "oklch(96.7% 0.003 264.542)",
-            "surface-hover": "oklch(92.8% 0.006 264.531)",
-            "brand": "oklch(54.6% 0.245 262.881)",
-            "brand-hover": "oklch(48.8% 0.243 264.376)",
+            "surface-muted": "oklch(92.8% 0.006 264.531)",
+            "surface-hover": "oklch(87.2% 0.01 258.338)",
+            "brand": "oklch(56.8% 0.201 259.681)",
+            "brand-hover": "oklch(53.2% 0.194 260.157)",
             "danger": "oklch(57.7% 0.245 27.325)",
             "danger-hover": "oklch(50.5% 0.213 27.518)",
             "overlay": "oklch(0% 0 0 / 0.5)"
         },
         "fg": {
             "default": "oklch(21% 0.034 264.665)",
-            "muted": "oklch(55.1% 0.027 264.364)",
-            "danger": "oklch(57.7% 0.245 27.325)",
+            "muted": "oklch(49.9% 0.029 260.583)",
+            "brand": "oklch(53.2% 0.194 260.157)",
+            "danger": "oklch(50.5% 0.213 27.518)",
             "on-brand": "oklch(100% 0 0)",
             "on-danger": "oklch(100% 0 0)"
         },
         "border": {
-            "default": "oklch(87.2% 0.01 258.338)",
-            "focus": "oklch(54.6% 0.245 262.881)"
+            "default": "oklch(92.8% 0.006 264.531)",
+            "focus": "oklch(56.8% 0.201 259.681)"
         }
     },
     "dark": {
         "bg": {
-            "canvas": "oklch(13% 0.028 261.692)",
-            "surface": "oklch(21% 0.034 264.665)",
-            "surface-muted": "oklch(27.8% 0.033 256.848)",
-            "surface-hover": "oklch(37.3% 0.034 259.733)",
-            "brand": "oklch(62.3% 0.214 259.815)",
-            "brand-hover": "oklch(70.7% 0.165 254.624)",
-            "danger": "oklch(63.7% 0.237 25.331)",
-            "danger-hover": "oklch(70.4% 0.191 22.216)",
+            "canvas": "oklch(14.1% 0.005 285.823)",
+            "surface": "oklch(21% 0.006 285.885)",
+            "surface-muted": "oklch(27.4% 0.006 286.033)",
+            "surface-hover": "oklch(37% 0.013 285.805)",
+            "brand": "oklch(56.8% 0.201 259.681)",
+            "brand-hover": "oklch(53.2% 0.194 260.157)",
+            "danger": "oklch(57.7% 0.245 27.325)",
+            "danger-hover": "oklch(50.5% 0.213 27.518)",
             "overlay": "oklch(0% 0 0 / 0.6)"
         },
         "fg": {
-            "default": "oklch(98.5% 0.002 247.839)",
-            "muted": "oklch(70.7% 0.022 261.325)",
-            "danger": "oklch(63.7% 0.237 25.331)",
-            "on-brand": "oklch(13% 0.028 261.692)",
-            "on-danger": "oklch(13% 0.028 261.692)"
+            "default": "oklch(96.7% 0.001 286.375)",
+            "muted": "oklch(70.5% 0.015 286.067)",
+            "brand": "oklch(70.7% 0.165 254.624)",
+            "danger": "oklch(70.4% 0.191 22.216)",
+            "on-brand": "oklch(100% 0 0)",
+            "on-danger": "oklch(100% 0 0)"
         },
         "border": {
-            "default": "oklch(37.3% 0.034 259.733)",
-            "focus": "oklch(62.3% 0.214 259.815)"
+            "default": "oklch(27.4% 0.006 286.033)",
+            "focus": "oklch(56.8% 0.201 259.681)"
         }
     }
 };

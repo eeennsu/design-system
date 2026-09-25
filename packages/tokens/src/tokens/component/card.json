@@ -1,10 +1,15 @@
 {
-  "$description": "Card recipe. size 축 없음.",
+  "$description": "Card recipe. size 축 없음. 테두리 · 그림자 없이 canvas 와의 명도 차이로 구분된다(R26, 알려진 동작 24).",
   "component": {
     "card": {
-      "padding": { "$type": "dimension", "$value": "{primitive.spacing.4}" },
-      "radius": { "$type": "dimension", "$value": "{primitive.radius.lg}" },
-      "shadow": { "$type": "shadow", "$value": "{primitive.shadow.sm}" }
+      "padding": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.6}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.xl}"
+      }
     }
   }
 }

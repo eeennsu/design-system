@@ -29,14 +29,14 @@ export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false,
     onPress={onPress && (() => onPress())}
     className={cn(
       "flex-row items-center justify-center border px-4 py-2 rounded-full min-w-12",
-      selected ? "border-brand bg-brand hover:bg-brand-hover" : "border-border bg-surface hover:bg-surface-hover",
+      selected ? "border-brand bg-brand hover:bg-brand-hover" : "border-transparent bg-surface-muted hover:bg-surface-hover",
       // 누르는 동안은 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다(Button 과 같다)
       "active:opacity-80",
       disabled && "opacity-50",
       className,
     )}
   >
-    <RNText className={cn("text-sm", selected ? "text-fg-on-brand" : "text-fg")}>
+    <RNText className={cn("font-sans text-sm", selected ? "text-fg-on-brand" : "text-fg")}>
       {label}
     </RNText>
   </Pressable>

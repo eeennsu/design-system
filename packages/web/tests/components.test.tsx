@@ -111,14 +111,10 @@ describe("AC-7 Text · Label · Badge · Card", () => {
         <span>내용</span>
       </Card>,
     );
-    expect(screen.getByText("내용").parentElement).toHaveClass(
-      "bg-surface",
-      "border",
-      "border-border",
-      "rounded-lg",
-      "shadow-sm",
-      "p-4",
-    );
+    const card = screen.getByText("내용").parentElement;
+    expect(card).toHaveClass("bg-surface", "rounded-xl", "p-6");
+    // R26: 테두리 · 그림자 없이 canvas 와의 명도 차이로 구분된다(알려진 동작 24)
+    expect(card).not.toHaveClass("border", "shadow-sm");
   });
 });
 
@@ -189,7 +185,7 @@ describe("N-17 Chip · Icon", () => {
     expect(screen.getByRole("button", { name: "식비" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "배달" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "식비" })).toHaveClass("bg-brand", "text-fg-on-brand");
-    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface", "border-border");
+    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface-muted", "border-transparent");
   });
 
   it("Chip onClick 이 인자 없이 호출되고, 상태는 소비자가 바꾼다", () => {
@@ -418,6 +414,6 @@ describe("AC-11 병합 — 소비자 className 이 이긴다", () => {
         <span>내용</span>
       </Card>,
     );
-    expect(screen.getByText("내용").parentElement).toHaveClass("p-4", "p-5");
+    expect(screen.getByText("내용").parentElement).toHaveClass("p-6", "p-5");
   });
 });

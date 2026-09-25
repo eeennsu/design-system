@@ -26,5 +26,5 @@ const boxes = {
  * `className="self-start"` 를 준다. 기본값으로 넣지 않는 이유는 `align="center"` 인 가로 Stack 에서
  * 세로 가운데 정렬을 깨뜨리기 때문이다.
  */
-export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx(View, { className: cn("flex-row items-center border border-transparent", surfaces[variant], boxes[size], className), children: _jsx(RNText, { className: cn(foregrounds[variant], "text-sm"), children: children }) }));
+export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx(View, { className: cn("flex-row items-center border border-transparent", surfaces[variant], boxes[size], className), children: _jsx(RNText, { className: cn("font-sans", foregrounds[variant], "text-sm"), children: children }) }));
 //# sourceMappingURL=badge.js.map

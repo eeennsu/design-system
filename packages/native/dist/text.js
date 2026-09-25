@@ -23,5 +23,5 @@ export const steps = {
  * `accessibilityRole="header"` 로 간다 — 레벨 개념이 없으므로 1·2·3 이 같은 역할이 된다.
  * 시각적 크기는 어느 쪽이든 `size` 가 정한다.
  */
-export const Text = ({ children, tone = "default", size = "md", heading, className, }) => (_jsx(RNText, { accessibilityRole: heading ? "header" : undefined, className: cn(tones[tone], steps[size], className), children: children }));
+export const Text = ({ children, tone = "default", size = "md", heading, className, }) => (_jsx(RNText, { accessibilityRole: heading ? "header" : undefined, className: cn("font-sans", tones[tone], steps[size], className), children: children }));
 //# sourceMappingURL=text.js.map

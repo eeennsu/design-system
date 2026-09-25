@@ -73,7 +73,6 @@ describe("Card · 오버레이", () => {
     expect(screen.getByText("내용").parentElement).toHaveClass(
       `p-${component.card.padding}`,
       `rounded-${component.card.radius}`,
-      `shadow-${component.card.shadow}`,
     );
   });
 

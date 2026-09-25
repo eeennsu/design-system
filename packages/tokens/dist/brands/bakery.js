@@ -20,6 +20,7 @@ export const colors = {
         "fg": {
             "default": "oklch(21% 0.034 264.665)",
             "muted": "oklch(44.6% 0.03 256.802)",
+            "brand": "oklch(55.5% 0.163 48.998)",
             "danger": "oklch(57.7% 0.245 27.325)",
             "on-brand": "oklch(13% 0.028 261.692)",
             "on-danger": "oklch(100% 0 0)"
@@ -44,6 +45,7 @@ export const colors = {
         "fg": {
             "default": "oklch(98.5% 0.002 247.839)",
             "muted": "oklch(70.7% 0.022 261.325)",
+            "brand": "oklch(82.8% 0.189 84.429)",
             "danger": "oklch(63.7% 0.237 25.331)",
             "on-brand": "oklch(13% 0.028 261.692)",
             "on-danger": "oklch(13% 0.028 261.692)"

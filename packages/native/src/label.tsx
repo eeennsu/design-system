@@ -21,7 +21,7 @@ export const labelNativeId = (id: string): string => id + "-label";
 export const Label: FC<Contracts<"native">["Label"]> = ({ children, htmlFor, className }) => (
   <RNText
     nativeID={htmlFor ? labelNativeId(htmlFor) : undefined}
-    className={cn("text-sm text-fg", className)}
+    className={cn("font-sans text-sm text-fg", className)}
   >
     {children}
   </RNText>

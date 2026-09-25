@@ -6,50 +6,52 @@
 export declare const colors: {
     readonly light: {
         readonly bg: {
-            readonly canvas: "oklch(100% 0 0)";
+            readonly canvas: "oklch(96.7% 0.003 264.542)";
             readonly surface: "oklch(100% 0 0)";
-            readonly "surface-muted": "oklch(96.7% 0.003 264.542)";
-            readonly "surface-hover": "oklch(92.8% 0.006 264.531)";
-            readonly brand: "oklch(54.6% 0.245 262.881)";
-            readonly "brand-hover": "oklch(48.8% 0.243 264.376)";
+            readonly "surface-muted": "oklch(92.8% 0.006 264.531)";
+            readonly "surface-hover": "oklch(87.2% 0.01 258.338)";
+            readonly brand: "oklch(56.8% 0.201 259.681)";
+            readonly "brand-hover": "oklch(53.2% 0.194 260.157)";
             readonly danger: "oklch(57.7% 0.245 27.325)";
             readonly "danger-hover": "oklch(50.5% 0.213 27.518)";
             readonly overlay: "oklch(0% 0 0 / 0.5)";
         };
         readonly fg: {
             readonly default: "oklch(21% 0.034 264.665)";
-            readonly muted: "oklch(55.1% 0.027 264.364)";
-            readonly danger: "oklch(57.7% 0.245 27.325)";
+            readonly muted: "oklch(49.9% 0.029 260.583)";
+            readonly brand: "oklch(53.2% 0.194 260.157)";
+            readonly danger: "oklch(50.5% 0.213 27.518)";
             readonly "on-brand": "oklch(100% 0 0)";
             readonly "on-danger": "oklch(100% 0 0)";
         };
         readonly border: {
-            readonly default: "oklch(87.2% 0.01 258.338)";
-            readonly focus: "oklch(54.6% 0.245 262.881)";
+            readonly default: "oklch(92.8% 0.006 264.531)";
+            readonly focus: "oklch(56.8% 0.201 259.681)";
         };
     };
     readonly dark: {
         readonly bg: {
-            readonly canvas: "oklch(13% 0.028 261.692)";
-            readonly surface: "oklch(21% 0.034 264.665)";
-            readonly "surface-muted": "oklch(27.8% 0.033 256.848)";
-            readonly "surface-hover": "oklch(37.3% 0.034 259.733)";
-            readonly brand: "oklch(62.3% 0.214 259.815)";
-            readonly "brand-hover": "oklch(70.7% 0.165 254.624)";
-            readonly danger: "oklch(63.7% 0.237 25.331)";
-            readonly "danger-hover": "oklch(70.4% 0.191 22.216)";
+            readonly canvas: "oklch(14.1% 0.005 285.823)";
+            readonly surface: "oklch(21% 0.006 285.885)";
+            readonly "surface-muted": "oklch(27.4% 0.006 286.033)";
+            readonly "surface-hover": "oklch(37% 0.013 285.805)";
+            readonly brand: "oklch(56.8% 0.201 259.681)";
+            readonly "brand-hover": "oklch(53.2% 0.194 260.157)";
+            readonly danger: "oklch(57.7% 0.245 27.325)";
+            readonly "danger-hover": "oklch(50.5% 0.213 27.518)";
             readonly overlay: "oklch(0% 0 0 / 0.6)";
         };
         readonly fg: {
-            readonly default: "oklch(98.5% 0.002 247.839)";
-            readonly muted: "oklch(70.7% 0.022 261.325)";
-            readonly danger: "oklch(63.7% 0.237 25.331)";
-            readonly "on-brand": "oklch(13% 0.028 261.692)";
-            readonly "on-danger": "oklch(13% 0.028 261.692)";
+            readonly default: "oklch(96.7% 0.001 286.375)";
+            readonly muted: "oklch(70.5% 0.015 286.067)";
+            readonly brand: "oklch(70.7% 0.165 254.624)";
+            readonly danger: "oklch(70.4% 0.191 22.216)";
+            readonly "on-brand": "oklch(100% 0 0)";
+            readonly "on-danger": "oklch(100% 0 0)";
         };
         readonly border: {
-            readonly default: "oklch(37.3% 0.034 259.733)";
-            readonly focus: "oklch(62.3% 0.214 259.815)";
+            readonly default: "oklch(27.4% 0.006 286.033)";
+            readonly focus: "oklch(56.8% 0.201 259.681)";
         };
     };
 };

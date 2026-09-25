@@ -24,13 +24,13 @@ const APP_BRAND_DARK = "#5bbe62";
 const DS_DANGER_LIGHT = "#e7000b";
 const DS_FG_LIGHT = "#101828";
 const DS_SURFACE_LIGHT = "#fff";
-const DS_SURFACE_DARK = "#101828";
-const DS_SURFACE_MUTED_LIGHT = "#f3f4f6";
+const DS_SURFACE_DARK = "#18181b"; // zinc-900 (R26)
+const DS_SURFACE_MUTED_LIGHT = "#e5e7eb"; // gray-200 (R26 채움 톤)
 const DS_ON_BRAND = "#fff";
-/** base 다크의 on-brand · on-danger 는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다(N-17). */
-const DS_ON_BRAND_DARK = "#030712";
-const DS_FG_MUTED_LIGHT = "#6a7282";
-const DS_FG_MUTED_DARK = "#99a1af";
+/** base 다크의 on-brand · on-danger 는 R26 부터 다시 흰색이다 — 다크 brand · danger 가 진한 채움이다. */
+const DS_ON_BRAND_DARK = "#fff";
+const DS_FG_MUTED_LIGHT = "#5a6374"; // gray-550 (R26)
+const DS_FG_MUTED_DARK = "#9f9fa9"; // zinc-400 (R26)
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -137,9 +137,10 @@ describe("AC-11 RN절 · AC-25 className 병합", () => {
       </Text>,
     );
     expect(rootStyle()).toMatchObject({
-      fontSize: 20,
-      lineHeight: 28,
-      fontWeight: 600,
+      fontFamily: "Pretendard", // native 래퍼의 --font-sans (C-7b R26)
+      fontSize: 22,
+      lineHeight: 30,
+      fontWeight: 700,
       color: DS_FG_LIGHT,
     });
   });
@@ -372,7 +373,7 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     expect(screen.queryByRole("image")).toBeNull();
   });
 
-  test("base 다크의 on-brand 글자는 gray-950 이다 — 흰 글자는 4.5:1 이 안 된다", async () => {
+  test("base 다크의 on-brand · on-danger 글자는 흰색이다 (R26 진한 채움)", async () => {
     await mount(<Badge variant="primary">신규</Badge>, "dark");
     expect(screen.getByText("신규").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
 

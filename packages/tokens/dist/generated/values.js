@@ -15,9 +15,10 @@ export const spacing = {
 };
 /** 모서리 반경 스케일. */
 export const radius = {
-    "sm": "4px",
-    "md": "8px",
-    "lg": "12px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
     "full": "9999px"
 };
 /** 그림자 스케일. */
@@ -40,17 +41,17 @@ export const text = {
     },
     "lg": {
         "fontSize": "18px",
-        "lineHeight": "28px",
-        "fontWeight": 500
-    },
-    "xl": {
-        "fontSize": "20px",
-        "lineHeight": "28px",
+        "lineHeight": "26px",
         "fontWeight": 600
     },
+    "xl": {
+        "fontSize": "22px",
+        "lineHeight": "30px",
+        "fontWeight": 700
+    },
     "2xl": {
-        "fontSize": "24px",
-        "lineHeight": "32px",
+        "fontSize": "28px",
+        "lineHeight": "36px",
         "fontWeight": 700
     }
 };
@@ -79,11 +80,15 @@ export const twMergeConfig = {
         "overlay",
         "fg",
         "fg-muted",
+        "fg-brand",
         "fg-danger",
         "fg-on-brand",
         "fg-on-danger",
         "border",
-        "border-focus"
+        "border-focus",
+        "inherit",
+        "current",
+        "transparent"
     ],
     "spacing": [
         "0",
@@ -102,6 +107,7 @@ export const twMergeConfig = {
         "sm",
         "md",
         "lg",
+        "xl",
         "full"
     ],
     "shadow": [
@@ -130,6 +136,7 @@ export const semanticVariables = {
     "overlay": "--bg-overlay",
     "fg": "--fg-default",
     "fg-muted": "--fg-muted",
+    "fg-brand": "--fg-brand",
     "fg-danger": "--fg-danger",
     "fg-on-brand": "--fg-on-brand",
     "fg-on-danger": "--fg-on-danger",
@@ -179,9 +186,8 @@ export const component = {
         }
     },
     "card": {
-        "padding": "4",
-        "radius": "lg",
-        "shadow": "sm"
+        "padding": "6",
+        "radius": "xl"
     },
     "chip": {
         "paddingX": "4",
@@ -191,7 +197,7 @@ export const component = {
     },
     "dialog": {
         "padding": "6",
-        "radius": "lg",
+        "radius": "xl",
         "shadow": "lg",
         "maxWidth": "max-w-md"
     },

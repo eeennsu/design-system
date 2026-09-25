@@ -19,6 +19,7 @@ export declare const colors: {
         readonly fg: {
             readonly default: "oklch(21% 0.034 264.665)";
             readonly muted: "oklch(44.6% 0.03 256.802)";
+            readonly brand: "oklch(55.5% 0.163 48.998)";
             readonly danger: "oklch(57.7% 0.245 27.325)";
             readonly "on-brand": "oklch(13% 0.028 261.692)";
             readonly "on-danger": "oklch(100% 0 0)";
@@ -43,6 +44,7 @@ export declare const colors: {
         readonly fg: {
             readonly default: "oklch(98.5% 0.002 247.839)";
             readonly muted: "oklch(70.7% 0.022 261.325)";
+            readonly brand: "oklch(82.8% 0.189 84.429)";
             readonly danger: "oklch(63.7% 0.237 25.331)";
             readonly "on-brand": "oklch(13% 0.028 261.692)";
             readonly "on-danger": "oklch(13% 0.028 261.692)";

@@ -2,10 +2,22 @@
   "$description": "Dialog recipe. maxWidth 는 container 네임스페이스라 DS 리셋 대상이 아니다.",
   "component": {
     "dialog": {
-      "padding": { "$type": "dimension", "$value": "{primitive.spacing.6}" },
-      "radius": { "$type": "dimension", "$value": "{primitive.radius.lg}" },
-      "shadow": { "$type": "shadow", "$value": "{primitive.shadow.lg}" },
-      "maxWidth": { "$type": "className", "$value": "max-w-md" }
+      "padding": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.6}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.xl}"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "{primitive.shadow.lg}"
+      },
+      "maxWidth": {
+        "$type": "className",
+        "$value": "max-w-md"
+      }
     }
   }
 }

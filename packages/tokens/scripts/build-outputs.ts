@@ -11,6 +11,8 @@ export const BRANDS = ["base", "bakery"] as const;
 export type Brand = (typeof BRANDS)[number];
 
 export const SEMANTIC_GROUPS = ["bg", "fg", "border"] as const;
+/** 테마와 무관한 Tailwind 정적 색 유틸리티 키. twMergeConfig 색 키 끝에 붙는다(R26). */
+export const STATIC_COLORS = ["inherit", "current", "transparent"] as const;
 export const MODES = ["light", "dark"] as const;
 export type Mode = (typeof MODES)[number];
 
@@ -468,6 +470,9 @@ function webWrapperCss(brand: Brand): string {
  *
  * `tabular-nums` 는 react-native-css 가 `font-variant-numeric` 을 옮기지 않아 RN 에서 무효다.
  * 같은 클래스에 RN 전용 선언을 더해 웹과 같은 결과를 낸다(AC-25, 구현 노트 F-21).
+ *
+ * `--font-sans` 는 웹 목록(`"Pretendard Variable", Pretendard, …`)의 첫 이름을 RN 이 그대로 요청하므로
+ * 토큰 소스의 RN 이름(`$extensions["ds.native"]`) 하나로 다시 낸다(C-7b R26).
  */
 function nativeWrapperCss(source: TokenSource, brand: Brand): string {
   const text = textSteps(source.shared);
@@ -495,6 +500,11 @@ function nativeWrapperCss(source: TokenSource, brand: Brand): string {
     const lineHeight = pxNumber(value.lineHeight, `component.text.${step}.lineHeight`);
     lines.push(`  --text-${step}--line-height: ${lineHeight / fontSize};`);
   }
+  lines.push("}");
+  lines.push("");
+  lines.push("/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */");
+  lines.push("@theme {");
+  lines.push(`  --font-sans: ${fontFamilyOf(source.primitive).sans.native};`);
   lines.push("}");
   lines.push("");
   lines.push("/* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */");
@@ -543,7 +553,13 @@ function valuesTs(source: TokenSource): string {
   const component = componentRecipes(source);
 
   const twMergeConfig = {
-    color: semanticEntries(source, "base", "light").map(({ group, name }) => colorKey(group, name)),
+    // Tailwind 정적 색(inherit · current · transparent)은 --color-* 리셋과 무관하게 생성된다. 키에 없으면
+    // twMerge 가 border-transparent 를 색 그룹으로 보지 않아 border-danger 와 병합하지 않고, CSS 순서상
+    // transparent 가 이긴다(R26 입력 칸 invalid 테두리가 사라졌다).
+    color: [
+      ...semanticEntries(source, "base", "light").map(({ group, name }) => colorKey(group, name)),
+      ...STATIC_COLORS,
+    ],
     spacing: Object.keys(spacing),
     radius: Object.keys(radius),
     shadow: Object.keys(shadow),

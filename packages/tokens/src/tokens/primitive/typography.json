@@ -20,23 +20,66 @@
         }
       },
       "fontSize": {
-        "14": { "$type": "dimension", "$value": "14px" },
-        "16": { "$type": "dimension", "$value": "16px" },
-        "18": { "$type": "dimension", "$value": "18px" },
-        "20": { "$type": "dimension", "$value": "20px" },
-        "24": { "$type": "dimension", "$value": "24px" }
+        "14": {
+          "$type": "dimension",
+          "$value": "14px"
+        },
+        "16": {
+          "$type": "dimension",
+          "$value": "16px"
+        },
+        "18": {
+          "$type": "dimension",
+          "$value": "18px"
+        },
+        "22": {
+          "$type": "dimension",
+          "$value": "22px"
+        },
+        "28": {
+          "$type": "dimension",
+          "$value": "28px"
+        }
       },
       "lineHeight": {
-        "20": { "$type": "dimension", "$value": "20px" },
-        "24": { "$type": "dimension", "$value": "24px" },
-        "28": { "$type": "dimension", "$value": "28px" },
-        "32": { "$type": "dimension", "$value": "32px" }
+        "20": {
+          "$type": "dimension",
+          "$value": "20px"
+        },
+        "24": {
+          "$type": "dimension",
+          "$value": "24px"
+        },
+        "26": {
+          "$type": "dimension",
+          "$value": "26px"
+        },
+        "30": {
+          "$type": "dimension",
+          "$value": "30px"
+        },
+        "36": {
+          "$type": "dimension",
+          "$value": "36px"
+        }
       },
       "fontWeight": {
-        "regular": { "$type": "fontWeight", "$value": 400 },
-        "medium": { "$type": "fontWeight", "$value": 500 },
-        "semibold": { "$type": "fontWeight", "$value": 600 },
-        "bold": { "$type": "fontWeight", "$value": 700 }
+        "regular": {
+          "$type": "fontWeight",
+          "$value": 400
+        },
+        "medium": {
+          "$type": "fontWeight",
+          "$value": 500
+        },
+        "semibold": {
+          "$type": "fontWeight",
+          "$value": 600
+        },
+        "bold": {
+          "$type": "fontWeight",
+          "$value": 700
+        }
       }
     }
   }

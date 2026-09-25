@@ -7,7 +7,7 @@ import { cn } from "./cn.js";
  * 색을 바꾸려면 `className` 이다(§4.2).
  */
 export const Card: FC<Contracts<"web">["Card"]> = ({ children, className }) => (
-  <div className={cn("bg-surface border border-border rounded-lg shadow-sm p-4", className)}>
+  <div className={cn("bg-surface rounded-xl p-6", className)}>
     {children}
   </div>
 );
