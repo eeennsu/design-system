@@ -471,8 +471,18 @@ react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform �
 - npm 패키지 페이지(README · `repository`)는 여전히 비어 있다
 - 웹 Chip · Icon 은 verify-next 화면에 없다. 브라우저 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 다음 웹 작업 때
   화면에 올려 확인한다(DS 재검증 테스트 공백 6)
-- 기기에서 볼 것(N-17): RN Icon 이름 한 번 읽기 · 꾸밈 건너뛰기, `rotate-180` · `ml-auto` 배치, hitSlop 48 과 칩 줄 간격 10 미만의 겹침,
-  `tabular-nums`, placeholder 색(라이트 · 다크), 하드웨어 키보드 포커스 테두리, bakery 라이트 포커스 · 고른 칩 채움 약 3.1:1,
-  글자 크기 200% 의 칩 줄, AC-23 다크 재촬영
+- 2026-09-25 에뮬레이터 확인(N-17, spendback 화면 · Android 16 · S24+ 해상도 · base 브랜드에 앱 색 재선언): placeholder 색은
+  라이트 · 다크 모두 읽힌다. 글자 크기 200% 에서 칩 줄이 넘어가며 버틴다. Chip · Button 의 `active:opacity-80` 이 보이고, 다크
+  on-brand · on-danger 글자가 거의 검정이다. Input 포커스 테두리는 터치 · `focus()` 로 바뀐다. 기록은 spendback `docs/DESIGN.md` 1.6
+- 에뮬레이터에서 새로 찾은 것(spendback DESIGN.md 5.2):
+  - RN Label 과 Input 이 따로 읽혀 같은 이름이 두 번 들린다. `htmlFor` 로 연결된 입력 칸이 이름을 가지면 Label 을 스크린 리더에서 숨기는 안
+  - Icon(Button 안 포함)이 글자 크기를 따르지 않아 200% 에서 라벨보다 한참 작다
+  - RN Button · Chip 의 하드웨어 키보드 포커스 표시가 Android 기본 강조(옅은 사각형)뿐이다. RN TextInput 은 Tab 으로 포커스를 받지 않는다(RN 이
+    입력 칸의 터치 모드 포커스를 막는다)
+  - 떠 있는 버튼(FAB)에 `active:opacity-80` 을 쓰면 아래 내용이 비친다. 알려진 동작 21 에 "떠 있는 버튼은 소비자가 `active:opacity-100` 과 표면색으로
+    덮는다"를 더할 후보
+- 기기에서 남은 것(N-17): RN Icon 이름 한 번 읽기 · 꾸밈 건너뛰기, `rotate-180` · `ml-auto` 배치(spendback 은 단독 Icon 을 아직 안 쓴다),
+  hitSlop 48 과 칩 줄 간격 10 미만의 겹침, `tabular-nums`(에뮬레이터 Roboto 는 숫자가 원래 고정폭이라 판별 불가), bakery 라이트 포커스 · 고른 칩
+  채움 약 3.1:1, AC-23 다크 재촬영
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
