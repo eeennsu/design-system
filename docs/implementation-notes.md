@@ -3,11 +3,11 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-25
+- 기준일: 2026-09-26
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
-- v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` — 구현 · 테스트 완료, **publish 전**
+- v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` 을 **2026-09-26 npm 에 publish 했다**(`latest`). spendback 이 0.4.0 으로 올라갔다
 
 ## 1. 완료 상태
 
@@ -28,7 +28,7 @@
 | 7 | T-P1 publish | 완료 | npm `0.1.0` 3패키지. 새 Next 프로젝트에서 npm 설치로 AC-16 화면 확인 |
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
-| v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish 전 | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
+| v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
 
 수동 확인 상태:
 
@@ -271,7 +271,8 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
   verify-expo 게이트 테스트의 색 · 크기 값을 R26 으로 바꿨다(게이트의 메커니즘 판정은 그대로)
 - 테스트는 Node 22 에서 돌린다. Node 20 으로 web 테스트를 돌리면 jsdom 30 이 쓰는 undici 가 `webidl.util.markAsUncloneable` 없이 죽어 79 개 중 18 개만 돈다
   (루트 `engines` 가 `>=22.12.0` 이다)
-- **기기 화면 확인은 하지 않았다** — 같은 값을 spendback 실험에서 에뮬레이터로 봤다(라이트 · 다크). 0.4.0 을 spendback 에 올린 뒤 다시 본다
+- 기기 화면: publish 전에 로컬 빌드를 spendback 에 넣어, publish 뒤에 npm 0.4.0 을 설치해 두 번 에뮬레이터(Android 16 · S24+ 해상도)로 봤다.
+  앱이 색 · 글자 · 모서리를 하나도 덮지 않은 상태로 실험 화면과 같다(라이트 · 다크). 기록은 spendback `docs/DESIGN.md` 1.7
 
 ## 3. 구현 중 확인한 사실
 
@@ -497,6 +498,17 @@ react-native-svg 도형은 style 을 props 에 합친 뒤 opacity · transform �
 `border-transparent` 가 되자 `invalid` 의 `border-danger` 가 사라졌다(verify-expo jest 가 잡았다). 빌드가 색 키 끝에 정적 색 3개를 붙인다.
 C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 계약은 그대로다.
 
+### F-29. 에이전트 세션처럼 TTY 가 없으면 npm 이 브라우저 인증 대신 OTP 를 요구한다
+
+`0.4.0` 을 낼 때 겪었다. TTY 없는 셸에서 `pnpm -r publish` 는 `EOTP`(OTP 코드 요구)로 끝나고 브라우저 인증 링크를 내지 않는다.
+`script -q <로그> npm publish --auth-type=web --browser=false` 로 가상 터미널을 붙이면 `https://www.npmjs.com/auth/cli/…` 링크가
+나오지만, 약 5분 안에 인증하지 않으면 `E404 … /-/v1/done?authId=…` 로 만료된다. pnpm 은 `--auth-type` 옵션을 받지 않는다.
+세 패키지 모두 `workspace:` 의존성이 없어 패키지 폴더에서 `npm publish` 로 내도 같은 결과다. 결국 사람이 자기 터미널에서
+`pnpm -r publish --access public` 을 돌리는 것이 가장 짧다.
+
+같은 날 로그인 토큰이 약 30분 사이에 `E401` 이 됐고, 그 상태의 publish 는 `PUT … 404 '@eeennsu/tokens@0.4.0' is not in this registry` 로
+보인다 — 쓰기 권한이 없을 때 npm 이 scoped 패키지에 404 를 준다. `npm whoami` 로 먼저 확인하고 `npm login` 부터 한다(F-17).
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -522,7 +534,7 @@ C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 �
 - 기기에서 남은 것(N-17): RN Icon 이름 한 번 읽기 · 꾸밈 건너뛰기, `rotate-180` · `ml-auto` 배치(spendback 은 단독 Icon 을 아직 안 쓴다),
   hitSlop 48 과 칩 줄 간격 10 미만의 겹침, `tabular-nums`(에뮬레이터 Roboto 는 숫자가 원래 고정폭이라 판별 불가), bakery 라이트 포커스 · 고른 칩
   채움 약 3.1:1, AC-23 다크 재촬영
-- `0.4.0`(N-18, R26)은 구현 · 테스트까지 했고 publish 전이다. 브랜치 `feat/r26-toss-look` 을 main 에 합친 뒤 낸다. 0.4.0 은 base 모양 전체를
+- `0.4.0`(N-18, R26)은 2026-09-26 publish 했다(F-29). 0.4.0 은 base 모양 전체를
   바꾸고 RN 소비 앱에 글꼴 등록을 요구한다 — 릴리스 노트에 적는다. AC-23 스크린샷 네 장은 옛 모양이다(웹을 새로 찍으면 RN 과 짝이 안 맞아 되돌렸다, F-25).
   RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다. 검증 앱의 앱 색(초록)은 다크에서 흰 on-brand 와 대비가 낮다 — 검증 앱은 C-5b 짝 대비를 따르지 않는다
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →

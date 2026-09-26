@@ -34,7 +34,7 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 - 계획 검증: [docs/plan-verification.md](docs/plan-verification.md). 2026-09-05 검증 완료(B 2·P 21·N 13, 전부 plan.md v2에 반영). 사용자 확정 4건은 plan.md D-6 · D-28 · D-29 · D-30
 - 착수 게이트는 두 단계이고 **둘 다 닫혔다** — 웹 선확인(T-W0) 2026-09-05 통과, C-19 게이트(T-G1 · T-G2) 2026-09-06 실행, 게이트 (7) 기기 화면 확인 2026-09-08 완료(Android 에뮬레이터 + Expo Go, 스크린샷은 `docs/assets/`). **Phase 5 착수 조건은 없다.** 기기 확인에서 (5) lineHeight 결함이 화면 레이아웃을 무너뜨리는 것을 봤고, T-N0 이 그것을 고쳤다
 - 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 9항목 판정과 고정한 버전이 여기 있다 — (1)(3)(6)(7)(8)(9) 통과, (2)(4) 실패(R24 개정 + T-N0 우회), (5) 부분(T-N0 배수 line-height 로 해소). T-R1 의 AC-23 웹·RN 비교도 이 문서에 있다
-- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — npm `0.1.0` · `0.2.0`(2026-09-24), `0.3.0`(2026-09-25) publish, `0.4.0`(R26) publish 전**), 계획과 갈린 지점 17건, 구현 중 확인한 사실 27건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
+- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — npm `0.1.0` · `0.2.0`(2026-09-24), `0.3.0`(2026-09-25) publish, `0.4.0`(R26, 2026-09-26) publish**), 계획과 갈린 지점 17건, 구현 중 확인한 사실 27건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
 
 ## 현재 코드 상태
 
