@@ -514,11 +514,12 @@ C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 �
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
 - 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
-  `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다
+  `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다.
+  **web · native README 에 소비 규칙을 실었다(2026-10-19), 다음 publish 에 포함.** 남은 것은 tokens README 와 `repository`
 - `0.2.0`(N-16 의 RN 4개)은 2026-09-24 publish 했다
 - `0.3.0`(N-17)은 2026-09-25 publish 했다. pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
 - 0.3.0 은 base 다크 · bakery 라이트의 글자색을 바꾼다. 릴리스 노트에 적고, AC-23 다크 스크린샷(`docs/assets/ac23-*-dark.png`)은 흰 글자로 남아 있어 다음 기기 확인 때 다시 찍는다
-- npm 패키지 페이지(README · `repository`)는 여전히 비어 있다
+- npm 패키지 페이지(README · `repository`)는 여전히 비어 있다. web · native README 에 소비 규칙을 실었다(2026-10-19), 다음 publish 에 포함
 - 웹 Chip · Icon 은 verify-next 화면에 없다. 브라우저 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 다음 웹 작업 때
   화면에 올려 확인한다(DS 재검증 테스트 공백 6)
 - 2026-09-25 에뮬레이터 확인(N-17, spendback 화면 · Android 16 · S24+ 해상도 · base 브랜드에 앱 색 재선언): placeholder 색은
