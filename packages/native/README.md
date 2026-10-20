@@ -1,6 +1,6 @@
 # @eeennsu/native
 
-React Native(Expo + NativeWind v5) 용 디자인 시스템 컴포넌트다. 토큰과 클래스 어휘를 `@eeennsu/web` 과 공유하고, 컴포넌트 구현은 플랫폼별로 따로 둔다. 공개 컴포넌트는 웹의 일부이고, 웹의 오버레이(Dialog · Drawer · Tooltip)와 Form 은 v2 라서 없다.
+React Native(Expo + NativeWind v5) 용 디자인 시스템 컴포넌트다. 토큰과 클래스 어휘를 `@eeennsu/web` 과 공유하고, 컴포넌트 구현은 플랫폼별로 따로 둔다. 공개 컴포넌트는 웹의 일부이고, 웹의 오버레이(Dialog · Drawer · Tooltip)와 Form 은 v2 라서 없고, ButtonGroup 도 웹 전용이다.
 
 ## 설치
 
@@ -18,7 +18,7 @@ peer 의존성(`nativewind` · `react-native-css` · `react-native-svg` · `tail
 
 이 한 줄은 Expo 소비자 기준이다. Expo 없는 RN CLI 앱의 Metro 설정은 그 앱의 몫이다.
 
-브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 어떤 브랜드가 있는지는 설치된 `themes/` 폴더가 보여 준다.
+브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 기본은 `base` 다. 앱 색은 아래 C-5b 재선언으로 정하고, `themes/` 폴더의 `bakery` 는 DS 가 브랜드 교체(AC-6a)를 검증하는 프리셋이다.
 
 ## 소비 규칙
 
@@ -89,7 +89,7 @@ RN 은 hybrid 가 아니라 **OS 단독**이다(C-20 R24). 루트 `.dark` · `.l
 - RN CLI Android: `android/app/src/main/res/font/` 에 `pretendard_regular.otf` 처럼 소문자 이름으로 넣고, 같은 폴더의 `pretendard.xml` 에 무게별 `<font>` 를 가진 `<font-family>` 를 둔다. `MainApplication.onCreate` 에서 `ReactFontManager.getInstance().addCustomFont(this, "Pretendard", R.font.pretendard)` 를 부른다. RN 이 `fontWeight` 로 무게를 고른다. 에뮬레이터에서 확인했다.
 - Pretendard 는 SIL OFL 1.1 이다.
 
-**배수 line-height.** react-native-css 는 line-height 를 단위 없는 배수로 읽는다. `px` 값을 그대로 두면 `fontSize 20 × 28 = 560` 이 되어 화면이 무너지고, `rem` 도 같은 방식으로 틀린다. 그래서 native 래퍼가 `--text-<step>--line-height` 를 배수로 다시 낸다(알려진 동작 16). 줄 높이는 `text-<step>` 클래스로 정하고, 앱 CSS 에서 `px`·`rem` 으로 직접 선언하지 않는다. 앱의 `className="text-lg"` 도 크기·줄 높이·무게 세 값이 모두 적용된다.
+**배수 line-height.** react-native-css 는 line-height 를 단위 없는 배수로 읽는다. `px` 값을 그대로 두면 `fontSize 20 × 28 = 560` 이 되어 화면이 무너지고, `rem` 도 같은 방식으로 틀린다. 그래서 native 래퍼가 `--text-<step>--line-height` 를 배수로 다시 낸다(알려진 동작 16). 줄 높이는 `text-<step>` 클래스로 정하고, 앱 CSS 에서 `px`·`rem` 으로 직접 선언하지 않는다. 앱의 `className="text-lg"` 도 크기·줄 높이·무게 세 값이 모두 적용된다. className 의 line-height 임의값(`leading-[22px]` 등)은 탈출구로도 쓰지 않는다. react-native-css 가 이 값의 단위를 어떻게 읽는지는 DS 가 확인하지 못했다.
 
 **웹과 다르게 동작하는 것.**
 

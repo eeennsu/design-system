@@ -16,7 +16,7 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 @import "@eeennsu/web/themes/base.css";
 ```
 
-브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 어떤 브랜드가 있는지는 설치된 `themes/` 폴더가 보여 준다.
+브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 기본은 `base` 다. 앱 색은 아래 C-5b 재선언으로 정하고, `themes/` 폴더의 `bakery` 는 DS 가 브랜드 교체(AC-6a)를 검증하는 프리셋이다.
 
 ## 소비 규칙
 
@@ -32,7 +32,7 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 - `--fg-on-brand`: 채움 위 글자
 - `--fg-brand`: 표면 위에 쓰는 브랜드 색 글자
 
-웹은 다크를 **3블록 모두** 재선언한다. 하나라도 빠지면 OS 라이트·다크와 루트 클래스 유무로 나뉘는 4조합 중 일부만 바뀐다(알려진 동작 12).
+웹은 **3블록(라이트 `:root`, 다크 둘)을 모두** 재선언한다. 하나라도 빠지면 OS 라이트·다크와 루트 클래스 유무로 나뉘는 4조합 중 일부만 바뀐다(알려진 동작 12).
 
 ```css
 @import "@eeennsu/web/themes/base.css";
