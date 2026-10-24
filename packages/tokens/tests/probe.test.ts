@@ -79,6 +79,16 @@ describe("AC-6b 열거 밖 어휘가 무효다 (알려진 동작 1)", () => {
   });
 });
 
+describe("R27 Prose 임의 변형이 특이성 0 선택자를 낸다 (decisions-r27 13, plan D-34)", () => {
+  it("[:where(&)…] 변형은 선택자가 :where( 로 시작하고 값을 담는다", async () => {
+    const css = await build(["[:where(&)_h2]:text-xl", "[:where(&)>*+*]:mt-4", "[:where(&)_:not(pre)>code]:font-mono"]);
+    // 클래스 이름에 이스케이프된 `)` 가 있어 선택자 끝은 `\)` 가 아닌 `) ` 로 잡는다. 규칙 줄은 `:where(` 로 시작해야 한다.
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) h2 \{\s*font-size: var\(--text-xl\)/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) > \* \+ \* \{\s*margin-top: var\(--spacing-4\)/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) :not\(pre\) > code \{\s*font-family: var\(--font-mono\)/m);
+  });
+});
+
 describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {
   it("base 와 bakery 의 차이가 semantic 색 선언 줄뿐이다", () => {
     const baseLines = tokenCss("base").split("\n");

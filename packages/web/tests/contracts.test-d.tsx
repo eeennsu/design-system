@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Stack, Table, Text, components } from "../src/index.js";
+import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Prose, Stack, Table, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -149,6 +149,19 @@ describe("R27 CodeBlock 계약", () => {
     assertType(<CodeBlock label="예제">{["a", "b"]}</CodeBlock>);
     // @ts-expect-error 엘리먼트 children 은 막는다 (글자 컴포넌트 규칙)
     assertType(<CodeBlock>{<span />}</CodeBlock>);
+  });
+});
+
+describe("R27 Prose 계약", () => {
+  it("children 과 className 뿐이다 (비인터랙티브라 label 이 없다)", () => {
+    expectTypeOf<Contracts<"web">["Prose"]>().toEqualTypeOf<{ children: ReactNode; className?: string }>();
+    assertType(
+      <Prose>
+        <h2>제목</h2>
+      </Prose>,
+    );
+    // @ts-expect-error children 은 필수다
+    assertType(<Prose />);
   });
 });
 

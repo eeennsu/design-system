@@ -21,6 +21,7 @@ import {
   Icon,
   Input,
   Label,
+  Prose,
   Stack,
   Table,
   Text,
@@ -513,5 +514,41 @@ describe("R27 CodeBlock", () => {
     const root = container.firstElementChild!;
     expect(root).toHaveClass("bg-surface");
     expect(root).not.toHaveClass("bg-surface-muted");
+  });
+});
+
+describe("R27 Prose", () => {
+  it("루트는 div 이고 text-md text-fg 와 선택자 클래스가 붙고 소비자 className 이 병합된다", () => {
+    const { container } = render(<Prose className="mt-6">{"x"}</Prose>);
+    const root = container.firstElementChild!;
+    expect(root.tagName).toBe("DIV");
+    expect(root).toHaveClass(
+      "text-md",
+      "text-fg",
+      "mt-6",
+      "[:where(&)>*+*]:mt-4",
+      "[:where(&)_h2]:text-xl",
+      "[:where(&)_:not(pre)>code]:font-mono",
+    );
+  });
+
+  it("AC-11 소비자 className 이 루트 글자 크기를 민다", () => {
+    const { container } = render(<Prose className="text-sm">{"x"}</Prose>);
+    const root = container.firstElementChild!;
+    expect(root).toHaveClass("text-sm");
+    expect(root).not.toHaveClass("text-md");
+  });
+
+  it("원시 h2 · p · code 를 자식으로 렌더한다", () => {
+    render(
+      <Prose>
+        <h2>제목</h2>
+        <p>
+          본문 <code>x</code>
+        </p>
+      </Prose>,
+    );
+    expect(screen.getByRole("heading", { level: 2, name: "제목" })).toBeInTheDocument();
+    expect(screen.getByText("x").tagName).toBe("CODE");
   });
 });

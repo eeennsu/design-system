@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, CodeBlock, Dialog, Drawer, Input, Table, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Card, Chip, CodeBlock, Dialog, Drawer, Input, Prose, Table, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -78,6 +78,24 @@ describe("CodeBlock", () => {
       `text-${component.codeBlock.text}`,
     );
     expect(container.firstElementChild).toHaveClass(`rounded-${component.codeBlock.radius}`);
+  });
+});
+
+describe("Prose", () => {
+  it("pre · th · td 선택자가 CodeBlock · Table recipe 값과 같다 (R27, decisions-r27 20)", () => {
+    const { container } = render(<Prose>{"x"}</Prose>);
+    const { codeBlock, table } = component;
+    expect(container.firstElementChild).toHaveClass(
+      `[:where(&)_pre]:p-${codeBlock.padding}`,
+      `[:where(&)_pre]:text-${codeBlock.text}`,
+      `[:where(&)_pre]:rounded-${codeBlock.radius}`,
+      `[:where(&)_th]:px-${table.paddingX}`,
+      `[:where(&)_th]:py-${table.paddingY}`,
+      `[:where(&)_th]:text-${table.text}`,
+      `[:where(&)_td]:px-${table.paddingX}`,
+      `[:where(&)_td]:py-${table.paddingY}`,
+      `[:where(&)_td]:text-${table.text}`,
+    );
   });
 });
 

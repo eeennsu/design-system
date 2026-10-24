@@ -240,9 +240,17 @@ export type Contracts<P extends Platform> = {
     label?: string;
     className?: string;
   };
+  /**
+   * 마크다운식 원시 요소(h1~h3 · p · ul · a · code · pre · blockquote · table 등)를 DS 어휘로 꾸미는 래퍼(R27, 웹 전용).
+   * 요소 선택자로 스타일하므로 `children` 은 `ReactNode` 이고, 선택자는 `:where` 라 안의 DS 컴포넌트와 소비자 클래스가 이긴다.
+   */
+  Prose: {
+    children: ReactNode;
+    className?: string;
+  };
 };
 
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock 은 R27. */
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose 는 R27. */
 export const webComponents = [
   "Button",
   "ButtonGroup",
@@ -262,6 +270,7 @@ export const webComponents = [
   "Form",
   "Table",
   "CodeBlock",
+  "Prose",
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**
