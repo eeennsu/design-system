@@ -73,7 +73,7 @@ describe("Table", () => {
 describe("Tabs", () => {
   it("탭 버튼이 토큰 recipe 와 같고 활성 밑줄이 목록 선 위에 겹친다 (R27)", () => {
     render(<Tabs label="언어" items={[{ value: "c", label: "C", content: "내용" }]} />);
-    expect(screen.getByRole("tab")).toHaveClass(...expected(component.tabs), "-mb-px");
+    expect(screen.getByRole("tab")).toHaveClass(...expected(component.tabs), "-mb-px", "whitespace-nowrap");
   });
 });
 

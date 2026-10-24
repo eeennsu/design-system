@@ -443,6 +443,12 @@ describe("R27 Table", () => {
     expect(container.firstElementChild).toHaveAttribute("tabindex", "0");
   });
 
+  it("label 이 빈 문자열이면 aria-label 속성이 없다 (CodeBlock 과 같다)", () => {
+    const { container } = render(<Table label="" columns={columns} rows={rows} />);
+    expect(container.firstElementChild).not.toHaveAttribute("aria-label");
+    expect(screen.queryByRole("region")).toBeNull();
+  });
+
   it("align=end 열의 th · td 는 text-end tabular-nums 이고 기본 열은 text-start 이다", () => {
     render(<Table columns={columns} rows={rows} />);
     const [nameHead, amountHead] = screen.getAllByRole("columnheader");
@@ -487,13 +493,22 @@ describe("R27 Table", () => {
 });
 
 describe("R27 CodeBlock", () => {
-  it("문자열은 공백과 줄바꿈 그대로 code 안에 있고, 배열은 \\n 으로 join 된다", () => {
+  it("문자열은 공백과 줄바꿈 그대로 code 안에 있고, 배열은 Text 처럼 이어 붙는다 (최종 리뷰)", () => {
     const source = "if (a) {\n  b();\n}";
     const { container, unmount } = render(<CodeBlock>{source}</CodeBlock>);
     expect(container.querySelector("pre > code")!.textContent).toBe(source);
     unmount();
     const array = render(<CodeBlock>{["a", "b"]}</CodeBlock>);
-    expect(array.container.querySelector("pre > code")!.textContent).toBe("a\nb");
+    expect(array.container.querySelector("pre > code")!.textContent).toBe("ab");
+  });
+
+  it("JSX 보간 `npm i {pkg}` 는 줄바꿈 없이 한 줄이고, 여러 줄 문자열의 줄바꿈은 남는다", () => {
+    const pkg = "@eeennsu/web";
+    const { container, unmount } = render(<CodeBlock>npm i {pkg}</CodeBlock>);
+    expect(container.querySelector("pre > code")!.textContent).toBe("npm i @eeennsu/web");
+    unmount();
+    const multi = render(<CodeBlock>{"a\nb"}</CodeBlock>);
+    expect(multi.container.querySelector("pre > code")!.textContent).toBe("a\nb");
   });
 
   it("label 이 있으면 figcaption 글자이고 pre 가 region 이다", () => {
@@ -633,6 +648,22 @@ describe("R27 Tabs", () => {
     await waitFor(() => expect(third).toHaveFocus());
     fireEvent.keyDown(third, { key: "Home" });
     await waitFor(() => expect(first).toHaveFocus());
+  });
+
+  it("키보드 — 포커스한 비활성 탭에서 Space 가 활성화한다 (Base UI 가 click 을 보낸다, F-31)", () => {
+    render(<Tabs label="언어" items={items} />);
+    const second = screen.getByRole("tab", { name: "TS" });
+    second.focus();
+    fireEvent.keyDown(second, { key: " " });
+    expect(second).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("TS 내용")).toBeInTheDocument();
+  });
+
+  it("onValueChange 는 문자열만 받는다 — 탭이 모두 사라져 Base UI 가 null 을 알려도 전달하지 않는다", () => {
+    const onValueChange = vi.fn();
+    const { rerender } = render(<Tabs label="언어" items={items} onValueChange={onValueChange} />);
+    rerender(<Tabs label="언어" items={[]} onValueChange={onValueChange} />);
+    for (const call of onValueChange.mock.calls) expect(typeof call[0]).toBe("string");
   });
 
   it("탭 버튼이 type=button 이다 (C-21)", () => {

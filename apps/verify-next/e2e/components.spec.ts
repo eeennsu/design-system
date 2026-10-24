@@ -43,6 +43,12 @@ test.describe("Tabs", () => {
     expectSameColor(await toRgba(page, border), await toRgba(page, appBrand.light), "활성 탭 밑줄");
   });
 
+  test("탭 버튼은 줄을 바꾸지 않는다 (white-space: nowrap)", async ({ page }) => {
+    for (const tab of await page.getByRole("tab").all()) {
+      expect(await tab.evaluate((element) => getComputedStyle(element).whiteSpace)).toBe("nowrap");
+    }
+  });
+
   test("키보드 — ArrowRight 는 포커스만 옮기고 Enter 가 활성화한다", async ({ page }) => {
     const first = page.getByRole("tab", { name: "코드" });
     const second = page.getByRole("tab", { name: "사용법" });
@@ -176,6 +182,7 @@ test.describe("Prose", () => {
         .evaluate((element) => getComputedStyle(element).fontSize),
     ).toBe("14px");
 
+    // 회귀 가드일 뿐이다: Prose 의 pre padding 도 16px 라 :where 가 졌는지 가려내지 못한다. 진짜 증거는 위 Text 14px 단언이다.
     const inside = prose(page).getByRole("region", { name: "Prose 안 코드" });
     expect(await inside.evaluate((element) => getComputedStyle(element).padding)).toBe("16px");
   });

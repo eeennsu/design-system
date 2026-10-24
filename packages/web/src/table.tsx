@@ -19,7 +19,7 @@ export const Table: FC<TableProps> = ({ label, columns, rows, className }) => (
   <div
     tabIndex={0}
     role={label ? "region" : undefined}
-    aria-label={label}
+    aria-label={label || undefined}
     className={cn(
       "overflow-x-auto",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus",

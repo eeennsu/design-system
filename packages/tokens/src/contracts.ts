@@ -235,7 +235,7 @@ export type Contracts<P extends Platform> = {
   };
   /**
    * 코드 블록 하나(R27, 웹 전용). 글자 컴포넌트라 `children` 은 `string | string[]` 이다.
-   * 줄 배열은 `\n` 으로 join 한다 — React 기본은 배열 항목을 줄바꿈 없이 이어 붙이기 때문이다.
+   * 배열은 Text 처럼 줄바꿈 없이 이어 붙는다 — JSX 보간(`npm i {pkg}`)이 만드는 조각이기 때문이다. 줄 배열은 `lines.join("\n")` 으로 넘긴다.
    * 비인터랙티브라 `label` 은 선택이고, 있으면 보이는 `<figcaption>` 이자 접근성 이름이다.
    */
   CodeBlock: {

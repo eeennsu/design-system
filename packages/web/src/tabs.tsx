@@ -23,7 +23,10 @@ export const Tabs: FC<Contracts<"web">["Tabs"]> = ({
   <BaseTabs.Root
     value={value}
     defaultValue={defaultValue ?? items[0]?.value}
-    onValueChange={(next) => onValueChange?.(next)}
+    onValueChange={(next) => {
+      // 탭이 모두 사라지면 Base UI 가 null 을 알리므로 계약(string)에 맞게 문자열만 넘긴다.
+      if (typeof next === "string") onValueChange?.(next);
+    }}
     className={cn("flex flex-col", className)}
   >
     <BaseTabs.List aria-label={label} className="flex border-b border-border">
@@ -32,7 +35,7 @@ export const Tabs: FC<Contracts<"web">["Tabs"]> = ({
           key={item.value}
           value={item.value}
           className={cn(
-            "-mb-px px-4 py-2 text-md border-b-2 border-transparent text-fg-muted hover:text-fg data-[active]:border-brand data-[active]:text-fg",
+            "-mb-px whitespace-nowrap px-4 py-2 text-md border-b-2 border-transparent text-fg-muted hover:text-fg data-[active]:border-brand data-[active]:text-fg",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus",
           )}
         >

@@ -1,3 +1,4 @@
+import type { TableColumn, TableRow } from "@eeennsu/web";
 import { Card, Chip, CodeBlock, Collapsible, Icon, Prose, Stack, Table, Tabs, Text } from "@eeennsu/web";
 
 /**
@@ -5,17 +6,17 @@ import { Card, Chip, CodeBlock, Collapsible, Icon, Prose, Stack, Table, Tabs, Te
  * 서버 컴포넌트다: Tabs · Collapsible · Chip 이 `"use client"` 를 스스로 지니므로 여기에는 지시문이 없다.
  * Table · Tabs 하나는 canvas 위에 바로 놓아 구분선(`border.default`)을 눈으로 확인할 수 있게 했다.
  */
-const columns = [
+const columns: TableColumn[] = [
   { label: "항목" },
-  { label: "1월 지출액", align: "end" as const },
-  { label: "2월 지출액", align: "end" as const },
-  { label: "3월 지출액", align: "end" as const },
-  { label: "4월 지출액", align: "end" as const },
-  { label: "5월 지출액", align: "end" as const },
-  { label: "합계", align: "end" as const },
+  { label: "1월 지출액", align: "end" },
+  { label: "2월 지출액", align: "end" },
+  { label: "3월 지출액", align: "end" },
+  { label: "4월 지출액", align: "end" },
+  { label: "5월 지출액", align: "end" },
+  { label: "합계", align: "end" },
 ];
 
-const rows = [
+const rows: TableRow[] = [
   { cells: ["식비", "320,000", "298,500", "341,200", "310,400", "329,900", "1,600,000"] },
   { cells: ["교통", "58,000", "61,500", "47,300", "52,100", "49,800", "268,700"] },
   { cells: ["구독", "42,900", "42,900", "42,900", "42,900", "42,900", "214,500"] },
