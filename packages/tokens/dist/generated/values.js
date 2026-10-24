@@ -232,6 +232,11 @@ export const component = {
             "radius": "md"
         }
     },
+    "table": {
+        "paddingX": "3",
+        "paddingY": "2",
+        "text": "sm"
+    },
     "textarea": {
         "rows": {
             "sm": 3,

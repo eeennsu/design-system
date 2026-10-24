@@ -45,6 +45,15 @@ type Press<P extends Platform> = P extends "web" ? {
  * 한쪽만 고치면 `Record<IconName, LucideIcon>` 이 컴파일 에러를 낸다.
  */
 export type IconName = "check" | "x" | "plus" | "minus" | "trash" | "pencil" | "search" | "chevron-down" | "chevron-up" | "chevron-left" | "chevron-right" | "arrow-left" | "arrow-right" | "menu" | "settings" | "user" | "mail" | "lock" | "eye" | "eye-off" | "info" | "alert-circle" | "loader" | "external-link" | "home" | "list" | "chart-pie" | "calendar";
+/** Table 열. `end` 는 숫자 열이다 — 머리글과 셀이 `text-end tabular-nums`(decisions-r27 8). */
+export type TableColumn = {
+    label: string;
+    align?: "start" | "end";
+};
+/** Table 행. 객체라 행 key · 행 머리글 · 행 강조를 선택 필드로 나중에 더해도 호출부가 깨지지 않는다(decisions-r27 7). */
+export type TableRow = {
+    cells: ReactNode[];
+};
 /**
  * 컴포넌트 prop 계약. 웹·RN 구현이 이 맵을 그대로 만족해야 한다(C-17, AC-21).
  * 닫힌 type 리터럴로 두는 이유: AC-11a · AC-15 의 mapped type 테스트가
@@ -180,9 +189,19 @@ export type Contracts<P extends Platform> = {
         children: ReactNode;
         className?: string;
     };
+    /**
+     * 데이터 표(R27, 웹 전용). 비인터랙티브라 `label` 은 선택이고, 있으면 보이는 `<caption>` 이자 접근성 이름이다.
+     * 셀은 `ReactNode` 내용이라 `number` 타입 prop 을 여는 것이 아니다(C-14).
+     */
+    Table: {
+        label?: string;
+        columns: TableColumn[];
+        rows: TableRow[];
+        className?: string;
+    };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17). */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table 은 R27. */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.

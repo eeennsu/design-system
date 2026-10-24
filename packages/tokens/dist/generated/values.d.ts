@@ -182,6 +182,11 @@ export declare const component: {
             readonly radius: "md";
         };
     };
+    readonly table: {
+        readonly paddingX: "3";
+        readonly paddingY: "2";
+        readonly text: "sm";
+    };
     readonly textarea: {
         readonly rows: {
             readonly sm: 3;

@@ -1,0 +1,19 @@
+{
+  "$description": "Table recipe(R27). 셀(th · td) 안쪽 여백과 글자다. 높이는 행 내용이 정한다.",
+  "component": {
+    "table": {
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.3}"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.2}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.sm}"
+      }
+    }
+  }
+}

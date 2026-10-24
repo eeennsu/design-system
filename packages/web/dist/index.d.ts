@@ -11,10 +11,12 @@ import { Icon } from "./icon.js";
 import { Input } from "./input.js";
 import { Label } from "./label.js";
 import { Stack } from "./stack.js";
+import { Table } from "./table.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, Dialog, Drawer, Form, Icon, Input, Label, Stack, Text, Textarea, Tooltip };
+export { Badge, Box, Button, ButtonGroup, Card, Chip, Dialog, Drawer, Form, Icon, Input, Label, Stack, Table, Text, Textarea, Tooltip };
+export type { TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `webComponents` 와 같고
@@ -143,6 +145,12 @@ export declare const components: {
     }>;
     Form: import("react").FC<{
         children: import("react").ReactNode;
+        className?: string;
+    }>;
+    Table: import("react").FC<{
+        label?: string;
+        columns: import("@eeennsu/tokens").TableColumn[];
+        rows: import("@eeennsu/tokens").TableRow[];
         className?: string;
     }>;
 };

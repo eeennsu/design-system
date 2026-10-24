@@ -229,6 +229,7 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
     expect(component.dialog).toEqual({ padding: "6", radius: "xl", shadow: "lg", maxWidth: "max-w-md" });
     expect(component.drawer).toEqual({ padding: "6", width: "max-w-sm w-full" });
     expect(component.tooltip).toEqual({ paddingX: "2", paddingY: "1", text: "sm", radius: "sm" });
+    expect(component.table).toEqual({ paddingX: "3", paddingY: "2", text: "sm" });
   });
 
   it("컨트롤 높이는 2 x paddingY + lineHeight + 2 = 30 / 42 / 52 다 (plan D-6, R26 lg)", () => {

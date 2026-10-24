@@ -14,9 +14,10 @@ import type {
 } from "@eeennsu/tokens";
 import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import { Badge, Button, Chip, Dialog, Icon, Input, Stack, Text, components } from "../src/index.js";
+import type { TableColumn, TableRow } from "../src/index.js";
+import { Badge, Button, Chip, Dialog, Icon, Input, Stack, Table, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -118,6 +119,25 @@ describe("N-17 Chip · Icon 계약", () => {
     assertType(<Icon name="home" tone="#333" />);
     // @ts-expect-error 아이콘에 누름 이벤트는 없다 — 누르는 것은 Button 이다
     assertType(<Icon name="home" onClick={() => {}} />);
+  });
+});
+
+describe("R27 Table 계약", () => {
+  it("진입점이 TableColumn · TableRow 를 타입 전용으로 다시 내보낸다", () => {
+    expectTypeOf<TableColumn>().toEqualTypeOf<{ label: string; align?: "start" | "end" }>();
+    expectTypeOf<TableRow>().toEqualTypeOf<{ cells: ReactNode[] }>();
+    expectTypeOf<Contracts<"web">["Table"]["columns"]>().toEqualTypeOf<TableColumn[]>();
+    expectTypeOf<Contracts<"web">["Table"]["rows"]>().toEqualTypeOf<TableRow[]>();
+    expectTypeOf<Contracts<"web">["Table"]["label"]>().toEqualTypeOf<string | undefined>();
+  });
+
+  it("label 은 선택이다 (비인터랙티브) — 열 정렬은 start · end 뿐이고 행은 { cells } 객체다", () => {
+    assertType(<Table columns={[{ label: "이름" }]} rows={[{ cells: ["a"] }]} />);
+    assertType(<Table label="표" columns={[{ label: "금액", align: "end" }]} rows={[]} />);
+    // @ts-expect-error 가운데 정렬은 두지 않는다
+    assertType(<Table columns={[{ label: "이름", align: "center" }]} rows={[]} />);
+    // @ts-expect-error 행은 셀 배열의 배열이 아니라 { cells } 객체다
+    assertType(<Table columns={[{ label: "이름" }]} rows={[["a"]]} />);
   });
 });
 

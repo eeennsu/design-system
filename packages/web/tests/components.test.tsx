@@ -21,6 +21,7 @@ import {
   Input,
   Label,
   Stack,
+  Table,
   Text,
   Textarea,
   Tooltip,
@@ -415,5 +416,59 @@ describe("AC-11 병합 — 소비자 className 이 이긴다", () => {
       </Card>,
     );
     expect(screen.getByText("내용").parentElement).toHaveClass("p-6", "p-5");
+  });
+});
+
+describe("R27 Table", () => {
+  const columns = [{ label: "이름" }, { label: "금액", align: "end" as const }];
+  const rows = [{ cells: ["커피", "4,500"] }, { cells: [<code key="c">tea</code>, "3,000"] }];
+
+  it("label 이 caption 글자이고 table 의 접근성 이름이다", () => {
+    render(<Table label="지출" columns={columns} rows={rows} />);
+    expect(screen.getByRole("table", { name: "지출" })).toBeInTheDocument();
+    expect(screen.getByText("지출").tagName).toBe("CAPTION");
+  });
+
+  it("label 이 있으면 루트가 region 이고, 없으면 caption 도 region 도 없지만 tabIndex 는 남는다", () => {
+    const { unmount } = render(<Table label="지출" columns={columns} rows={rows} />);
+    expect(screen.getByRole("region", { name: "지출" })).toHaveAttribute("tabindex", "0");
+    unmount();
+    const { container } = render(<Table columns={columns} rows={rows} />);
+    expect(container.querySelector("caption")).toBeNull();
+    expect(screen.queryByRole("region")).toBeNull();
+    expect(container.firstElementChild).toHaveAttribute("tabindex", "0");
+  });
+
+  it("align=end 열의 th · td 는 text-end tabular-nums 이고 기본 열은 text-start 이다", () => {
+    render(<Table columns={columns} rows={rows} />);
+    const [nameHead, amountHead] = screen.getAllByRole("columnheader");
+    expect(nameHead).toHaveClass("text-start");
+    expect(nameHead).not.toHaveClass("tabular-nums");
+    expect(amountHead).toHaveClass("text-end", "tabular-nums");
+    expect(amountHead).not.toHaveClass("text-start");
+    const cells = screen.getAllByRole("cell");
+    expect(cells[0]).toHaveClass("text-start");
+    expect(cells[1]).toHaveClass("text-end", "tabular-nums");
+    expect(cells[1]).not.toHaveClass("text-start");
+  });
+
+  it("th 는 scope=col 이고 행마다 cells 수만큼 td 가 나오며 셀에 엘리먼트를 넣을 수 있다", () => {
+    render(<Table columns={columns} rows={rows} />);
+    for (const head of screen.getAllByRole("columnheader")) expect(head).toHaveAttribute("scope", "col");
+    expect(screen.getAllByRole("row")).toHaveLength(3);
+    expect(screen.getAllByRole("cell")).toHaveLength(4);
+    expect(screen.getByText("tea").tagName).toBe("CODE");
+  });
+
+  it("셀이 모자란 행은 빈 칸을 채우지 않고 짧은 행이 된다", () => {
+    render(<Table columns={columns} rows={[{ cells: ["커피"] }]} />);
+    expect(screen.getAllByRole("cell")).toHaveLength(1);
+  });
+
+  it("루트가 tabIndex=0 이고 소비자 className 이 루트에 병합된다", () => {
+    const { container } = render(<Table columns={columns} rows={rows} className="mt-6" />);
+    const root = container.firstElementChild!;
+    expect(root).toHaveAttribute("tabindex", "0");
+    expect(root).toHaveClass("overflow-x-auto", "mt-6");
   });
 });
