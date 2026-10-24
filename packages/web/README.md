@@ -84,5 +84,6 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 - 색·간격·글자 스텝·radius·shadow: `themes/<brand>.css` 가 import 하는 `@eeennsu/tokens/themes/<brand>.css`. `@theme` 블록이 스케일을, `@theme inline` 블록이 semantic 색 매핑을 갖고, `:root` 에 semantic 변수가 있다. 이 패키지의 `themes/<brand>.css` 는 Tailwind·토큰 import, 다크 variant, `@source` 선언뿐이다.
 - 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다.
+- 글꼴: DS 가 덮어쓰는 것은 `--font-sans` 하나다. `font-mono` · `font-serif` 는 DS 토큰이 아니라 Tailwind 기본값이고, DS 는 고정폭 글꼴을 소유하거나 로딩하지 않는다(CodeBlock · Prose 의 코드가 `font-mono` 를 쓴다).
 
 `@eeennsu/tokens` 는 이 패키지의 `dependencies` 라서 앱의 직접 의존성이 아니다. `node-linker=hoisted` 설치에서는 최상위 `node_modules/@eeennsu/tokens/` 에 있다. pnpm 격리 레이아웃(기본값)에서는 최상위 `node_modules/@eeennsu/` 에 `web` 만 보이고, `tokens` 는 이 패키지 실경로(`node_modules/.pnpm/@eeennsu+web@…/node_modules/@eeennsu/web`) 옆의 `../tokens` 에 있다. pnpm 의 기본 hoist 설정이면 `node_modules/.pnpm/node_modules/@eeennsu/tokens/` 에도 있다.

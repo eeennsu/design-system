@@ -3,12 +3,13 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-09-26
+- 기준일: 2026-10-24
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` 을 **2026-09-26 npm 에 publish 했다**(`latest`). spendback 이 0.4.0 으로 올라갔다
 - v1 이후 네 번째: web · native 패키지 README 에 `## 소비 규칙` 을 실은 `0.4.1` 을 **2026-10-21 npm 에 publish 했다**(`latest`, 코드 무변경). spendback 이 0.4.1 로 올라갔다. my-agent-setup 의 design-flow 라우터가 설치본의 이 절을 읽는다
+- v1 이후 다섯 번째: 웹 전용 컴포넌트 5개(Tabs · Table · CodeBlock · Prose · Collapsible)를 더한(N-19, 스펙 R27) `0.5.0` 을 **준비했다.** 브랜치 `feat/r27-web-components` 에서 구현 · 검증 · 버전 올리기까지 마쳤고, main 병합과 publish(T-P4)는 사용자 몫이다. 구분선 확인은 대기다(N-19)
 
 ## 1. 완료 상태
 
@@ -30,6 +31,7 @@
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 | v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
+| v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 구현 · `0.5.0` 준비 완료(2026-10-24). publish 대기, 구분선 확인 대기 | tokens 72 · web 125 · native 26 · verify-expo 50 · verify-next 36(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
 
 수동 확인 상태:
 
@@ -41,6 +43,7 @@
    `next build`(타입 검사 포함) 통과, `postcss.config.mjs` · `next.config.ts` 는 생성 원본과 diff 0.
    Playwright 로 `<form>` · `autocomplete` · `type="button"` · Enter 무동작 · `onClick` 오류 표시를 확인했고
    화면은 `docs/assets/ac16-npm-{light,dark}.png` 두 장이다
+5. R27 구분선 확인(decisions-r27 19) — **대기(2026-10-24).** `out/r27-dividers/{light,dark}.png` 를 만들었고 사용자가 아직 받아들일지 정하지 않았다(N-19)
 
 ## 2. 계획과 갈린 지점
 
@@ -274,6 +277,41 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
   (루트 `engines` 가 `>=22.12.0` 이다)
 - 기기 화면: publish 전에 로컬 빌드를 spendback 에 넣어, publish 뒤에 npm 0.4.0 을 설치해 두 번 에뮬레이터(Android 16 · S24+ 해상도)로 봤다.
   앱이 색 · 글자 · 모서리를 하나도 덮지 않은 상태로 실험 화면과 같다(라이트 · 다크). 기록은 spendback `docs/DESIGN.md` 1.7
+
+### N-19. v1 이후 다섯 번째 — 웹 Tabs · Table · CodeBlock · Prose · Collapsible (0.5.0)
+
+첫 웹 소비 앱 amulator 학습 사이트가 챕터 화면에 쓸 범용 UI 다섯 개를 요청했다. 스펙 R27, 대안 비교는 [decisions-r27.md](decisions-r27.md) 다.
+다섯 개 모두 웹 전용이라 RN 은 그대로다. 웹 컴포넌트가 16 → 21 개가 됐고, `nativeComponents` 는 11 개로 변함없다. 새 의존성과 새 semantic 토큰은 없다.
+`TabItem` · `TableColumn` · `TableRow` 는 tokens `contracts.ts` 에 두고 `@eeennsu/web` 진입점이 타입으로 다시 내보낸다(pnpm 격리 레이아웃에서는 소비 앱이 tokens 를 직접 import 할 수 없다).
+
+- **Table**: `columns` + `rows`(`{ cells }`) 데이터 방식. 루트 `div` 가 `overflow-x-auto` 와 `tabIndex=0` 을 갖고, `label` 이 있으면 `role="region"` · `aria-label` 과 `<caption>` 이 된다.
+  `align="end"` 열은 `text-end tabular-nums` 다. 셀 recipe 는 component 토큰 `table`(px 3 · py 2 · text sm). 구현 중 한 번 고쳤다 — F-30
+- **CodeBlock**: `figure` 가 `bg-surface-muted rounded-lg`, 안의 `pre` 가 `font-mono` 와 `p-4`(component 토큰 `codeBlock`). `children` 이 배열이면 `\n` 으로 join 한다.
+  `pre` 가 가로 스크롤 영역이라 `tabIndex=0`, `label` 이 있으면 `role="region"` 이다. 서버 컴포넌트다
+- **Prose**: 원시 요소를 정적 클래스 문자열의 `[:where(&)_h2]:…` 변형으로 칠한다. 특이성이 0 이라 안에 놓인 DS 컴포넌트와 소비자 클래스가 이긴다.
+  recipe 토큰은 두지 않고 `pre` · `th` · `td` 가 CodeBlock · Table 과 같은 값을 쓴다(recipe 일치 테스트가 본다). 서버 컴포넌트다.
+  plan §4.9 와 갈린 곳이 하나다 — `th` · `td` 에 `text-sm` 을 더했다. Table 은 `table` 요소에 `text-sm` 이 있는데 Prose 에는 그 요소가 없어 표 글자가 본문(16)보다 작아지지 않기 때문이다(decisions-r27 14 "Table 과 같은 셀 글자").
+  plan §4.9 의 `th` · `td` 행 문구를 이에 맞췄다. `whitespace-nowrap` 은 더하지 않는다 — 마크다운 표는 줄을 바꿔도 된다
+- **Tabs**: Base UI `Tabs` 위에 `items` 데이터 방식. 값 3종(`value` / `defaultValue` / `onValueChange`)이고 비제어는 첫 항목이다. 활성 탭은 `border-brand` 2px 밑줄이며
+  component 토큰 `tabs`(px 4 · py 2 · text md)와 아래 테두리 2px 가 합쳐 높이 42 다. `"use client"`
+- **Collapsible**: Base UI `Collapsible` 위에 `label` 트리거 + 꺾쇠. 개폐 3종(`open` / `defaultOpen` / `onOpenChange`)이고 기본 닫힘이다. component 토큰 `collapsible`(px 3 · py 2 · text md · radius md)과
+  투명 테두리 1px 로 높이 42 다. 닫힌 패널은 마운트하지 않는다. `"use client"`
+- **계약**: `Contracts<P>` 에 다섯 키가 늘었고 C-17 맵 동등성 테스트(`contracts.test-d.tsx`)가 그대로 통과한다. 한 컴포넌트는 `FC<Props>` 하나다(파트를 정적 속성으로 붙이지 않았다).
+  `ref` · `as` · `render` · `style` 은 없고, Tabs · Collapsible 만 `label` 이 필수다(C-13)
+- **`font-mono`**: Tailwind 기본값으로 남는 것을 알려진 동작 28 로 옮기고 tokens probe 테스트가 `font-mono` · `font-serif` 생성을 본다. `packages/web/README.md` "어휘 위치"에도 한 줄 적었다
+- **검증 화면**: verify-next 에 서버 컴포넌트 라우트 `/components` 를 새로 두고 다섯 개와, R25 뒤 화면에 없던 웹 Chip · Icon 을 올렸다(§4 "다음"의 웹 Chip · Icon 항목 해소). 페이지에 `"use client"` 가 없어 Next 빌드와 렌더가 C-4 확인이다.
+  `/`(AC-23 스크린샷 화면)는 그대로다. Playwright 는 Tabs · Collapsible 키보드, Table 정렬 · 줄 안 바꿈 · 가로 스크롤, CodeBlock 글꼴 · 채움, Prose 원시 요소와 안의 DS 컴포넌트, Chip · Icon 의 computed style 을 본다
+- **검증 결과**(2026-10-24, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 72(69 + 3: probe 의 `font-mono` · Prose `:where` 변형 · `-mb-px`), web 125(79 + 46: 컴포넌트 · recipe · 타입 · dist), native 26, verify-expo 50,
+  verify-vite 5, verify-next 36 통과 + 2 건너뜀(기존 18 + `/components` 18. 건너뛴 2 는 구분선 스크린샷으로 `R27_DIVIDERS=1` 일 때만 돈다). `docs/assets` 는 되돌렸다(F-25).
+  `pnpm verify:pack` 통과 — 세 패키지가 `0.5.0` 이고, 타르볼 설치 상태에서 verify-next 36 · verify-vite 5 · verify-expo 50 이 돈다(AC-18 · AC-16 · AC-17 재확인)
+- **구분선 확인 — 대기.** `border.default` 는 `surface-muted` 와 같은 값이라 Table · Tabs 의 구분선이 라이트 canvas 위에서 1.12:1 로 약하고 채움 위에서는 사라진다(decisions-r27 19, 알려진 동작 32).
+  라이트 · 다크 스크린샷을 `out/r27-dividers/{light,dark}.png` 에 만들었다(`R27_DIVIDERS=1 pnpm --filter verify-next test`, `out/` 은 gitignored). **사용자는 아직 받아들일지 정하지 않았다.**
+  받아들이면 decisions-r27 19 를 그대로 둔다. 받아들이지 않으면 `border.default` 값을 올리거나(Card 경계 · Tooltip 테두리도 바뀐다) 구분선 전용 semantic 토큰을 새로 두는 것(C-5b 표면이 는다)이고, 어느 쪽이든 토큰 결정 뒤 Table · Tabs 를 다시 확인한다.
+  publish 전에 정한다
+- 리뷰에서 미룬 것(막지 않는 지적): Table `th` 의 recipe 일치와 `label=""` 일 때 남는 빈 `aria-label`, Prose 선택자 중 단위 테스트가 존재를 단언하는 것은 일부(나머지는 verify-next 가 본다),
+  Prose 의 `rounded-lg` 가 안에 놓인 CodeBlock `pre` 에도 걸리는 것(포커스 윤곽 모서리뿐), 비제어 Tabs 에서 `items` 가 `[]` 에서 채워질 때의 Base UI 개발 경고,
+  Tabs · Collapsible 높이 42 가 build-output 높이 테스트에 없는 것, Collapsible · Tabs `className` 병합 테스트가 겨루는 클래스 없이 존재만 보는 것, C-4 단언이 hydration 뒤 가시성만 보는 것
+  (`javaScriptEnabled: false` 로 돌리면 서버 HTML 을 직접 증명한다)
 
 ## 3. 구현 중 확인한 사실
 
@@ -510,6 +548,27 @@ C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 �
 같은 날 로그인 토큰이 약 30분 사이에 `E401` 이 됐고, 그 상태의 publish 는 `PUT … 404 '@eeennsu/tokens@0.4.0' is not in this registry` 로
 보인다 — 쓰기 권한이 없을 때 npm 이 scoped 패키지에 404 를 준다. `npm whoami` 로 먼저 확인하고 `npm login` 부터 한다(F-17).
 
+### F-30. 가로 스크롤 영역 안의 표 셀은 `whitespace-nowrap` 이 없으면 한국어가 음절마다 줄을 바꾼다
+
+Table 처음 구현은 `table` 에 폭 제한이 없고 `th` · `td` 에 줄바꿈 규칙도 없었다. 393px 화면에서 한국어 셀이 스크롤 영역 폭에 맞춰 **한 음절씩 줄**을 바꿨다.
+한국어는 기본 `word-break` 에서 음절 사이를 끊을 수 있어 좁은 열에서는 줄바꿈이 음절 단위로 나온다.
+decisions-r27 10("넓은 표는 줄을 바꾸지 않고 가로로 스크롤한다")을 어긴 것이다. 단위 테스트와 jsdom 은 레이아웃을 계산하지 않아 못 잡았고,
+T-V4 리뷰가 스크린샷으로 찾았다.
+
+`th` · `td` 에 `whitespace-nowrap` 을 줘서 고쳤다(`table.tsx`). `table` 요소에 주지 않았다 — `<caption>` 까지 줄을 못 바꾼다.
+Prose 의 원시 `th` · `td` 에도 주지 않았다. 마크다운 표는 가로 스크롤 감싸개가 없어 줄을 바꿔야 화면 밖으로 넘치지 않는다(알려진 동작 30).
+verify-next 의 `글자 th · td 는 줄을 바꾸지 않는다` 가 computed `white-space: nowrap` 을 본다.
+
+### F-31. jsdom 은 Enter 와 네이티브 button 의 Space 에서 click 을 만들지 않는다
+
+Base UI 1.8.0 `useButton`(`internals/use-button/useButton.js`)은 네이티브 `<button>` 의 키보드 활성화를 브라우저에 맡긴다. Enter 와 Space 의 `click` 은
+브라우저가 합성하는 것이라 jsdom 에서 `keyDown` 을 보내도 `click` 이 나오지 않는다. 합성 `click` 을 직접 쏘면 키 처리가 아니라 `click` 핸들러를 시험하는 것이다.
+탭이 속한 composite(Tabs)는 다르다 — `useButton` 이 Space 의 `keydown` 에서 기본 동작을 막고 `click` 을 직접 디스패치한다. 그래서 같은 Space 라도
+Tabs 와 Collapsible 의 경로가 다르고, 단위 테스트는 어느 쪽도 실제 활성화를 증명하지 못한다.
+
+그래서 Tabs · Collapsible 단위 테스트는 `keyDown` 이 기본 동작을 취소하지 않는 것까지만 본다. Enter · Space 로 탭이 바뀌고 Collapsible 이 열리고 닫히는 것은
+`apps/verify-next/e2e/components.spec.ts` 의 Playwright 가 실제 브라우저에서 증명한다(스펙 알려진 동작 31 이 Enter · Space 를 약속한다).
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -523,8 +582,7 @@ C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 �
 - npm 패키지 페이지(README · `repository`)는 여전히 비어 있다. web · native README 에 소비 규칙을 실었다(2026-10-19), 다음 publish 에 포함
 - 스펙 C-20(293행)은 "next-themes 는 해석된 테마를 `light` / `dark` 클래스로 루트에 쓴다"고만 적는다. next-themes 0.4.6 의 `attribute` 기본값은
   `data-theme` 라서 `attribute="class"` 를 줘야 한다(verify-next `theme/page.tsx` 가 준다). web README 에는 이 조건을 적었다. 스펙은 고치지 않는다
-- 웹 Chip · Icon 은 verify-next 화면에 없다. 브라우저 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 다음 웹 작업 때
-  화면에 올려 확인한다(DS 재검증 테스트 공백 6)
+- ~~웹 Chip · Icon 은 verify-next 화면에 없다~~ — **해소(R27, N-19).** `/components` 에 올려 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 Playwright 가 본다(DS 재검증 테스트 공백 6)
 - 2026-09-25 에뮬레이터 확인(N-17, spendback 화면 · Android 16 · S24+ 해상도 · base 브랜드에 앱 색 재선언): placeholder 색은
   라이트 · 다크 모두 읽힌다. 글자 크기 200% 에서 칩 줄이 넘어가며 버틴다. Chip · Button 의 `active:opacity-80` 이 보이고, 다크
   on-brand · on-danger 글자가 거의 검정이다. Input 포커스 테두리는 터치 · `focus()` 로 바뀐다. 기록은 spendback `docs/DESIGN.md` 1.6
@@ -541,5 +599,9 @@ C-5b 의 "색 키와 1:1" 은 `semanticVariables` 맵(plan §3.1)이 실체라 �
 - `0.4.0`(N-18, R26)은 2026-09-26 publish 했다(F-29). 0.4.0 은 base 모양 전체를
   바꾸고 RN 소비 앱에 글꼴 등록을 요구한다 — 릴리스 노트에 적는다. AC-23 스크린샷 네 장은 옛 모양이다(웹을 새로 찍으면 RN 과 짝이 안 맞아 되돌렸다, F-25).
   RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다. 검증 앱의 앱 색(초록)은 다크에서 흰 on-brand 와 대비가 낮다 — 검증 앱은 C-5b 짝 대비를 따르지 않는다
+- `0.5.0`(N-19, R27)은 준비를 마쳤다 — 세 패키지 `package.json` 이 `0.5.0` 이고 `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` 이 통과했다. 남은 것은 셋이다.
+  (1) **구분선 확인**(1절 수동 확인 상태 5, 사용자 판단). 받아들이지 않으면 토큰 결정과 재작업이 먼저다.
+  (2) `feat/r27-web-components` 를 main 에 합친다(pnpm 은 main 에서만 publish 한다, `publish-branch`).
+  (3) T-P4 publish 는 사용자가 자기 터미널에서 한다(F-17 · F-29). 0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
