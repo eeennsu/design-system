@@ -10,6 +10,7 @@
 - 2026-09-06 R24 개정. C-19 착수 게이트 실행 결과 반영. 게이트 (2)·(4) 실패에 따라 RN 다크 경로를 `@media` 단일 셀렉터로 확정 — C-20 RN 항목, C-6 산출물, C-5b RN 항목, AC-19 (c), AC-26 RN절 수정, 알려진 동작 15~16 추가. 웹은 무변경. 측정 기록은 [gate-c19.md](gate-c19.md)
 - 2026-09-25 R25 개정. v1 이후 첫 RN 소비 앱(spendback) 반영. Chip · Icon 신설, `IconName` 28개, RN 눌림 표시 · 누름 영역 · 입력 포커스 · placeholder 색 · 고정폭 숫자, 글자 대비(base 다크 · bakery). C-5b · C-6 · C-7c · C-11 · C-12 · C-13 · C-17 보강, AC-7 · AC-13 · AC-20, Ontology `Icon`, 알려진 동작 17~23 추가. 결정 근거는 [decisions-r25.md](decisions-r25.md)
 - 2026-09-25 R26 개정. base를 토스 앱 인상을 참고한 값으로 바꿨다(회색 canvas · 흰 surface · 채움 입력 칸 · 글자 스텝 · 모서리 · RN 글꼴). `fg.brand` 신설, `fg.danger` 별칭 해제, radius `xl` 추가. C-5b · C-6 · C-7b · C-8 보강, 알려진 동작 24~27 추가. 결정 근거는 [decisions-r26.md](decisions-r26.md)
+- 2026-10-24 R27 개정. 첫 웹 소비 앱(amulator 학습 사이트) 반영. 웹 전용 Tabs · Table · CodeBlock · Prose · Collapsible 신설(`0.5.0`). C-4 · C-6 · C-12 · C-13 · C-17 보강, AC-7 · AC-13, Topology, Ontology `ComponentContract` · `ClassVocabulary`, 알려진 동작 28~32 추가(계획 S-7의 `font-mono` 예외를 28로 옮겼다). 결정 근거는 [decisions-r27.md](decisions-r27.md)
 - 본문의 `R{n}`은 인터뷰 라운드 번호. 결정 근거는 문서 끝 트랜스크립트에서 추적
 - 패키지명의 npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05). R21 보류 항목이었고 문자열 치환을 마쳤다
 
@@ -118,6 +119,26 @@ spendback을 에뮬레이터로 본 사용자가 인상이 애매하다고 했�
 
 R26 보류: 없음.
 
+### R27 개정 요약 (2026-10-24)
+
+첫 웹 소비 앱인 amulator 학습 사이트가 챕터 화면에 쓸 범용 UI 다섯 개를 요청했다. 다섯 개를 DS에 넣고 웹 전용으로 둔다는 것과 범위를 다섯으로 고정한다는 것은 사용자가 정했고, API는 기존 컴포넌트 관례를 따라 설계자가 정했다(전부 설계자 판단). 대안 비교는 [decisions-r27.md](decisions-r27.md)이고 이 절은 결과만 싣는다. 닫힌 결정(R21~R26)과 C-5c, R25 보류는 열지 않았다. 새 의존성과 새 semantic 토큰은 없다.
+
+- **다섯 개 모두 `@eeennsu/web` 전용이다.** ButtonGroup · Tooltip · Dialog · Drawer · Form과 같은 자리이고 계약은 tokens에 있다. 한 컴포넌트는 계약 키 하나 · `FC<Props>` 하나다 — 파트를 정적 속성으로 붙이면 C-17 맵 동등성이 깨진다. `ref`는 다섯 개 모두 없다
+- **Tabs**: `label`(필수, 탭 목록의 접근성 이름) · `items: TabItem[]`(`{ value: string; label: string; content: ReactNode }`) · `value` / `defaultValue` / `onValueChange`(값 3종, 문자열). 비제어면 첫 항목이다. Base UI `Tabs` 위에 두고 키보드는 Base UI 기본(화살표 포커스 이동, Enter · Space 활성화, Home · End, 끝에서 처음으로)이다. 밑줄 탭 모양
+- **Table**: `label?`(보이는 캡션) · `columns: TableColumn[]`(`{ label: string; align?: "start" | "end" }`) · `rows: TableRow[]`(`{ cells: ReactNode[] }` — 행을 객체로 둬서 행 key · 행 머리글 · 행 강조를 나중에 추가적으로 더한다). `align="end"` 열은 `text-end tabular-nums`다. 비인터랙티브. 넓으면 가로 스크롤
+- **CodeBlock**: `children: string | string[]` · `label?`(보이는 캡션). 블록 하나이고 문법 강조 · 복사 버튼 · 줄 번호가 없다. `font-mono`, `surface-muted` 채움, 줄바꿈 없이 가로 스크롤. 인라인 코드는 Prose가 맡는다
+- **Prose**: `children: ReactNode`. MDX · HTML 원시 요소(h1~h3 · p · 목록 · 링크 · 인라인 code · pre · blockquote · hr · 표 · img)를 DS 어휘로 칠한다. 정적 클래스 문자열의 임의 변형이고 특이성을 `:where`로 낮춰 안에 놓인 DS 컴포넌트와 소비자 클래스가 이긴다. Prose의 `pre` · 표는 CodeBlock · Table과 같은 recipe다
+- **Collapsible**: `label`(필수, 트리거 글자 겸 접근성 이름) · `children: ReactNode` · `open` / `defaultOpen` / `onOpenChange`(기본 닫힘). Base UI `Collapsible` 위에 둔다. 상자 없는 트리거 줄 + 꺾쇠이고, 상자는 Card와 조합한다. 닫힌 패널은 DOM에 없다
+- **`"use client"`는 Tabs · Collapsible뿐이다.** Table · CodeBlock · Prose는 서버 컴포넌트에서 렌더된다(C-4)
+- **스크롤 영역**: Table · CodeBlock의 가로 스크롤 영역은 키보드 포커스를 받는다(`tabIndex={0}` + 포커스 링). `label`이 있으면 그 영역이 `role="region"` + `aria-label`을 갖는다(어댑터 내부, 계약 무변경)
+- **타입 export**: 계약 타입 `TabItem` · `TableColumn` · `TableRow`는 tokens `contracts.ts`에 있고, `@eeennsu/web` 진입점이 타입 전용으로 다시 내보낸다. pnpm 격리 레이아웃에서는 소비 앱이 `@eeennsu/tokens`를 직접 import할 수 없다. `components` 맵은 그대로다
+- **`font-mono` 예외를 스펙으로 옮겼다.** Tailwind 기본 `--font-mono` · `--font-serif`가 리셋되지 않고 남는 것은 계획 S-7에 메모로만 있었다. CodeBlock · Prose가 `font-mono`를 쓰므로 알려진 동작 28로 옮기고 probe 테스트로 지킨다
+- **component recipe**: Tabs(탭 버튼) · Table(셀) · CodeBlock · Collapsible(트리거)의 값을 component 계층에 둔다. 탭 버튼과 트리거는 md 컨트롤과 같은 높이 42다(계획 D-6)
+- **검증 화면**: verify-next에 서버 컴포넌트 라우트를 새로 두고 다섯 개와, R25 뒤 화면에 없던 웹 Chip · Icon을 올려 Playwright로 확인한다. AC-23 스크린샷 화면은 그대로다
+- C-4(`"use client"` 대상), C-6(리셋 범위의 `font-mono` 예외), C-12(값 3종에 Tabs, 개폐 3종에 Collapsible), C-13(Tabs · Collapsible · Table · CodeBlock · Prose 매핑), C-17(children · ref 규칙) 보강, AC-7 목록과 검증 항목, AC-13 문구, Topology, Ontology, 알려진 동작 28~32 추가. 번호 유지, 삭제 · 재번호 없음
+
+R27 보류: 없음. R25 보류(데이터 값 `number` prop)는 그대로 사용자 판단으로 남는다 — Table 셀은 `ReactNode` 내용이라 그 질문을 열지 않는다.
+
 ## Topology
 
 최상위 컴포넌트 6개 중 4개 활성. docs·agent-native는 v2 보류. platform-adapter는 R6에서 보류됐다가 R11에서 축소 범위로 복귀.
@@ -125,7 +146,7 @@ R26 보류: 없음.
 | Component | Status | Description | Coverage / Deferral Note |
 |-----------|--------|-------------|--------------------------|
 | **tokens** | active | primitive → semantic → component 3계층 토큰. 플랫폼 무관 소스에서 웹·RN 양쪽 빌드 | AC-1 ~ AC-6 |
-| **components** | active | Base UI 위에 자체 API로 재설계한 웹 컴포넌트 14개(R21: Text 추가). R25에서 Chip · Icon을 더해 16개 | AC-7 ~ AC-15 |
+| **components** | active | Base UI 위에 자체 API로 재설계한 웹 컴포넌트 14개(R21: Text 추가). R25에서 Chip · Icon을 더해 16개, R27에서 Tabs · Table · CodeBlock · Prose · Collapsible을 더해 21개 | AC-7 ~ AC-15 |
 | **distribution** | active | npm 3패키지 배포. 새 프로젝트가 설치 즉시 화면 작성 시작 | AC-16 ~ AC-19, AC-24, AC-26 |
 | **platform-adapter** | active (축소) | RN 토큰 빌드 + NativeWind v5 + 핵심 컴포넌트 5개(R21: Text 추가). v1 이후 Textarea · Label · Badge · Box(구현 노트 N-16), Chip · Icon(R25)을 더해 11개 | AC-20 ~ AC-23, AC-25. RN 오버레이 컴포넌트는 v2 |
 | docs | **deferred** | Storybook 등 문서·프리뷰 | v2 보류. 근거 — 사용자가 1인. Storybook 유지비가 편익을 초과 |
@@ -181,6 +202,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - 이전(R12): "컴파일된 CSS 배포, 소비 프로젝트 Tailwind 불필요". `className` 허용으로 성립 불가해져 폐기
 - C-4. **RSC 대응**: 인터랙티브 컴포넌트는 `"use client"` 지시어를 붙여 배포한다. Next.js App Router에서 동작해야 하며, Vite 환경에서는 무해. Form도 대상이다 — `<form>`의 `onSubmit` 핸들러(`preventDefault`)를 갖는 인터랙티브 컴포넌트(R21, C-21)
   - **(R21 후속) 산출물 제약 2건**: (1) 번들러가 파일별 `"use client"` 지시어를 dist에 보존해야 한다 — 번들러 다수가 기본 설정에서 지시어를 삭제하므로 빌드 설정과 dist 검사 테스트가 필요. (2) 컴포넌트의 클래스는 **정적 문자열 리터럴**로만 쓴다. `` `bg-${variant}` `` 같은 동적 조합은 `@source "../dist"` 스캔이 찾지 못해 CSS가 생성되지 않는다. variant별 클래스는 객체 맵으로 둔다
+  - **(R27)** Tabs · Collapsible은 `"use client"` 대상이다(Base UI 상태). Table · CodeBlock · Prose는 훅과 이벤트가 없어 지시어 없이 서버 컴포넌트에서 렌더된다
 - C-4a. 레포는 **pnpm workspace** 단일 레포(`packages/{tokens,web,native}`, 패키지명 `@eeennsu/{tokens,web,native}`). 배포는 **공개 npm** — 비공개 레지스트리는 소비 프로젝트에 `.npmrc` 토큰 설정을 요구해 AC-16을 깨뜨리므로 채택하지 않는다. 스코프 이름은 `@eeennsu`로 확정됐다(2026-09-05)
   - **(R21 후속) 최소 버전**: peer `react >= 19` — 계약의 `ref`가 일반 prop이라 `forwardRef` 없이 성립하는 조건. `tailwindcss >= 4`. `react-native` · `nativewind` 버전은 C-19 고정 정책. 검증 프로젝트는 전부 새로 만든 빈 프로젝트이며 형제 프로젝트를 검증 대상으로 쓰지 않는다
 
@@ -212,7 +234,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
     - **선행 확인**: `--radius-*`·폰트 패밀리 변수가 소비자 `:root` 재선언으로 덮이는지는 토큰 빌드가 `@theme inline`을 쓰는 범위에 달렸고 아직 안 정해졌다. 계획 태스크 "토큰 인벤토리"의 확인 항목이며, 같은 태스크에서 두 변수군 이름을 나중에 공개 계약이 돼도 되는 이름으로 짓는다. RN은 게이트 (6)이 같은 질문을 담고 있다. 근거는 [decisions-r23.md](decisions-r23.md)
 - C-6. **(R21 확장)** 토큰 소스는 플랫폼 무관 포맷(JSON / DTCG) **1본**. 빌드 산출물:
   - `@eeennsu/tokens/themes/<brand>.css` — `:root` 변수(primitive 포함) + semantic 다크 오버라이드 2셀렉터(`.dark`, `@media (prefers-color-scheme: dark) { :root:not(.light) }`) + `@theme inline` 매핑 + 네임스페이스 리셋 + `--spacing-0: 0`. 내부 산출물이며 소비자가 직접 import하지 않는다
-  - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
+  - **리셋 범위(R21 후속 확정)**: 리셋 = `--color-*`, `--spacing-*`(단독 `--spacing` 포함 여부는 probe로 확인), `--radius-*`, `--shadow-*`, `--text-*`, `--font-weight-*`. 무게는 타이포 스텝만이 정하므로 `font-bold`는 무효(알려진 동작 1). `--font-*`(패밀리)는 리셋이 아니라 DS `fontFamily` 토큰으로 덮어쓴다. **(R27)** 덮어쓰는 것은 `--font-sans` 하나라 Tailwind 기본 `--font-mono` · `--font-serif`가 남고 `font-mono` · `font-serif` 클래스가 생긴다. 어휘 봉쇄(C-15)의 유일한 글꼴 예외이며 CodeBlock · Prose가 `font-mono`를 쓴다(알려진 동작 28). **유지** = `--breakpoint-*`(`sm:` 등 반응형), `--container-*`(`max-w-*`), 그 외 Tailwind 정적 유틸리티(`flex`, `w-full`, `px`)
   - 플랫폼 래퍼 `@eeennsu/web/themes/<brand>.css`, `@eeennsu/native/themes/<brand>.css` — 빌드가 생성한다(브랜드당 2개). 소비자 공개 경로(C-3)
   - **(R24) native 래퍼만 다크 블록을 하나 더 낸다** — 토큰 파일 import 뒤에 `@media (prefers-color-scheme: dark) { :root { … } }`. semantic 다크 값을 `:not(.light)` 없이 다시 낸 것이며 값은 같은 DTCG 소스에서 나온다(AC-5 동시 전파 유지). 게이트 (4)의 귀결이고, 토큰 파일과 web 래퍼는 무변경이다. native 래퍼는 이 밖에 타이포 줄 높이를 배수로 다시 내고(R24, 계획 D-31), **(R25)** `.tabular-nums`에 RN 선언(`-rn-font-variant`)을 더한다(알려진 동작 17). **(R26)** `--font-sans`를 토큰 소스의 RN 패밀리 이름 하나(`Pretendard`)로 다시 낸다 — react-native-css가 목록의 첫 이름만 쓰기 때문이다(C-7b)
   - RN 런타임용 JS 객체
@@ -237,6 +259,7 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - `number` → 웹 `type="text"` + `inputMode="numeric"`(스피너 없는 쪽) / RN `keyboardType="numeric"`
   - 자동완성 힌트도 `kind`에서 파생한다(어댑터 세부, 계약 변경 없음) — 웹 `password` → `autoComplete="current-password"`, `email` → `autoComplete="email"`. RN `password` → `autoComplete="password"` + `textContentType="password"`, `email` → `autoComplete="email"` + `textContentType="emailAddress"`. `new-password`는 구분하지 않는다(알려진 동작 8)
 - C-12. **(R21 확장) 제어 API 네이밍 고정.** 두 갈래 — 값 입력(Input · Textarea)은 `value` / `defaultValue` / `onValueChange`, 오버레이(Dialog · Drawer · Tooltip)는 `open` / `defaultOpen` / `onOpenChange`. 같은 3종 패턴이라 규칙 취지가 같고 Base UI 이름과 일치한다. `open`이 있으면 제어, 없으면 `defaultOpen`으로 시작. 누름 이벤트는 **플랫폼 관용 이름**을 쓴다(R21 후속, B-9 재개정) — 웹 `onClick?: () => void`, RN `onPress?: () => void`. 시그니처는 양쪽 동일하고 이름만 다르며, 매핑은 계약 타입의 플랫폼 매개변수 한 곳에서 정의한다(C-17). 웹에서 `onClick={(e) => …}`는 타입 에러. 원칙: 웹은 Base UI · DOM 관용, RN은 RN 관용을 따르고, 둘이 같으면 이름 하나(`onValueChange`, `onOpenChange`), 다르면 계약이 플랫폼별 이름을 정한다. v1에서 갈리는 건 누름 하나뿐. `onChange`는 RN `TextInput`의 `onChangeText`와 혼동되고 시그니처도 다르므로(이벤트 vs 값) 쓰지 않는다. `onChange` / `onToggle` 같은 이름은 계약 어디에도 없다. Input `value`는 `kind`와 무관하게 항상 `string`(RN `TextInput`이 문자열만 다루므로 `number`도 문자열). Form은 값이 없어 제어 컴포넌트가 아니다. 오버레이는 v1에 별도 `trigger` prop 없이 제어 API만 둔다 — 소비자가 Button 누름 이벤트로 `open`을 토글.
+  - **(R27)** 값 3종에 Tabs가 더해진다 — `value` / `defaultValue` / `onValueChange: (value: string) => void`, 값은 항목의 `value` 문자열이다. 오버레이 3종은 **개폐 3종**으로 읽는다 — Collapsible이 같은 `open` / `defaultOpen` / `onOpenChange`를 쓴다. 오버레이는 아니지만 Base UI 이름과 같고 "열림 불리언 하나"라는 개념이 같다(둘이 같으면 이름 하나)
   - **(R25)** Chip `selected`는 제어 전용 상태다 — `defaultSelected`와 변경 콜백이 없고, 소비자가 누름 이벤트에서 바꾼다. 오버레이의 `open`을 Button 누름으로 토글하는 것과 같은 방식이며, 값 3종 · 오버레이 3종에 이은 세 번째 제어 형태가 아니라 누름 이벤트 하나다
   - 이전(R21 4차, B-9): "`onPress`로 고정, `onClick` 미노출". 웹에서 `onPress`가 어색하다는 사용자 판단으로 재개정. 되돌리기 — 나중에 웹에 `onPress`를 추가하는 건 추가적이고, 반대(`onPress` 확정 후 `onClick`으로 변경)는 소비자 파괴라 지금이 바꿀 시점 Tooltip은 앵커가 본질이라 `children`으로 앵커를 받는다(앵커 타입, Base UI `Trigger`의 `render` 내부 사용은 계획 단계)
 - C-13. **(R21 재작성) 접근성 이름 보장 계약.** 인터랙티브 컴포넌트는 `label: string`을 필수로 받고, 어댑터가 접근성 이름을 보장한다. 타입 레벨에서 강제. 매핑:
@@ -247,6 +270,10 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
   - Tooltip: `label`이 표시 내용이자 접근성 설명
   - Chip(R25): Button과 같다 — `label`이 가시 텍스트 겸 접근성 이름이다. 고른 상태는 웹 `aria-pressed`, RN `accessibilityState.selected`로 알린다
   - Icon(R25): 비인터랙티브라 `label`이 선택이다. 있으면 이름 있는 그림(웹 `role="img"` + `aria-label`, RN `accessibilityRole="image"`), 없으면 꾸밈이라 보조 기술에서 숨긴다
+  - Tabs(R27): `label` 필수. 탭 목록(`role="tablist"`)의 `aria-label`이며 보이지 않는다(ButtonGroup과 같다). 항목 `label`은 탭 글자 겸 그 탭의 접근성 이름이다. 고른 탭은 Base UI가 `aria-selected`로 알린다
+  - Collapsible(R27): `label` 필수. Button처럼 트리거의 가시 텍스트 겸 접근성 이름이다. 열림은 Base UI가 `aria-expanded`로 알린다
+  - Table · CodeBlock(R27): 비인터랙티브라 `label`이 선택이다. 있으면 보이는 캡션(`<caption>` · `<figcaption>`)으로 렌더하고 접근성 이름을 겸한다. 가로 스크롤 영역은 포커스를 받지만 컨트롤이 아니다(알려진 동작 29)
+  - Prose(R27): 비인터랙티브. 안의 원시 요소와 DS 컴포넌트가 각자 의미를 갖는다
   - Text · Form · Badge · Card · Label은 비인터랙티브라 대상이 아니다(Badge · Card · Label은 R21 후속. Label은 가시 텍스트가 곧 내용이고 `htmlFor`로 Input에 연결된다)
   - 이전: "웹은 `aria-label`, RN은 `accessibilityLabel`로 변환". Button 가시 텍스트를 `label`로 통합하며 "변환"에서 "보장"으로(R21 A-4)
 - C-14. **(R21 재작성) 토큰 값을 받는 prop이 없다.** 계약 전체에 `number` 타입 prop이 없고(`padding={16}` 같은 prop 자체가 존재하지 않는다), 색 의도를 받는 prop(`variant`, `tone`)은 enum 키만 받는다(`tone="#333"`은 타입 에러). 간격은 `className` 전용(C-7a) — Stack / Box에 `gap` · `padding` prop 없음. `className` 안의 임의값(`bg-[#333]`, `mt-[13px]`)은 타입·구조 어느 쪽으로도 막지 못한다 — 이는 C-15의 의도된 탈출구
@@ -265,8 +292,8 @@ Tailwind v4가 CSS-first 설정(`@theme`)이고 NativeWind v5가 같은 방식�
 - C-17. **(R21 강제 수단 확정)** `@eeennsu/web`과 `@eeennsu/native`는 **동일한 prop 시그니처**를 갖되 구현을 공유하지 않는다. 계약 타입은 `@eeennsu/tokens`에 단일 정의(`Contracts<P>` 타입 맵 + `webComponents` / `nativeComponents` 키 목록)로 두고 양쪽이 그것을 구현한다. 사람 규율에 맡기지 않는다. 강제 수단:
   - 각 패키지가 export 맵 전체를 타입 동등성 테스트 1개로 검사한다 — web은 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in WebKeys]: FC<Contracts<'web'>[K]> }>()`, native는 `Contracts<'native'>`와 `NativeKeys`. 추가·제거·누락 컴포넌트가 전부 걸린다. CI에 `vitest --typecheck`
   - **플랫폼 매개변수(R21 후속)**: `Contracts<P extends 'web' | 'native'>`. 대부분의 prop은 `P`와 무관하게 동일하고, 플랫폼 관용 이름이 갈리는 prop만 `P`로 분기한다 — v1에서는 Button 누름 이벤트 하나(`P extends 'web' ? { onClick?: () => void } : { onPress?: () => void }`, C-12)이고, R25에서 Chip이 같은 분기(`Press<P>`)를 쓴다. 이름 매핑은 계약 파일 이 한 곳에만 존재하고 어댑터가 자체 별칭을 두지 않는다. "동일한 prop 시그니처"는 "계약이 정의한 매핑 제외 동일"로 읽는다
-  - `ref`는 플랫폼별 엘리먼트 대신 `Ref<{ focus(): void; blur(): void }>` 핸들로 계약에 포함한다. 핸들에서 DOM 노출로 넓히는 변경은 소비자 무영향(추가적)이고 반대는 파괴적이다. 대상은 포커스 가능한 Button · Input · Textarea뿐(R21 후속)이고 R25에서 Chip이 더해졌다. Card · Stack · Box · Text · Badge · Label · Icon엔 `ref` 없음
-  - **`children` 타입 규칙(R21 후속)**: 텍스트 컴포넌트(Text · Badge · Label)는 `string | string[]`. 컨테이너(Card · Stack · Box)는 **문자열을 제외한 엘리먼트 노드** — `ReactElement | boolean | null | undefined | 그 배열`. RN `View` 안의 원시 문자열 자식은 크래시하므로 타입으로 막는다. 웹 전용(Dialog · Drawer · Tooltip · Form)만 `ReactNode`. ReactNode로 넓히는 변경은 추가적. Chip · Icon(R25)은 `children`이 없다
+  - `ref`는 플랫폼별 엘리먼트 대신 `Ref<{ focus(): void; blur(): void }>` 핸들로 계약에 포함한다. 핸들에서 DOM 노출로 넓히는 변경은 소비자 무영향(추가적)이고 반대는 파괴적이다. 대상은 포커스 가능한 Button · Input · Textarea뿐(R21 후속)이고 R25에서 Chip이 더해졌다. Card · Stack · Box · Text · Badge · Label · Icon엔 `ref` 없음. **(R27)** Tabs · Table · CodeBlock · Prose · Collapsible에도 없다 — Tabs · Collapsible은 안에 포커스 대상이 여럿이라 "포커스할 하나"가 정해지지 않는다
+  - **`children` 타입 규칙(R21 후속)**: 텍스트 컴포넌트(Text · Badge · Label)는 `string | string[]`. 컨테이너(Card · Stack · Box)는 **문자열을 제외한 엘리먼트 노드** — `ReactElement | boolean | null | undefined | 그 배열`. RN `View` 안의 원시 문자열 자식은 크래시하므로 타입으로 막는다. 웹 전용(Dialog · Drawer · Tooltip · Form)만 `ReactNode`. ReactNode로 넓히는 변경은 추가적. Chip · Icon(R25)은 `children`이 없다. **(R27)** 웹 전용인 Prose · Collapsible의 `children`과 Tabs 항목 `content`, Table 셀(`rows: TableRow[]`의 `cells: ReactNode[]`)은 `ReactNode`다. CodeBlock은 글자 컴포넌트라 `string | string[]`이다. Tabs · Table은 `children`이 없다
   - 플랫폼 전용 prop은 0개. 웹·RN 차이는 계약의 열거형 교차 어휘로 흡수한다(Input `kind`, C-11). 플랫폼 매개변수 분기는 같은 prop의 이름 차이일 뿐 전용 prop이 아니다
   - 콜백은 플랫폼 이벤트 인자를 받지 않는다 — `onClick` / `onPress: () => void`, `onOpenChange: (open: boolean) => void`. 웹 `MouseEvent`와 RN `GestureResponderEvent`가 달라 계약에 넣을 수 없다. 나중에 교차 인자를 추가하는 변경은 소비자 콜백이 인자를 무시해도 할당 가능하므로 추가적이다
   - 계약은 tokens에 놓이고 웹 전용 컴포넌트(오버레이 · Form)의 v1 구현자는 web뿐. RN v2가 같은 계약을 구현하면 맵 테스트가 그대로 대칭을 검사한다
@@ -336,6 +363,11 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 25. **(R26)** Input · Textarea · 고르지 않은 Chip은 테두리 대신 `surface-muted` 채움으로 보인다(canvas 위 1.12, surface 위 1.24). 채움은 비텍스트 3:1 대상으로 보지 않는다 — 라벨로 식별되고 포커스 때 brand 테두리가 생긴다. 테두리는 투명으로 남아 높이를 맞춘다. 소비자가 `--bg-surface-muted`를 canvas나 surface와 같은 값으로 재선언하면 채움이 보이지 않는다.
 26. **(R26)** RN DS 컴포넌트는 `Pretendard` 패밀리를 요청한다. 소비 앱이 등록하지 않으면 Android는 기본 글꼴로 조용히 떨어진다. iOS는 "Unrecognized font family" 메시지를 낸다고 알려져 있으나 기기에서 확인하지 못했다. 등록한 글꼴에 없는 무게는 가까운 무게로 그려진다.
 27. **(R26)** `text-brand`는 채움 색(`bg.brand`)이다. 글자로 쓰면 다크 surface 위 3.57:1이라 기준에 못 미친다. 브랜드 색 글자는 `text-fg-brand`를 쓴다. `text-brand`는 0.3.0 소비자 호환을 위해 남아 있다(색 키는 `@theme inline` 하나에서 `bg-` · `text-` · `border-`를 함께 만든다).
+28. **(R27)** `font-mono` · `font-serif`는 DS 토큰이 아니라 Tailwind 기본값이다. DS는 `--font-sans`만 덮어쓰고 `--font-*`를 리셋하지 않아(C-6) 두 클래스가 남는다. 어휘 봉쇄의 유일한 글꼴 예외이고, CodeBlock과 Prose의 코드가 `font-mono`(시스템 고정폭 글꼴 목록)를 쓴다. 한글은 시스템 글꼴로 대체된다. 소비자가 `:root`에서 `--font-mono`를 재선언하면 기술적으로 덮이지만 계약 밖이다(C-5c와 같은 지위). DS는 고정폭 글꼴을 소유하지 않고 로딩도 안내하지 않는다. 출처는 계획 S-7이다.
+29. **(R27)** CodeBlock은 문법 강조 · 복사 버튼 · 줄 번호가 없고 줄을 바꾸지 않는다. 긴 줄은 가로로 스크롤한다. `children`이 배열이면 줄 배열로 보고 `\n`으로 join한다(React 기본은 줄바꿈 없이 이어 붙인다). Table과 CodeBlock의 스크롤 영역은 넘치지 않아도 Tab 정지점이다(키보드로 스크롤하기 위해서다). `label`이 있으면 그 영역이 `role="region"`과 이름을 갖고, 없으면 이름 없는 포커스 영역이다. 인라인 코드 컴포넌트는 없다 — 인라인 코드는 Prose 안의 `<code>`가 칠해진다.
+30. **(R27)** Prose는 원시 요소를 특이성 0(`:where`)으로 칠한다. 안에 놓인 DS 컴포넌트(Text 제목, CodeBlock, Table)와 소비자가 원시 요소에 준 클래스가 Prose 규칙을 이긴다. 원시 `<table>`은 가로 스크롤 감싸개가 없어 넓으면 넘친다 — 넓은 표는 Table을 쓴다. Prose 안의 원시 `pre` · `table`(MDX 펜스 코드, 마크다운 표)은 Tab 정지점이 아니라 키보드로 가로 스크롤할 수 없다. MDX 소비자는 `components.pre`를 CodeBlock으로 넘기는 몇 줄짜리 어댑터(자식 `<code>`의 글자를 꺼내 `children`으로)를 쓸 수 있다. 선택자 표기는 Tailwind 4.3.3에서만 확인했다 — peer 범위는 `tailwindcss >=4.1`이다. `strong`은 무게를 글자 스텝 밖에서 줄 수 없어(C-6) 브라우저 `bolder` 그대로이고, `h4` 이하는 본문과 같다. 글 폭은 정하지 않는다(`className="max-w-prose"`).
+31. **(R27)** Tabs는 화살표가 포커스만 옮기고 Enter · Space가 탭을 바꾼다(Base UI 기본). 숨은 패널은 마운트하지 않아 탭을 바꾸면 그 패널 안의 상태가 사라지고 브라우저 찾기가 숨은 패널을 찾지 못한다. 가로 방향만 있다. Collapsible의 닫힌 패널도 마운트하지 않는다 — 찾기가 닫힌 답을 펼치지 않는다. 숨은 Tabs 패널과 닫힌 Collapsible 패널은 서버 HTML에도 없다 — Next 같은 서버 렌더 소비자에서 검색 엔진과 JS 없는 렌더가 그 내용을 보지 못한다. 높이 애니메이션은 없다.
+32. **(R27)** Collapsible은 상자가 없다. 트리거 줄과 패널뿐이고, 상자로 보이려면 Card 안에 둔다. 채움 상자로 두면 안에 넣은 CodeBlock · 인라인 코드의 `surface-muted` 채움이 같은 색 위에서 사라진다. CodeBlock을 `surface-muted` 바탕(채운 영역) 위에 직접 두면 같은 이유로 채움이 보이지 않는다 — 그때는 `className="bg-surface"`를 준다. Table · Tabs의 구분선(`border.default`)은 `surface-muted`와 같은 값이라 채운 영역 위에 두면 선이 사라진다. 라이트 canvas 위에서도 1.12:1로 약하다.
 
 ## Non-Goals
 
@@ -371,7 +403,8 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-6c. `fontFamily` 토큰이 존재하고, 패키지에 폰트 파일이 동봉되지 않는다
 
 ### components (`@eeennsu/web`)
-- [ ] AC-7. **(R21 수정)** 다음 12개가 구현된다: `Button` `Input` `Textarea` `Label` `Card` `Badge` `Tooltip` `Dialog` `Drawer` `Form` `ButtonGroup` `Text`. **(R25)** `Chip` `Icon`이 더해졌다(계약은 C-13 · C-17)
+- [ ] AC-7. **(R21 수정)** 다음 12개가 구현된다: `Button` `Input` `Textarea` `Label` `Card` `Badge` `Tooltip` `Dialog` `Drawer` `Form` `ButtonGroup` `Text`. **(R25)** `Chip` `Icon`이 더해졌다(계약은 C-13 · C-17). **(R27)** 웹 전용 `Tabs` `Table` `CodeBlock` `Prose` `Collapsible`이 더해졌다(계약은 C-12 · C-13 · C-17)
+  - **(R27)** 다섯 컴포넌트와 웹 `Chip` · `Icon`이 verify-next의 서버 컴포넌트 화면에서 렌더되고, Playwright가 확인한다 — Tabs 키보드 이동 · 활성화와 `aria-selected`, Collapsible 펼치기와 `aria-expanded`, Table 숫자 열 오른쪽 정렬 · 고정폭 숫자와 가로 스크롤, CodeBlock 고정폭 글꼴 · 채움 · 가로 스크롤, Prose 원시 요소의 글자 스텝 · 간격 · 색과 안에 놓인 DS 컴포넌트가 자기 스타일을 지키는 것, Chip · Icon의 computed style(AC-11 웹 통합 계층)
   - `Text` 계약: `children: string | string[]`(string 전용, RN 안전. `string[]`은 `<Text>Hi {name}</Text>` 허용용, R21 후속), `tone?: Tone`, `size?: TypographyStep`, `heading?: '1' | '2' | '3'`(R21 후속), `className?`. 비인터랙티브라 `label` 없음. `children: ReactNode`는 계약이 같아도 런타임이 갈려(`<span>`이 RN에서 크래시) 타입으로 못 막으므로 불채택. string에서 node로 넓히는 변경은 추가적
   - `heading`: 웹은 `<h1>` ~ `<h3>`, 없으면 `<span>`. RN은 `accessibilityRole="header"`. 문자열 enum인 이유 — `as`는 C-10 금지이고 숫자 리터럴은 AC-15 mapped type 테스트에 걸린다. `heading`은 시맨틱 레벨이며 시각 크기는 여전히 `size`가 정한다(두 축 독립)
   - `Textarea`: `size`가 행수를 정한다(매핑값은 계획). `rows` · `maxLength` 없음(알려진 동작 10). `Label`: `children: string`, `htmlFor?: string`. `Badge`: `children: string`
@@ -381,7 +414,7 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 - [ ] AC-11. **(R20 반전, R21 수정)** 전 컴포넌트가 `className?: string`을 받고, 소비자 클래스가 DS 기본 클래스와 충돌하면 소비자가 이긴다 (예: `variant="primary"`에 `className="bg-danger"`를 주면 배경이 danger). 승리 범위는 같은 유틸리티 그룹·같은 변형(C-15). 웹·RN 동일 동작은 정지 상태에 한정. 검증 3계층 — 단위: 병합 문자열 · `toHaveClass`. 웹 통합: Playwright computed style을 토큰 JS 값과 비교. RN: NativeWind가 테스트 환경에서 className을 style로 해석하면 `toHaveStyle`, 안 되면 className prop 스냅샷으로 격하(AC-25)
 - [ ] AC-11a. **(R21 수정)** 어떤 컴포넌트도 `style` prop을 받지 않고, `{...rest}` 스프레드로 미지 prop을 통과시키지 않는다 (타입 테스트로 검증). `className`이 유일한 커스텀 채널
 - [ ] AC-12. 어떤 컴포넌트도 `as` / `render` / `asChild`를 공개 prop으로 노출하지 않는다
-- [ ] AC-13. **(R21 재작성)** 제어 API가 두 갈래로 고정된다. 값 입력 컴포넌트(Input · Textarea)는 `value` / `defaultValue` / `onValueChange`만, 오버레이(Dialog · Drawer · Tooltip)는 `open` / `defaultOpen` / `onOpenChange`만 노출한다. Button 누름 이벤트는 웹 `onClick` / RN `onPress` 하나씩만 — 웹에 `onPress` 없고 RN에 `onClick` 없다(R21 후속). **(R25)** Chip도 같다 — `selected`는 제어 전용이고 `onSelectedChange` 같은 변경 콜백이 없다. 시그니처는 양쪽 `() => void`. ButtonGroup 자체는 누름 이벤트 없음(자식 Button이 가짐). `onChange` / `onToggle` 같은 이름은 어디에도 없다. Form은 값이 없어 대상 밖. 검증 = C-17 맵 테스트
+- [ ] AC-13. **(R21 재작성)** 제어 API가 두 갈래로 고정된다. 값 입력 컴포넌트(Input · Textarea)는 `value` / `defaultValue` / `onValueChange`만, 오버레이(Dialog · Drawer · Tooltip)는 `open` / `defaultOpen` / `onOpenChange`만 노출한다. Button 누름 이벤트는 웹 `onClick` / RN `onPress` 하나씩만 — 웹에 `onPress` 없고 RN에 `onClick` 없다(R21 후속). **(R25)** Chip도 같다 — `selected`는 제어 전용이고 `onSelectedChange` 같은 변경 콜백이 없다. 시그니처는 양쪽 `() => void`. ButtonGroup 자체는 누름 이벤트 없음(자식 Button이 가짐). `onChange` / `onToggle` 같은 이름은 어디에도 없다. Form은 값이 없어 대상 밖. **(R27)** Tabs는 값 3종(`value: string`, `onValueChange: (value: string) => void`), Collapsible은 개폐 3종(`open`, `onOpenChange: (open: boolean) => void`)만 노출한다. 검증 = C-17 맵 테스트
 - [ ] AC-14. 인터랙티브 컴포넌트에서 `label` 누락 시 타입 에러가 난다
 - [ ] AC-15. **(R21 재정의)** 계약 전체에 `number` 타입 prop이 없고, 색 의도를 받는 prop(`variant`, `tone`)은 enum 키만 받는다 (`tone="#333"`은 타입 에러). mapped type 테스트 1개로 검증. `className` 문자열 내부는 검사 대상이 아니다
   - 이전: "`padding={16}`, `color="#333"`이 타입 에러". 해당 prop이 존재하지 않는 쪽으로 재정의(C-14)
@@ -499,9 +532,9 @@ Inter가 양쪽 공통이지만 **한글 글리프가 없어** 현재 웹 프로
 | DesignToken | core domain | name, tier, value, platform | belongs to TokenTier; consumed by Component |
 | TokenTier | core domain | primitive \| semantic \| component | ordered 3-level hierarchy; primitive ← semantic ← component |
 | Component | core domain | name, variant, size, tone(Text), label, props | references DesignToken (semantic 이상만); conforms to ComponentContract |
-| ComponentContract | core domain | variant 어휘, size 스케일(전역 5단 + 컨트롤 부분집합), `tone` 축 (R21), 제어 네이밍(`value` 3종 / `open` 3종 / 누름은 플랫폼 관용 `onClick`·`onPress`), 교차 어휘 열거형 `kind` (R21), 플랫폼 매개변수 `Contracts<P>` (R21 후속), a11y 필수, 금지 prop 목록, `className` 허용 (R20), `ref` 핸들 | governs all Components across both Platforms; enforced by export-map type equality test (C-17) |
+| ComponentContract | core domain | variant 어휘, size 스케일(전역 5단 + 컨트롤 부분집합), `tone` 축 (R21), 제어 네이밍(`value` 3종 — Input · Textarea · Tabs(R27) / `open` 3종 — 오버레이 · Collapsible(R27) / 누름은 플랫폼 관용 `onClick`·`onPress`), 한 컴포넌트 = 계약 키 하나 · `FC<Props>` 하나(파트 정적 속성 없음, R27), 교차 어휘 열거형 `kind` (R21), 플랫폼 매개변수 `Contracts<P>` (R21 후속), a11y 필수, 금지 prop 목록, `className` 허용 (R20), `ref` 핸들 | governs all Components across both Platforms; enforced by export-map type equality test (C-17) |
 | Platform | supporting | web \| native | consumes DesignToken via platform build; hosts its own Component impl; both resolve className against shared ClassVocabulary |
-| ClassVocabulary | supporting (R20) | `@theme` 산출물 — 토큰에서 파생된 Tailwind 클래스 집합. **봉쇄** (R21): Tailwind 기본 팔레트·동적 spacing 리셋, primitive 미노출. 열거 외 키는 무효 | built from DesignToken; consumed by web Tailwind and NativeWind identically via platform wrapper; the only customization channel; merged by tailwind-merge with DS key config |
+| ClassVocabulary | supporting (R20) | `@theme` 산출물 — 토큰에서 파생된 Tailwind 클래스 집합. **봉쇄** (R21): Tailwind 기본 팔레트·동적 spacing 리셋, primitive 미노출. 열거 외 키는 무효. 글꼴 예외는 Tailwind 기본 `font-mono` · `font-serif`뿐 (R27, 알려진 동작 28) | built from DesignToken; consumed by web Tailwind and NativeWind identically via platform wrapper; the only customization channel; merged by tailwind-merge with DS key config |
 | Package | supporting | name, version, exports, types | `@eeennsu/tokens` → `@eeennsu/web`, `@eeennsu/native`. 스코프 이름 `@eeennsu` 확정(2026-09-05). 공개 경로는 `web/themes/<brand>.css`, `native/themes/<brand>.css` |
 | Theme | supporting | brand × (light \| dark) | rebinds semantic DesignToken; composed of Brand and color scheme; dark resolved by hybrid rule (C-20) |
 | Brand | core domain | name, semantic 색 오버라이드. v1: `base`, `bakery` (R21). 주입 위치 2곳 (R22): DS 브랜드 파일(이름 있는 프리셋) / 소비자 로컬 오버라이드(앱 전용, C-5b) | injects into semantic tier only; 간격·타이포·component 계층은 불변; preset selected at build time by import path, one per app; local override cascades over the preset in consumer global CSS |

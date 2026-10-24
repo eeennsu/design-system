@@ -172,7 +172,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 | `fg.danger` | `--fg-danger` | `--color-fg-danger` | red-700 (R26, 이전 `var(--bg-danger)`) | red-400 (R26) | red-600 | red-500 | `tone="danger"` |
 | `fg.on-brand` | `--fg-on-brand` | `--color-fg-on-brand` | white | white (R26, 이전 gray-950) | gray-950 (R25, 이전 white) | gray-950 | primary Button 글자 |
 | `fg.on-danger` | `--fg-on-danger` | `--color-fg-on-danger` | white | white (R26, 이전 gray-950) | white | gray-950 (R25, 이전 white) | danger Button 글자 |
-| `border.default` | `--border-default` | `--color-border` | gray-200 (R26) | zinc-800 (R26) | amber-300 | gray-700 | 소비자 구분선 · Card 경계(DS 컴포넌트는 R26부터 쓰지 않는다) |
+| `border.default` | `--border-default` | `--color-border` | gray-200 (R26) | zinc-800 (R26) | amber-300 | gray-700 | 소비자 구분선 · Card 경계, Tooltip 테두리. **(R27)** Tabs 목록선 · Table · Prose 구분선(blockquote · hr · 표). R26에 "DS 컴포넌트는 쓰지 않는다"고 적었으나 Tooltip이 계속 써 왔다 |
 | `border.focus` | `--border-focus` | `--color-border-focus` | `var(--bg-brand)` | `var(--bg-brand)` | 동일 | 동일 | focus ring(§4.6) |
 
 - **(R26) `fg.danger`는 더 이상 별칭이 아니다.** 진한 채움 위 흰 글자와 표면 위 글자를 한 값으로 맞출 수 없어 `fg.brand`와 함께 글자용 값을 따로 둔다(decisions-r26 5). 아래는 R26 전의 근거다.
@@ -208,7 +208,7 @@ semantic 색 하나에 이름이 세 개 생긴다. 역할이 다르므로 혼�
 |---|---|---|---|
 | `--font-sans` | `"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` | `Pretendard` | **사용자 확정(2026-09-05, §8 D-1)**. 로딩은 소비자 책임(웹 `next/font/local` 또는 `@font-face`, RN `expo-font`). 폰트 파일 미동봉(AC-6c). RN 값은 `expo-font`로 등록하는 패밀리 이름과 일치해야 하며, RN에서 무게별 정적 폰트를 쓸 경우 무게별 이름 등록까지 소비자 책임. **(R26)** native 래퍼가 `--font-sans`를 RN 값 하나로 다시 내고 native 텍스트 컴포넌트가 `font-sans`를 쓴다 |
 
-- `--font-*`는 리셋하지 않고 `--font-sans`만 덮어쓴다(C-6). `--font-mono`·`--font-serif`는 v1에서 선언하지 않으므로 Tailwind 기본값이 남는다. 어휘 봉쇄의 예외이며 §9에 적었다
+- `--font-*`는 리셋하지 않고 `--font-sans`만 덮어쓴다(C-6). `--font-mono`·`--font-serif`는 v1에서 선언하지 않으므로 Tailwind 기본값이 남는다. 어휘 봉쇄의 예외다. **(R27)** CodeBlock · Prose가 `font-mono`를 쓰게 되어 스펙 알려진 동작 28로 옮겼고(§9 S-7 종결), tokens probe가 `font-mono` 출력을 확인한다(T-W10)
 - R23 요구 (b): 이름은 Tailwind 관용 `--font-sans` 그대로 둔다. 나중에 C-5c 계약이 돼도 바꿀 이유가 없다
 
 ### 3.7 `@theme inline` 적용 범위 (R23 요구 (a)의 답)
@@ -234,8 +234,13 @@ component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 �
 | Dialog | `dialog.padding` / `radius` / `shadow` / `maxWidth` | `6` / `xl`(R26, 이전 `lg`) / `lg` / `max-w-md`(container 네임스페이스, 리셋 대상 아님) | | |
 | Drawer | `drawer.padding` / `width` | `6` / `max-w-sm w-full` | | |
 | Tooltip | `tooltip.paddingX` / `paddingY` / `text` / `radius` | `2` / `1` / `sm` / `sm` | | |
+| Tabs (R27) | `tabs.paddingX` / `paddingY` / `text` (탭 버튼) | `4` / `2` / `md` (+ 아래 테두리 2px, 높이 42) | | |
+| Table (R27) | `table.paddingX` / `paddingY` / `text` (셀 · 머리글) | `3` / `2` / `sm` | | |
+| CodeBlock (R27) | `codeBlock.padding` / `text` / `radius` | `4` / `sm` / `lg` (Prose `pre`도 같은 값) | | |
+| Collapsible (R27) | `collapsible.paddingX` / `paddingY` / `text` / `radius` (트리거) | `3` / `2` / `md` / `md` (+ 투명 테두리, 높이 42) | | |
 
 - 색 매핑(variant → semantic)은 §4.2 표에 있다
+- **(R27)** Prose는 recipe가 없다(Form과 같다). 요소 선택자 조합이라 소스로 옮기면 클래스 목록을 다시 적는 것이 된다. Prose의 `pre` · `th` · `td`는 `codeBlock` · `table` recipe 값을 그대로 쓰고 단위 테스트가 확인한다(§4.9, decisions-r27 20)
 - `icon.size`는 클래스가 아니라 lucide `size` prop(JS 값)으로 전달한다 — 20px는 spacing 열거 밖(키 5 없음)이라 `size-5` 클래스가 생성되지 않으며(검증 probe 확인), JS 값 전달은 C-4 (2) 정적 클래스 제약과 무관하다(v2 F-8)
 
 ### 3.9 `twMergeConfig` (빌드 생성)
@@ -261,8 +266,8 @@ component 계층 토큰은 소스에 두되, CSS로 나가는 것은 타이포 �
 ```ts
 // @eeennsu/tokens                       브랜드 무관
 export const spacing, radius, shadow, text, fontFamily, twMergeConfig, semanticVariables
-export const component   // { button, input, textarea, badge, icon, card, dialog, drawer, tooltip } — §3.8 값. T-W8 (6)·T-N2가 읽는다 (v2 F-2)
-export type { Contracts, Platform, Variant, Size, TypographyStep, ControlSize, BadgeSize, Tone, InputKind, FocusHandle, ElementChildren, IconName, WebKey, NativeKey }
+export const component   // { button, input, textarea, badge, icon, card, dialog, drawer, tooltip } — §3.8 값. T-W8 (6)·T-N2가 읽는다 (v2 F-2). R25 chip, R27 tabs · table · codeBlock · collapsible 추가
+export type { Contracts, Platform, Variant, Size, TypographyStep, ControlSize, BadgeSize, Tone, InputKind, FocusHandle, ElementChildren, IconName, WebKey, NativeKey, TabItem /* R27 */, TableColumn /* R27 */, TableRow /* R27 */ }
 export { webComponents, nativeComponents }   // contracts.ts re-export (v2 F-2)
 // @eeennsu/tokens/brands/base, /brands/bakery   브랜드별 해석값
 export const colors = { light: { bg: {…}, fg: {…}, border: {…} }, dark: {…} }
@@ -336,12 +341,18 @@ type Press<P extends Platform> = P extends "web" ? { onClick?: () => void } : { 
 | Dialog | web | — | — | — | 필수 (제목으로 렌더, `aria-labelledby`) | 오버레이 3종 | — | `ReactNode` | — |
 | Drawer | web | — | — | — | 필수 (제목으로 렌더, `aria-labelledby`) | 오버레이 3종 | — | `ReactNode` | `side?: "left" \| "right" \| "bottom"` (기본 `right`) |
 | Form | web | — | — | — | — | — | — | `ReactNode` | — |
+| Tabs (R27) | web | — | — | — | 필수 (탭 목록 `aria-label`, 보이지 않음) | `value?` / `defaultValue?` / `onValueChange?: (value: string) => void` | — | 없음 | `items: TabItem[]` (`{ value: string; label: string; content: ReactNode }`) |
+| Table (R27) | web | — | — | — | 선택 (보이는 `<caption>`) | — | — | 없음 | `columns: TableColumn[]` (`{ label: string; align?: "start" \| "end" }`, 기본 `start`), `rows: TableRow[]` (`{ cells: ReactNode[] }`) |
+| CodeBlock (R27) | web | — | — | — | 선택 (보이는 `<figcaption>`) | — | — | `string \| string[]` | — |
+| Prose (R27) | web | — | — | — | — | — | — | `ReactNode` | — |
+| Collapsible (R27) | web | — | — | — | 필수 (트리거 가시 텍스트 겸 접근성 이름) | `open?` / `defaultOpen?` (기본 `false`) / `onOpenChange?: (open: boolean) => void` | — | `ReactNode` (패널) | — |
 
 - `invalid`는 `disabled`·`loading`과 같은 기능 불리언(C-11 예외)이다. Form v1의 오류 표시(C-21)에서 Input 테두리를 danger로 바꾸는 유일한 경로다
 - `wrap`은 AC-8이 명시한 기능 불리언이다
 - `side`는 열거형 prop이라 C-11에 맞고 RN 대응물이 없어도 웹 전용 컴포넌트라 C-17 "플랫폼 전용 prop 0개"에 걸리지 않는다(Tooltip · Drawer는 v1 웹 전용이며 계약은 tokens에 놓여 v2 RN이 같은 계약을 구현한다)
 - Card에 `variant`를 두지 않는다. 표면 하나뿐이고 색을 바꾸려면 `className`이다
 - ButtonGroup에 `size`를 두지 않는다(v2 F-18, 사용자 확정). r21 B-8·C-7a는 ButtonGroup을 `size` 컨트롤로 열거하지만 C-13·AC-7·AC-13에는 없다. 자식 Button이 각자 `size`를 가지며, 나중에 그룹 `size`(context 전파)를 추가하는 것은 추가적이다. §9 S-16
+- **(R27)** 다섯 개는 웹 전용이고 `variant` · `size` · `tone`이 없다. 모양이 하나씩이고 바꾸려면 `className`이다(Card와 같은 판단). 한 컴포넌트는 계약 키 하나 · `FC<Props>` 하나라 파트를 정적 속성(`Tabs.Tab`)으로 붙이지 않는다 — 맵 동등성(C-17)이 깨진다. 근거와 대안은 decisions-r27 1 ~ 18
 - Label·Badge `children`은 `string | string[]`(v2 F-1, 사용자 확정). 스펙 C-17(텍스트 3종 `string | string[]`)과 AC-7(`string`)이 갈리며 Text와 통일하는 쪽을 택했다. `<Badge>{n}개</Badge>` 같은 보간을 허용한다. §9 S-11
 
 **variant → semantic 색 매핑** (Button · Badge 공통. Badge는 hover 없음)
@@ -398,7 +409,7 @@ Base UI 패키지는 `@base-ui/react`(구 `@base-ui-components/react`에서 2025
 ### 4.6 focus ring
 
 - semantic `border.focus`(`--color-border-focus`, `bg.brand` 별칭) 하나로 통일한다. 별도 `ring` 토큰을 두지 않는다
-- 웹: 포커스 가능 컴포넌트(Button · Chip(R25) · Input · Textarea · Dialog 닫기 버튼)에 `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus`. `outline-2`·`outline-offset-2`는 정적 유틸리티라 리셋과 무관하고, 색은 `--color-*` 네임스페이스라 DS 어휘 안이다. `ring-*`은 `--color-ring` 같은 별도 기본값에 기대므로 쓰지 않는다
+- 웹: 포커스 가능 컴포넌트(Button · Chip(R25) · Input · Textarea · Dialog 닫기 버튼, R27의 Tabs 탭 버튼 · 패널, Collapsible 트리거, Table · CodeBlock 스크롤 영역)에 `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus`. `outline-2`·`outline-offset-2`는 정적 유틸리티라 리셋과 무관하고, 색은 `--color-*` 네임스페이스라 DS 어휘 안이다. `ring-*`은 `--color-ring` 같은 별도 기본값에 기대므로 쓰지 않는다
 - RN: Input에 NativeWind `focus:border-border-focus`(TextInput은 `focus:` 변형 지원). Button은 RN에서 키보드 포커스 개념이 약해 v1 무처리. **(R25)** 0.2.0 구현에서 Input · Textarea 의 이 클래스가 빠져 있었고 0.3.0 에서 넣었다(Chip 도 Button 처럼 무처리)
 
 ### 4.7 Input · Label · Form 연결
@@ -441,7 +452,88 @@ export type NativeKey = (typeof nativeComponents)[number];
 
 - 맵 테스트(C-17): web은 `expectTypeOf<typeof components>().toEqualTypeOf<{ [K in WebKey]: FC<Contracts<"web">[K]> }>()`, native는 `NativeKey` × `Contracts<"native">`
 - 위 초안은 착수 전 모습이다. 지금 목록은 `packages/tokens/src/contracts.ts` 에 있다 — 웹 16개(Chip · Icon 추가, R25), RN 11개(N-16 의 4개와 Chip · Icon)
+
+**(R27) 추가분** — 웹 21개. `nativeComponents`는 그대로다. 각 항목은 그 컴포넌트를 구현하는 태스크(T-W9 ~ T-W13)가 넣는다 — 계약만 먼저 넣으면 web 맵 테스트가 구현 전에 깨진다.
+
+```ts
+/** Tabs 항목. 탭 글자와 패널 내용을 한 항목에 묶는다(decisions-r27 2). */
+export type TabItem = { value: string; label: string; content: ReactNode };
+/** Table 열. `end`는 숫자 열이다 — 머리글과 셀이 `text-end tabular-nums`(decisions-r27 8). */
+export type TableColumn = { label: string; align?: "start" | "end" };
+/** Table 행. 객체라 행 key · 행 머리글 · 행 강조를 선택 필드로 나중에 더해도 호출부가 깨지지 않는다(decisions-r27 7). */
+export type TableRow = { cells: ReactNode[] };
+
+// Contracts<P> 안
+  Tabs: { label: string; items: TabItem[]; value?: string; defaultValue?: string;
+          onValueChange?: (value: string) => void; className?: string };
+  Table: { label?: string; columns: TableColumn[]; rows: TableRow[]; className?: string };
+  /** `children`이 배열이면 줄 배열로 보고 `\n`으로 join한다 — React는 배열 항목을 줄바꿈 없이 이어 붙인다. */
+  CodeBlock: { children: string | string[]; label?: string; className?: string };
+  Prose: { children: ReactNode; className?: string };
+  Collapsible: { label: string; children: ReactNode; open?: boolean; defaultOpen?: boolean;
+                 onOpenChange?: (open: boolean) => void; className?: string };
+
+// webComponents 끝에 "Tabs", "Table", "CodeBlock", "Prose", "Collapsible"
+```
+
+- 다섯 개 모두 `ref` · `style` · `as` · `render` · `asChild`가 없고 `number` 타입 prop이 없다. 기존 mapped type 테스트(AC-11a · AC-12 · AC-15)가 그대로 새 키를 순회한다
+- `TabItem` · `TableColumn` · `TableRow`는 `packages/web/src/index.ts`가 `export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens"`로 다시 내보낸다. pnpm 격리 레이아웃에서는 소비 앱이 `@eeennsu/tokens`를 직접 import할 수 없다(web README). 타입 전용이라 `components` 맵과 맵 테스트는 그대로다
+- `Press<P>` 분기가 없어 `Contracts<"web">` · `Contracts<"native">`의 다섯 항목이 같다. RN v2가 구현하면 `nativeComponents`에 넣는 것만으로 맵 테스트가 대칭을 본다
 - 실제로 깨지는지 확인(AC-21): T-N4에서 native Button에 임시로 prop 하나를 추가하고 `vitest --typecheck`가 실패하는 것을 기록한 뒤 되돌린다. 컴포넌트 누락도 같은 방식으로 1회 확인
+
+### 4.9 R27 웹 컴포넌트 세부
+
+근거와 대안은 [decisions-r27.md](decisions-r27.md). 여기에는 구현이 따를 값만 적는다. 클래스는 전부 `cn()` 안의 정적 리터럴이다(C-4 (2)).
+
+**Base UI 파트** (`@base-ui/react` 1.8.0, 파트별 import `@base-ui/react/tabs` · `@base-ui/react/collapsible`)
+
+| DS | Base UI 파트 | 처리 |
+|---|---|---|
+| Tabs | `Tabs.Root`(`value` · `defaultValue ?? items[0]?.value` · `onValueChange`) → `Tabs.List`(`aria-label={label}`) → 항목마다 `Tabs.Tab value`(`label` 렌더) → 항목마다 `Tabs.Panel value`(`content` 렌더) | `Tabs.Indicator`는 쓰지 않는다 — 밑줄은 탭 버튼의 `data-[active]:` 테두리다. `activateOnFocus` · `loopFocus` · `keepMounted`는 Base UI 기본(false · true · false). `onValueChange`는 둘째 인자를 버린다. `"use client"` |
+| Collapsible | `Collapsible.Root`(`open` · `defaultOpen` · `onOpenChange`) → `Collapsible.Trigger`(`label` + `Glyph name="chevron-down"`) → `Collapsible.Panel`(`children`) | `keepMounted` · `hiddenUntilFound`는 Base UI 기본(false). `onOpenChange`는 boolean 하나로 감싼다(Dialog와 같다). `"use client"` |
+
+- 두 Base UI 버튼은 `useButton`이 `type="button"`을 붙인다(`internals/use-button/useButton.js`). DS가 따로 넘기지 않는다
+
+**클래스**
+
+| DS | 요소 | 클래스 |
+|---|---|---|
+| Tabs | 루트 | `flex flex-col` + `className` |
+| | 목록 | `flex border-b border-border` |
+| | 탭 버튼 | `-mb-px px-4 py-2 text-md border-b-2 border-transparent text-fg-muted hover:text-fg data-[active]:border-brand data-[active]:text-fg` + 포커스 링(§4.6). `-mb-px`는 활성 밑줄 2px를 목록의 1px `border-b` 위에 겹친다 |
+| | 패널 | `pt-4` + 포커스 링 |
+| Table | 루트(스크롤 영역, `tabIndex={0}`. `label`이 있으면 `role="region"` + `aria-label={label}`) | `overflow-x-auto` + 포커스 링 + `className` |
+| | `table` | `w-full text-sm` (`border-collapse`는 preflight가 이미 준다) |
+| | `caption` | `text-start text-sm text-fg-muted pb-2` |
+| | `th` | `px-3 py-2 text-start text-fg-muted border-b border-border` |
+| | `tr` · `td` | 행마다 `<tr key={인덱스}>`, `row.cells`마다 `<td>`. `td`는 `px-3 py-2 text-fg border-b border-border` |
+| | `align="end"` 열 | `th` · `td` 모두 `text-end tabular-nums` (`Record<"start" \| "end", string>` 맵) |
+| CodeBlock | 루트 `figure` | `bg-surface-muted rounded-lg` + `className` |
+| | `figcaption` | `px-4 pt-3 text-sm text-fg-muted` |
+| | `pre`(스크롤 영역, `tabIndex={0}`. `label`이 있으면 `role="region"` + `aria-label={label}`) | `p-4 overflow-x-auto bg-transparent text-sm font-mono text-fg` + 포커스 링. 공백은 `pre` 기본 `white-space: pre`가 지킨다. `bg-transparent`는 Prose 안에서 Prose의 `pre` 채움이 이 `pre`에 걸려 소비자가 루트에 준 배경을 가리지 않게 한다 |
+| Collapsible | 루트 | `className`만 |
+| | 트리거 | `group flex w-full items-center justify-between gap-2 border border-transparent rounded-md px-3 py-2 text-md text-fg text-start hover:bg-surface-hover` + 포커스 링 |
+| | 꺾쇠(`Glyph`) | `text-fg-muted transition-transform group-data-[panel-open]:rotate-180` |
+| | 패널 | `px-3 pt-2` |
+
+**Prose 선택자** — 루트 `text-md text-fg` + 아래 임의 변형 + `className`. 모두 `:where`로 특이성을 낮춘다(decisions-r27 13)
+
+| 대상 | 클래스(예시 표기) |
+|---|---|
+| 직계 자식 사이 | `[:where(&)>*+*]:mt-4` |
+| h1 · h2 · h3 | `[:where(&)_h1]:text-2xl` · `[:where(&)_h2]:text-xl` · `[:where(&)_h3]:text-lg`, 앞 형제가 있으면 `[:where(&)>*+h1]:mt-8` · `[:where(&)>*+h2]:mt-8` · `[:where(&)>*+h3]:mt-6` |
+| ul · ol | `[:where(&)_ul]:list-disc` · `[:where(&)_ol]:list-decimal`, 둘 다 `ps-6` |
+| li | `[:where(&)_li+li]:mt-1` |
+| a | `[:where(&)_a]:text-fg-brand` · `[:where(&)_a]:underline` |
+| 인라인 code | `[:where(&)_:not(pre)>code]:` + `font-mono text-sm bg-surface-muted rounded-sm px-1` |
+| pre | `[:where(&)_pre]:` + CodeBlock `pre`와 같은 값 + `bg-surface-muted rounded-lg` |
+| blockquote | `[:where(&)_blockquote]:` + `border-s-4 border-border ps-4 text-fg-muted` |
+| hr | `[:where(&)_hr]:border-border` |
+| th · td | `[:where(&)_th]:` · `[:where(&)_td]:` + Table `th` · `td`와 같은 값 |
+| img | `[:where(&)_img]:max-w-full` |
+
+- 이 표기는 설치된 Tailwind 4.3.3에서 확인했다(2026-10-24, 독립 리뷰의 메모리 컴파일). `[:where(&)_h2]:text-xl` → `:where(.…) h2 {…}`, `[:where(&)>*+*]:mt-4` → `:where(.…) > * + *`, `_:not(pre)>code` · `_li+li` · `>*+h2`도 기대대로이고 Oxide 스캐너가 JS 문자열에서 후보를 뽑는다. peer 범위는 `tailwindcss >=4.1`이지만 확인한 것은 4.3.3뿐이라 T-W11의 probe를 회귀 가드로 둔다
+- 간격 키는 전부 열거 안이다(`1` · `4` · `6` · `8`). 색 · 글자는 DS 어휘뿐이다
 
 ---
 
@@ -754,6 +846,100 @@ design-system/
 - **T-T6** 글자 대비 — base 다크 · bakery 의 on-brand · on-danger, tokens 대비 테스트 — N-17, F-23
 - **T-P2** `0.3.0` publish — `pnpm version:set 0.3.0` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` → main 에 합친 뒤 `npm login` → `pnpm -r publish --access public`
 
+### R27 — 웹 컴포넌트 5종 (`0.5.0`)
+
+스펙 R27, 근거 [decisions-r27.md](decisions-r27.md), 값 §3.8 · §4.2 · §4.8 · §4.9. 순서는 T-W9 → T-W10 → T-W11 → T-W12 → T-W13 → T-V4 → T-P3 → T-P4다. T-W11(Prose)은 T-W9 · T-W10의 recipe를 쓰므로 그 뒤다. T-W12 · T-W13은 서로 독립이다.
+
+**모든 컴포넌트 태스크(T-W9 ~ T-W13)에 공통인 것**
+
+- 한 태스크가 자기 컴포넌트의 계약 항목 · `webComponents` 키 · 구현 · export · `components` 맵 · 테스트를 **함께** 넣는다. 계약만 먼저 넣으면 `packages/web/tests/contracts.test-d.tsx`의 맵 동등성이 구현 전에 깨진다
+- 고칠 파일(컴포넌트 이름을 `<x>`로):
+  - `packages/tokens/src/contracts.ts` — `Contracts<P>` 항목(§4.8 R27 추가분), `webComponents` 끝에 키, 필요하면 `TabItem` · `TableColumn` · `TableRow` export. `webComponents` 위 JSDoc 문장도 고친다
+  - `packages/tokens/src/index.ts` — 새 타입을 다시 내보내는지 확인(`contracts.ts`를 `export *`로 내보내면 할 일 없음)
+  - recipe가 있으면 `packages/tokens/src/tokens/component/<x>.json`(§3.8 값, 기존 `chip.json` 모양) + `packages/tokens/tests/build-output.test.ts` "component recipe" 단언 + `packages/tokens/tests/token-source.test.ts` "component 계층 인벤토리" 키 목록
+  - `packages/web/src/<x>.tsx` — `FC<Contracts<"web">["<X>"]>`, 클래스는 §4.9 표, `cn(…, className)`
+  - `packages/web/src/index.ts` — import · named export · `components` 맵 세 곳. 계약에 새 타입(`TabItem` · `TableColumn` · `TableRow`)을 더한 태스크는 `export type { … } from "@eeennsu/tokens"`도 넣는다(§4.8, 타입 전용이라 맵 테스트 무영향). `contracts.test-d.tsx`에 `import type { TabItem, TableColumn, TableRow } from "../src/index.js"`가 컴파일되는 단언을 둔다
+  - `packages/web/tests/components.test.tsx` — 동작 단위 테스트(`describe("R27 <X>")`)
+  - `packages/web/tests/recipe.test.tsx` — recipe가 있으면 클래스 = 토큰 값
+  - `packages/web/tests/contracts.test-d.tsx` — 계약 단언과 `@ts-expect-error`(아래 태스크별). 인터랙티브(Tabs · Collapsible)는 "AC-14 label 누락" describe에 한 줄씩 더한다
+  - `packages/web/tests/dist.test.ts` — `"use client"` 컴포넌트(Tabs · Collapsible)면 `interactive` 목록에 `<x>.js`
+- 확인 명령(Node 22, 레포 루트):
+  - `pnpm -r build` — tokens 생성물(`packages/tokens/src/generated` · `themes`)과 web `dist`가 바뀐다. 생성물은 추적한다(손으로 고치지 않는다)
+  - `pnpm --filter @eeennsu/tokens test` · `pnpm --filter @eeennsu/web test` — 둘 다 `vitest run --typecheck`
+  - 이 단계에서 `pnpm -r test`는 돌리지 않아도 된다. 돌리면 verify-next 스크린샷이 `docs/assets/ac23-web-*.png`를 덮어쓴다(구현 노트 F-25) — 돌렸다면 커밋 전에 `git checkout -- docs/assets`
+- 태스크마다 커밋 하나. 커밋 직전에 브랜치가 `feat/r27-web-components`인지 확인한다
+
+**T-W9 Table**
+- 읽을 파일: decisions-r27 7 · 8 · 9 · 10 · 20, 스펙 C-13 Table 항목 · 알려진 동작 29, 이 문서 §4.2 · §4.9
+- 할 일: `TableColumn` · `TableRow` · `Contracts.Table`, web 진입점의 타입 재내보내기, `component/table.json`(`paddingX 3` · `paddingY 2` · `text sm`), `packages/web/src/table.tsx`. 루트는 `tabIndex={0}` 스크롤 감싸개 `div`(`label`이 있으면 `role="region"` + `aria-label={label}`), 안에 `<table>` → `label`이 있으면 `<caption>` → `<thead><tr>` 열마다 `<th scope="col">` → `<tbody>` 행마다 `<tr key={인덱스}>` → `row.cells`마다 `<td>`. 정렬은 `Record<"start" | "end", string>` 맵. `"use client"` 없음
+- 테스트: (1) `label`이 `caption` 글자이고 `getByRole("table", { name })`로 찾힌다, (2) `label`이 있으면 루트가 `getByRole("region", { name: label })`로 찾히고, 없으면 `caption`도 `region` 역할도 없다(`tabIndex=0`은 남는다), (3) `align="end"` 열의 `th` · `td`가 `text-end tabular-nums`, 기본 열은 `text-start`, (4) `rows: [{ cells: [...] }]`의 셀 수만큼 `td`가 나오고 셀에 엘리먼트(`<code>`)를 넣을 수 있다, (5) 루트가 `tabIndex=0`이고 소비자 `className`이 루트에 병합된다, (6) recipe — `td`가 `px-3 py-2 text-sm`과 토큰 값 일치. 타입: `@ts-expect-error` `align="center"`, `@ts-expect-error` 셀 배열의 배열(`rows={[["a"]]}` — 행은 `{ cells }` 객체다), `number` 타입 prop 부재는 기존 AC-15 테스트가 한다
+- 완료 조건: 위 확인 명령 통과
+- 닫는 AC: AC-7 (R27) 일부(Table)
+
+**T-W10 CodeBlock**
+- 읽을 파일: decisions-r27 9 · 10 · 11 · 12 · 21, 스펙 알려진 동작 28 · 29, 이 문서 §3.6 · §4.9
+- 할 일: `Contracts.CodeBlock`, `component/code-block.json`(키 `codeBlock` — `padding 4` · `text sm` · `radius lg`), `packages/web/src/code-block.tsx`. 루트는 늘 `<figure>`(채움 · 모서리 + `className`), `label`이 있으면 `<figcaption>`, 그 아래 `<pre tabIndex={0}><code>{children}</code></pre>`(`label`이 있으면 `pre`에 `role="region"` + `aria-label={label}`). `children`이 배열이면 `join("\n")`한다(JSDoc에 "줄 배열은 `\n`으로 join한다"). `"use client"` 없음
+- **probe 추가**: `packages/tokens/tests/probe.test.ts`에 "`font-mono` · `font-serif`는 Tailwind 기본값으로 남는다(알려진 동작 28)" — `build(["font-mono", "font-serif"])` 출력에 두 규칙이 있다
+- 테스트: (1) `children` 문자열이 공백 · 줄바꿈 그대로 `code` 안에 있다(`textContent` 비교), 배열 `["a", "b"]`는 `"a\nb"`다, (2) `label`이 있으면 `figcaption`이 있고 `pre`가 `getByRole("region", { name: label })`로 찾힌다, 없으면 둘 다 없다, (3) `pre`가 `tabIndex=0` · `overflow-x-auto` · `bg-transparent` · `font-mono`, (4) 소비자 `className="bg-surface"`가 루트에서 `bg-surface-muted`를 밀어낸다(AC-11), (5) recipe — `pre`가 `p-4 text-sm`, 루트가 `rounded-lg`. 타입: `@ts-expect-error` 엘리먼트 `children`(`<CodeBlock>{<span />}</CodeBlock>`)
+- 완료 조건: 위 확인 명령 통과(tokens probe 포함)
+- 닫는 AC: AC-7 (R27) 일부(CodeBlock). §9 S-7의 probe 가드
+
+**T-W11 Prose**
+- 읽을 파일: decisions-r27 13 · 14 · 15, 스펙 알려진 동작 30, 이 문서 §4.9 Prose 선택자
+- **첫 단계 — 회귀 가드**: 표기는 Tailwind 4.3.3에서 확인했다(2026-10-24, §4.9). `packages/tokens/tests/probe.test.ts`에 "임의 변형이 특이성 0 선택자를 낸다" — `build(["[:where(&)_h2]:text-xl", "[:where(&)>*+*]:mt-4", "[:where(&)_:not(pre)>code]:font-mono"])` 출력의 선택자가 `:where(`로 시작하고 값을 담는지 단언한다. Tailwind를 올려 이 테스트가 깨지면 같은 특이성을 내는 표기를 찾아 §4.9를 고치고, 방법이 없으면 멈추고 보고한다(decisions-r27 13 재검토)
+- 할 일: `Contracts.Prose`, `packages/web/src/prose.tsx`(`<div>` 루트, §4.9 Prose 선택자 전부를 정적 리터럴로). recipe 파일 없음. `"use client"` 없음
+- 테스트: (1) 루트에 `text-md text-fg`와 선택자 클래스들이 붙고 소비자 `className`이 병합된다, (2) **recipe 일치** — Prose 클래스 문자열에 `[:where(&)_pre]:p-${component.codeBlock.padding}` · `[:where(&)_td]:px-${component.table.paddingX}` 같은 클래스가 있다(값은 `@eeennsu/tokens` `component`에서, 조립은 테스트 쪽에서만), (3) 원시 `h2` · `p` · `code`를 자식으로 렌더할 수 있다. 계산된 스타일(특이성 · 간격)은 jsdom이 Tailwind CSS를 갖지 않아 여기서 보지 않고 T-V4 Playwright가 본다
+- 완료 조건: 위 확인 명령 통과(tokens probe 포함)
+- 닫는 AC: AC-7 (R27) 일부(Prose)
+
+**T-W12 Tabs**
+- 읽을 파일: decisions-r27 2 · 3 · 4 · 5 · 6 · 18, 스펙 C-12 (R27) · C-13 Tabs 항목 · 알려진 동작 31, 이 문서 §4.9 Base UI 파트
+- 할 일: `TabItem` · `Contracts.Tabs`, `component/tabs.json`(`paddingX 4` · `paddingY 2` · `text md`), `packages/web/src/tabs.tsx`(`"use client"`)
+- 테스트: (1) `role="tablist"`의 접근성 이름이 `label`, 탭마다 `role="tab"`이고 이름이 항목 `label`, (2) 비제어 기본은 첫 항목 — 첫 탭 `aria-selected="true"`, 첫 패널 내용만 DOM에 있다, (3) 클릭으로 바꾸면 `onValueChange`가 값 문자열 하나로 불린다(인자 1개), (4) 제어 — `value`를 바꾸면 패널이 바뀌고 클릭만으로는 바뀌지 않는다, (5) 키보드 — 첫 탭 포커스 → `ArrowRight`가 포커스를 다음 탭으로 옮기고(아직 활성 아님) `Enter`가 활성화한다, `End` · `Home`, (6) 탭 버튼이 `type="button"`(C-21), (7) recipe — 탭 버튼이 `px-4 py-2 text-md`이고 `-mb-px`가 붙는다. tokens probe에 `-mb-px` 출력이 있는지 한 줄 더한다(spacing 리셋과 무관한 정적 값인지 확인). 타입: `@ts-expect-error` `<Tabs items={[]} />`(label 누락, AC-14 describe), `value={1}`, `onValueChange={(v: number) => …}`, `@ts-expect-error` 항목 `content` 누락
+- 완료 조건: 위 확인 명령 통과
+- 닫는 AC: AC-7 (R27) 일부(Tabs). AC-13 · AC-14의 새 대상
+
+**T-W13 Collapsible**
+- 읽을 파일: decisions-r27 16 · 17 · 18, 스펙 C-12 (R27) · C-13 Collapsible 항목 · 알려진 동작 31 · 32, 이 문서 §4.9
+- 할 일: `Contracts.Collapsible`, `component/collapsible.json`(`paddingX 3` · `paddingY 2` · `text md` · `radius md`), `packages/web/src/collapsible.tsx`(`"use client"`). 꺾쇠는 `./icon.js`의 `Glyph`(공개 Icon 아님)
+- 테스트: (1) 트리거가 `role="button"`이고 이름이 `label`, 기본 `aria-expanded="false"`이며 패널 내용이 DOM에 없다, (2) 클릭하면 `aria-expanded="true"` · 내용이 보이고 `onOpenChange(true)`가 인자 하나로 불린다, (3) `defaultOpen`이면 처음부터 열린다, (4) 제어 `open`, (5) 트리거 `type="button"`, (6) recipe — 트리거가 `px-3 py-2 text-md rounded-md`. 타입: `@ts-expect-error` label 누락(AC-14 describe), `@ts-expect-error` `onValueChange`(개폐 3종만)
+- 완료 조건: 위 확인 명령 통과
+- 닫는 AC: AC-7 (R27) 완료(다섯 개). AC-13 · AC-14의 새 대상
+
+**T-V4 verify-next `/components` 화면 · Playwright (Chip · Icon 포함)**
+- 읽을 파일: 스펙 AC-7 (R27) 검증 항목 · AC-11 · C-4, decisions-r27 22, 구현 노트 §4 "웹 Chip · Icon 은 verify-next 화면에 없다"(DS 재검증 테스트 공백 6) · F-25
+- 할 일:
+  - `apps/verify-next/app/(app)/components/page.tsx` — **서버 컴포넌트**(`"use client"` 없음). `(app)` 그룹이라 앱 전용 brand 재선언(`globals.css`)을 받는다. 내용: Tabs(항목 셋, 패널 하나에 CodeBlock), Table(`label`, 숫자 열 `align="end"`, 열을 여럿 둬서 393px 폭에서 넘치게, 그리고 canvas 위에 바로 놓인 Table 하나 — 구분선 확인용), CodeBlock(`label`, 긴 한 줄), Prose(원시 `h2` · `p` · `ul` · 인라인 `code` · `a` · `pre` · `blockquote` · `hr` · 마크다운식 `table`, 그리고 안에 DS `Text heading="2" size="sm"`과 DS CodeBlock), Collapsible 둘(`label="정답 보기"` 기본 닫힘, Card 안에 하나), 웹 Chip(고른 것 · 안 고른 것), Icon(`label` 있는 것 · 없는 것, `tone="muted"`)
+  - `apps/verify-next/e2e/components.spec.ts` — 색 비교는 `e2e/color.ts`(`backgroundRgba` · `toRgba` · `expectSameColor`), 기대값은 `@eeennsu/tokens/brands/base`의 `colors`, brand는 `verify.spec.ts`의 `appBrand`와 같은 앱 값. **`test.use({ viewport: { width: 393, height: 851 } })`를 파일 위에 둔다** — `playwright.config.ts`에 뷰포트가 없어 기본은 1280×720이다(`screenshot.spec.ts` 9행과 같은 값)
+- 단언:
+  1. C-4 — 페이지가 Next 빌드 · 렌더된다(다섯 개 + Chip · Icon이 보인다)
+  2. Tabs — `tablist` 이름, 첫 탭 선택, 키보드(첫 탭 `focus()` → `ArrowRight` → `Enter`)로 둘째 패널이 보이고 `aria-selected`가 옮겨진다, 활성 탭 아래 테두리 색 = 앱 brand(라이트)
+  3. Collapsible — 기본 닫힘(답 글자가 안 보인다), 클릭 → `aria-expanded="true"`와 답이 보인다, `Enter` · `Space`로 다시 닫힌다
+  4. Table — 숫자 열 `th` · `td`의 `text-align: end`와 `font-variant-numeric: tabular-nums`, 스크롤 영역 `scrollWidth > clientWidth`(393px 뷰포트, 위 `test.use`)와 `tabindex="0"`, `role="region"` 이름 = `label`, `caption` 글자
+  5. CodeBlock — `pre`의 `font-family`가 `ui-monospace`로 시작, `figure` 배경 = `colors.light.bg["surface-muted"]`(다크 한 조합도), `overflow-x: auto`, `tabindex="0"`
+  6. Prose — 원시 `h2` font-size 22px(xl) · `p` margin-top 16px · 인라인 `code` 배경 = surface-muted · `a` 색 = `colors.light.fg.brand`, **Prose 안의 DS `Text heading="2" size="sm"`이 14px**(`:where`가 DS 클래스에 진다), Prose 안 CodeBlock `pre` padding 16px, Prose 안에서 `className="bg-surface"`를 준 CodeBlock의 보이는 배경이 surface다(`figure` 배경 = surface, `pre` 배경 투명)
+  7. Chip · Icon — 고른 Chip 배경 = 앱 brand, 안 고른 Chip 배경 = surface-muted, `aria-pressed`, `label` 있는 Icon은 `role="img"` + 이름, 없는 Icon은 `aria-hidden`, `tone="muted"` Icon의 `color` = `colors.light.fg.muted`
+- 확인 명령: `pnpm -r build` → `pnpm --filter verify-next exec playwright test e2e/components.spec.ts`. **새 spec만 돌린다** — `pnpm --filter verify-next test`나 `pnpm -r test`는 `screenshot.spec.ts`까지 돌려 `docs/assets/ac23-web-*.png`를 덮어쓴다(F-25). 덮였으면 `git checkout -- docs/assets`
+- **사용자 확인 단계(구분선)**: `pnpm --filter verify-next dev`로 `/components`를 띄워 라이트 canvas 위 Table · Tabs 구분선(`border.default`, 약 1.12:1)과 surface 위 구분선을 사용자에게 보여 준다. 받아들이면 결과를 구현 노트에 적는다. 받아들이지 않으면 멈추고 갈래 둘을 묻는다 — (a) `border.default` 값을 올린다(Card 경계 · Tooltip 테두리도 바뀌고, 지금 값은 사용자가 R26에서 고른 인상이다), (b) 구분선 전용 semantic 토큰을 새로 둔다(C-5b 계약 표면). 어느 쪽이든 사용자 결정이고 decisions-r27 19를 갱신한다
+- 완료 조건: 새 spec 통과, 기존 `verify.spec.ts`도 통과(`… playwright test e2e/verify.spec.ts`), `docs/assets` 변경 없음, 구분선 사용자 확인 기록
+- 닫는 AC: AC-7 (R27) 검증 항목, AC-11 웹 통합 계층(Chip · Icon · 새 다섯 개), C-4 서버 렌더 확인. 구현 노트의 Chip · Icon 미룸 항목 해소
+
+**T-P3 구현 기록 · `0.5.0` 준비 (에이전트)**
+- 읽을 파일: [CLAUDE.md](../CLAUDE.md), 구현 노트 §4 "다음" · F-17 · F-25 · F-29, 이 문서 §5.3
+- 할 일:
+  1. `docs/implementation-notes.md` — 진행 상태에 R27, 새 N 번호(N-19) 한 절(다섯 컴포넌트 · recipe · 테스트 수), 구현 중 확인한 사실은 F-30부터, §4 "다음"의 웹 Chip · Icon 줄을 해소로 바꾼다
+  2. `CLAUDE.md` — 문서 목록에 decisions-r27, 현재 기준 문장(R27), "현재 코드 상태"의 web 컴포넌트 수(21)와 테스트 수, verify-next Playwright 수
+  3. `packages/web/README.md` "어휘 위치"에 `font-mono`는 Tailwind 기본값이라는 한 줄(알려진 동작 28)
+  4. `pnpm version:set 0.5.0` — 세 `package.json`이 함께 바뀐다(lockstep. native는 코드 변경이 없어도 올린다)
+  5. `pnpm -r build` → `pnpm -r test` → `git checkout -- docs/assets`(F-25, 스크린샷이 바뀌었으면) → `pnpm verify:pack`
+- 완료 조건: 세 명령 모두 통과, 세 패키지 버전이 `0.5.0`, `docs/assets` 변경 없음. 결과(테스트 수, verify:pack 통과)를 구현 노트에 적는다
+- 닫는 AC: AC-18 · AC-16 · AC-17의 "타르볼 설치" 재확인(0.5.0)
+
+**T-P4 publish (사용자)**
+- 에이전트는 하지 않는다. 브랜치를 main에 합친 뒤(pnpm은 main에서만 publish한다) 사용자가 자기 터미널에서 `npm whoami`로 확인 → 필요하면 `npm login` → `pnpm -r publish --access public`. 패키지마다 브라우저 2FA 인증을 한다(F-17). 에이전트 세션은 TTY가 없어 인증 링크가 나오지 않는다(F-29)
+- publish 뒤 에이전트가 구현 노트 진행 상태에 `0.5.0` publish 날짜를 적는다(0.4.1 때와 같은 docs 커밋)
+- 닫는 AC: AC-16 · 17 · 18의 "npm 설치" 의미(0.5.0)
+
 ### Phase 7 — publish
 
 **T-P1 publish 게이트**
@@ -781,15 +967,18 @@ design-system/
 | AC-6b | spacing 희소 열거 + 열거 외 무효 + size 타입 | probe(`mt-5 mt-17 w-64 font-bold`) + 계약 타입 | T-T4 + T-T3 | 전 |
 | AC-6c | `fontFamily` 토큰 존재, 폰트 파일 미동봉 | 토큰 존재 테스트 + 타르볼 검사 | T-T1 → T-V3 | 전 |
 | AC-7 | 웹 12개 구현 + Text · Textarea · Label · Badge 계약 | 단위 + 맵 테스트 | T-W3 ~ T-W7 → T-W8 | 전 |
+| AC-7 (R25) | Chip · Icon | 단위 + 맵 테스트 | T-N6 | — |
+| AC-7 (R27) | Tabs · Table · CodeBlock · Prose · Collapsible 계약 · 구현 | 단위 + recipe + 맵 · 타입 테스트 | T-W9 ~ T-W13 | — |
+| AC-7 (R27) 검증 | 다섯 개 + 웹 Chip · Icon을 verify-next 서버 컴포넌트 화면에서 확인 | Playwright(`e2e/components.spec.ts`) | T-V4 | — |
 | AC-8 | Stack · Box, 4 prop, 간격 prop 없음 | 단위 + 타입 | T-W2 → T-W8 | 전 |
 | AC-9 | `variant` · `tone` 전역 집합 | 맵 동등성 테스트 | T-W8 | 전 |
 | AC-10 | `Size` 전역 + 부분집합 타입 고정 | 맵 동등성 테스트 | T-W8 | 전 |
-| AC-11 (웹 절) | `className` 병합, 소비자 승리 | 단위 병합 문자열 · `toHaveClass` + Playwright computed style | T-W8 + T-V1 | 전 |
+| AC-11 (웹 절) | `className` 병합, 소비자 승리 | 단위 병합 문자열 · `toHaveClass` + Playwright computed style | T-W8 + T-V1. R27: Chip · Icon · 새 다섯 개는 T-V4 | 전 |
 | AC-11 (RN 절) | 같은 병합이 RN에서도 | `toHaveStyle` 또는 className 스냅샷(게이트 (9)) | T-R1 | **후** |
 | AC-11a | `style` 없음, `{...rest}` 없음 | mapped type 테스트 | T-W8 | 전 |
 | AC-12 | `as` · `render` · `asChild` 미노출 | mapped type 테스트 | T-W8 | 전 |
-| AC-13 | 제어 API 두 갈래, 웹 `onClick`만 | 맵 테스트 + `@ts-expect-error` | T-W8 (RN 절은 T-N4) | 전 / RN 절 **후** |
-| AC-14 | `label` 누락 시 타입 에러 | `@ts-expect-error` 7개 | T-W8 | 전 |
+| AC-13 | 제어 API 두 갈래, 웹 `onClick`만 | 맵 테스트 + `@ts-expect-error` | T-W8 (RN 절은 T-N4). R27: Tabs 값 3종 · Collapsible 개폐 3종은 T-W12 · T-W13 | 전 / RN 절 **후** |
+| AC-14 | `label` 누락 시 타입 에러 | `@ts-expect-error` 7개(R25 Chip, R27 Tabs · Collapsible 추가로 10개) | T-W8, T-N6, T-W12 · T-W13 | 전 |
 | AC-15 | `number` prop 없음, 색 의도 prop은 enum만 | mapped type 테스트 1개 | T-W8 | 전 |
 | AC-15a | `icon` 문자열만, 잘못된 이름·노드 거부 | `@ts-expect-error` | T-W8 | 전 |
 | AC-16 | Next.js 부트스트랩 + 로그인 화면 + 자동완성 속성 | Playwright + 수동 1회 | T-V1 → T-V3 → T-P1 | 전 |
@@ -849,6 +1038,10 @@ design-system/
 | **D-29** (v2 F-1) | Label·Badge `children` | `string \| string[]` | C-17·Text와 통일. AC-7의 `string`은 §9 S-11. 사용자 확정 | 하(좁히면 파괴) |
 | **D-30** (v2 F-18) | ButtonGroup `size` | 없음 | 자식 Button이 각자 가진다. 추가는 추가적. §9 S-16. 사용자 확정 | 하 |
 | **D-31** (v2 F-11) | 타르볼 설치 검증 위치 | 워크스페이스 밖 임시 디렉터리 + 앱 자체 `pnpm.overrides` | 루트 overrides는 워크스페이스 소스 패키지까지 타르볼로 바꾼다(probe) | 하 |
+| D-32 (R27) | 웹 컴포넌트 5종의 API | §4.2 · §4.8 R27 추가분. 한 컴포넌트 = 계약 키 하나 · `FC<Props>` 하나, `ref` 없음 | decisions-r27 1 ~ 18. 전부 설계자 판단 | 중(구조를 파트 방식으로 바꾸면 소비자 코드가 바뀐다) |
+| D-33 (R27) | 5종의 recipe 값 | §3.8 R27 행. 탭 버튼 · 트리거는 높이 42(D-6), Prose는 recipe 없음 | decisions-r27 20 | 하 |
+| D-34 (R27) | Prose 선택자 특이성 | `:where`로 요소 수준 이하. 표기는 4.3.3에서 확인(2026-10-24), T-W11 probe가 회귀 가드 | Prose 안 DS 컴포넌트 · 소비자 클래스가 이겨야 한다(decisions-r27 13 · 15) | 중 |
+| D-35 (R27) | 5종 검증 화면 | verify-next `(app)/components` 서버 컴포넌트 라우트, 웹 Chip · Icon 포함. `/`(AC-23 스크린샷)는 그대로 | decisions-r27 22, F-25 | 하 |
 
 ---
 
@@ -864,7 +1057,7 @@ design-system/
 | S-4 | C-21 (출처 decisions-r21 B-6, v2 F-30) | "Base UI `Form` / `Field`를 내부 기반으로 쓰되"라고 했으나 v1 범위(submit 없음, 오류 표시는 `Text tone="danger"`)에서 Base UI Form의 기능이 쓰이지 않고, `Field`로 Input을 감싸면 Input 단독 사용과 DOM이 달라진다. D-13은 순수 `<form>`을 택했다 | 정합 | T-W6. B-6은 Form **범위**를 정한 결정이고 Base UI 사용은 구현 세부라 재개방이 아니다. 계약·AC 영향 없음. 개정 시 "Base UI Form은 v1에서 쓰지 않는다"로 |
 | S-5 | C-3 native 항목 ↔ NativeWind v5 문서 | 스펙은 래퍼가 `@import "tailwindcss"`를 먼저 포함한다고 하나, NativeWind v5 문서의 `global.css`는 `tailwindcss/theme.css layer(theme)` · `preflight.css layer(base)` · `utilities.css` 분리 import + `@import "nativewind/theme"`를 요구한다 | **종결(2026-09-06)** | 게이트 (8) 통과. 래퍼를 그대로 둔다 — C-3 문장 개정 없음. `@import "nativewind/theme"`는 **넣을 수 없다**(DS의 `--spacing: initial` 리셋과 충돌해 컴파일이 깨진다). 그것 없이 v1 어휘가 전부 동작한다. T-N1 보류 해제 |
 | S-6 | AC-19 (c) | RN 검증이 "`Appearance` 모킹 2조합"인데 NativeWind가 테스트 환경에서 className을 style로 해석하지 못할 때의 격하 규칙이 AC-25 · AC-26 RN절에는 있고 AC-19 (c)에는 없다 | 정합 | T-R1. AC-25 격하 규칙을 준용하고 `docs/gate-c19.md`에 명시. 개정 시 AC-19 (c)에 같은 문장 추가 |
-| S-7 | C-6 리셋 범위 · C-15 어휘 봉쇄 | `--font-*`(패밀리)를 리셋하지 않고 `--font-sans`만 덮어쓰므로 Tailwind 기본 `--font-mono` · `--font-serif`가 남아 `font-mono` · `font-serif` 클래스가 생성된다. "className에 쓸 수 있는 클래스는 DS 토큰 어휘뿐"의 예외 | 정합 | 없음. v1 알려진 동작 후보(R24가 15·16을 썼으므로 다음 번호)로 개정 시 추가. 리셋하면 소비자가 모노스페이스를 쓸 길이 없어져 유지 |
+| S-7 | C-6 리셋 범위 · C-15 어휘 봉쇄 | `--font-*`(패밀리)를 리셋하지 않고 `--font-sans`만 덮어쓰므로 Tailwind 기본 `--font-mono` · `--font-serif`가 남아 `font-mono` · `font-serif` 클래스가 생성된다. "className에 쓸 수 있는 클래스는 DS 토큰 어휘뿐"의 예외 | **종결(R27)** | 스펙 알려진 동작 28과 C-6 리셋 범위 (R27) 문장으로 옮겼다. CodeBlock · Prose가 `font-mono`를 쓰고 tokens probe가 출력을 지킨다(T-W10). 리셋하면 CodeBlock이 쓸 글꼴이 없어져 유지 |
 | S-8 | CLAUDE.md "C-19 게이트(… + pnpm peer)" | pnpm peer 해석 확인(C-3)은 웹이 먼저 필요로 하며 스펙은 이를 C-3 "착수 전 기술 확인"으로 둔다. 게이트 항목으로 두면 웹 착수가 게이트에 묶인다 | 정합 | 없음. T-W0에서 선확인, 게이트 (8)에서 native 재확인. CLAUDE.md 문구는 "C-3 선확인 + C-19 게이트"로 |
 | S-9 | decisions-r21 A-4 | "아이콘 전용일 때만 `aria-label`"은 R21 후속에서 뒤집혔고 스펙은 갱신됐으나 근거 문서 원문은 그대로다(B-9는 r21 헤더가 재개정 각주를 이미 달고 있어 제외. v2 F-30) | 정합 | 없음. 근거 문서는 이력이며 스펙이 우선. 개정 시 A-4에 "R21 후속으로 대체" 각주 |
 | S-10 | AC-26 (b) · C-8 (v2 F-30 위치 정정) | D-3 별칭 때문에 소비자가 `--bg-danger`를 덮으면 `--fg-danger`도 따라간다. AC-26 (b) "변수 단위로 격리"와 표면상 어긋나 보이나, 별칭은 스펙 C-8이 요구한 "같은 색"의 구현이다 | 정합 | T-V1의 AC-26 (b) 테스트는 별칭이 아닌 변수(`--bg-danger` 자체를 재선언하지 않은 상태)로 격리를 검사한다. 개정 시 알려진 동작에 "별칭 변수는 원본을 따라간다" 추가 |
@@ -877,5 +1070,5 @@ design-system/
 | S-17 (v2) | C-7c · Ontology Icon | "색·크기는 토큰으로 결정"인데 계획은 색을 `currentColor`(글자색 상속)로 둔다. 글자색이 `tone`/variant 토큰에서 오므로 간접 토큰 결정이다 | 정합 | 없음. 개정 시 "색은 글자색 상속" 명시. **(R25)** 공개 Icon 은 `tone` 으로 색을 직접 가진다 — 상속은 Button 안 아이콘에만 남는다 |
 | S-18 (v2) | 알려진 동작 후보 | tailwind-merge의 font-size 스케일에 `base`가 하드코딩돼 소비자 `className="text-base"`가 DS `text-md`를 밀어내고 CSS도 없어 글자 크기가 사라진다(F-27). 리셋 네임스페이스 no-op(알려진 동작 1)의 특수 사례 | 정합 | T-T5 테스트 이름에 기록. 개정 시 알려진 동작 1에 "`text-base`는 twMerge에서도 크기 그룹으로 분류돼 DS 값을 밀어낸다" 추가 |
 
-- **보류 항목 S-5는 게이트 (8)로 종결됐다(2026-09-06).** 남은 보류 태스크는 없다. 게이트 (2)·(4) 실패로 발생한 스펙 개정은 이 절과 별개이며 R24로 반영했다
+- **보류 항목 S-5는 게이트 (8)로 종결됐다(2026-09-06).** 남은 보류 태스크는 없다. S-7은 R27에서 스펙으로 옮겨 종결했다(2026-10-24). 게이트 (2)·(4) 실패로 발생한 스펙 개정은 이 절과 별개이며 R24로 반영했다
 - 게이트 (1)~(8) 실패 시 개정 대상은 §2.2 표에 있다. 이 절과 별개로 취급한다
