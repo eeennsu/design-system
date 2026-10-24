@@ -9,7 +9,7 @@
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` 을 **2026-09-26 npm 에 publish 했다**(`latest`). spendback 이 0.4.0 으로 올라갔다
 - v1 이후 네 번째: web · native 패키지 README 에 `## 소비 규칙` 을 실은 `0.4.1` 을 **2026-10-21 npm 에 publish 했다**(`latest`, 코드 무변경). spendback 이 0.4.1 로 올라갔다. my-agent-setup 의 design-flow 라우터가 설치본의 이 절을 읽는다
-- v1 이후 다섯 번째: 웹 전용 컴포넌트 5개(Tabs · Table · CodeBlock · Prose · Collapsible)를 더한(N-19, 스펙 R27) `0.5.0` 을 **준비했다.** 브랜치 `feat/r27-web-components` 에서 구현 · 검증 · 버전 올리기까지 마쳤고, main 병합과 publish(T-P4)는 사용자 몫이다. 구분선 확인은 대기다(N-19)
+- v1 이후 다섯 번째: 웹 전용 컴포넌트 5개(Tabs · Table · CodeBlock · Prose · Collapsible)를 더한(N-19, 스펙 R27) `0.5.0` 을 **준비했다.** 브랜치 `feat/r27-web-components` 에서 구현 · 검증 · 버전 올리기까지 마쳤고, main 병합과 publish(T-P4)는 사용자 몫이다. 구분선은 사용자 위임으로 지금 값을 받아들였다(N-19)
 
 ## 1. 완료 상태
 
@@ -31,7 +31,7 @@
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 | v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
-| v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 구현 · `0.5.0` 준비 완료(2026-10-24). publish 대기, 구분선 확인 대기 | tokens 72 · web 129 · native 26 · verify-expo 50 · verify-next 37(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
+| v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 구현 · `0.5.0` 준비 완료(2026-10-24). publish 대기, 구분선 받아들임 | tokens 72 · web 129 · native 26 · verify-expo 50 · verify-next 37(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
 
 수동 확인 상태:
 
@@ -43,7 +43,7 @@
    `next build`(타입 검사 포함) 통과, `postcss.config.mjs` · `next.config.ts` 는 생성 원본과 diff 0.
    Playwright 로 `<form>` · `autocomplete` · `type="button"` · Enter 무동작 · `onClick` 오류 표시를 확인했고
    화면은 `docs/assets/ac16-npm-{light,dark}.png` 두 장이다
-5. R27 구분선 확인(decisions-r27 19) — **대기(2026-10-24).** `out/r27-dividers/{light,dark}.png` 를 만들었고 사용자가 아직 받아들일지 정하지 않았다(N-19)
+5. ~~R27 구분선 확인(decisions-r27 19)~~ — **완료(2026-10-24).** `out/r27-dividers/{light,dark}.png` 를 보이고 권장안(지금 값 그대로)대로 진행하라는 사용자 위임을 받았다(N-19)
 
 ## 2. 계획과 갈린 지점
 
@@ -305,7 +305,7 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
 - **검증 결과**(2026-10-24, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 72(69 + 3: probe 의 `font-mono` · Prose `:where` 변형 · `-mb-px`), web 125→129(79 + 46, 최종 리뷰 +4: 컴포넌트 · recipe · 타입 · dist), native 26, verify-expo 50,
   verify-vite 5, verify-next 37 통과 + 2 건너뜀(기존 18 + `/components` 18 + 최종 리뷰 탭 nowrap 1. 건너뛴 2 는 구분선 스크린샷으로 `R27_DIVIDERS=1` 일 때만 돈다). `docs/assets` 는 되돌렸다(F-25).
   `pnpm verify:pack` 통과 — 세 패키지가 `0.5.0` 이고, 타르볼 설치 상태에서 verify-next 37 · verify-vite 5 · verify-expo 50 이 돈다(AC-18 · AC-16 · AC-17 재확인)
-- **구분선 확인 — 대기.** `border.default` 는 `surface-muted` 와 같은 값이라 Table · Tabs 의 구분선이 라이트 canvas 위에서 1.12:1 로 약하고 채움 위에서는 사라진다(decisions-r27 19, 알려진 동작 32).
+- **구분선 확인 — 받아들임(2026-10-24, 사용자 위임으로 권장안).** 아래는 판단 때의 기록이다. `border.default` 는 `surface-muted` 와 같은 값이라 Table · Tabs 의 구분선이 라이트 canvas 위에서 1.12:1 로 약하고 채움 위에서는 사라진다(decisions-r27 19, 알려진 동작 32).
   라이트 · 다크 스크린샷을 `out/r27-dividers/{light,dark}.png` 에 만들었다(`R27_DIVIDERS=1 pnpm --filter verify-next test`, `out/` 은 gitignored). **사용자는 아직 받아들일지 정하지 않았다.**
   받아들이면 decisions-r27 19 를 그대로 둔다. 받아들이지 않으면 `border.default` 값을 올리거나(Card 경계 · Tooltip 테두리도 바뀐다) 구분선 전용 semantic 토큰을 새로 두는 것(C-5b 표면이 는다)이고, 어느 쪽이든 토큰 결정 뒤 Table · Tabs 를 다시 확인한다.
   publish 전에 정한다
@@ -602,9 +602,8 @@ Base UI 1.8.0 `useButton`(`internals/use-button/useButton.js`)은 네이티브 `
 - `0.4.0`(N-18, R26)은 2026-09-26 publish 했다(F-29). 0.4.0 은 base 모양 전체를
   바꾸고 RN 소비 앱에 글꼴 등록을 요구한다 — 릴리스 노트에 적는다. AC-23 스크린샷 네 장은 옛 모양이다(웹을 새로 찍으면 RN 과 짝이 안 맞아 되돌렸다, F-25).
   RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다. 검증 앱의 앱 색(초록)은 다크에서 흰 on-brand 와 대비가 낮다 — 검증 앱은 C-5b 짝 대비를 따르지 않는다
-- `0.5.0`(N-19, R27)은 준비를 마쳤다 — 세 패키지 `package.json` 이 `0.5.0` 이고 `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` 이 통과했다. 남은 것은 셋이다.
-  (1) **구분선 확인**(1절 수동 확인 상태 5, 사용자 판단). 받아들이지 않으면 토큰 결정과 재작업이 먼저다.
-  (2) `feat/r27-web-components` 를 main 에 합친다(pnpm 은 main 에서만 publish 한다, `publish-branch`).
-  (3) T-P4 publish 는 사용자가 자기 터미널에서 한다(F-17 · F-29). 0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
+- `0.5.0`(N-19, R27)은 준비를 마쳤다 — 세 패키지 `package.json` 이 `0.5.0` 이고 `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` 이 통과했다. 남은 것은 둘이다(구분선은 2026-10-24 받아들였다, 1절 수동 확인 상태 5).
+  (1) `feat/r27-web-components` 를 main 에 합친다(pnpm 은 main 에서만 publish 한다, `publish-branch`).
+  (2) T-P4 publish 는 사용자가 자기 터미널에서 한다(F-17 · F-29). 0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

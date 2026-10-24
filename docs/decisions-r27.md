@@ -29,7 +29,7 @@
 | 16 | Collapsible 구조 · 값 | 컴포넌트 하나. `label`(필수)이 트리거 글자, `open` · `defaultOpen` · `onOpenChange`, 기본은 닫힘 | 설계자 판단 | 하 |
 | 17 | Collapsible 모양 · 패널 | 상자 없이 ghost 트리거 줄 + 꺾쇠 아이콘. 상자가 필요하면 Card에 넣는다. 닫힌 패널은 마운트하지 않는다(찾기로 펼쳐지지 않는다). 높이 애니메이션 없음 | 설계자 판단 | 하 |
 | 18 | ref | 다섯 개 모두 `ref` 없음 | 설계자 판단 | 하(추가는 추가적) |
-| 19 | 토큰 | 새 semantic 토큰 없음. 구분선은 기존 `border.default`(라이트 canvas 위 1.12로 약하다 — T-V4에서 사용자 확인) | 설계자 판단 | 하 |
+| 19 | 토큰 | 새 semantic 토큰 없음. 구분선은 기존 `border.default`(라이트 canvas 위 1.12로 약하다 — T-V4 스크린샷을 보고 사용자가 권장안대로 진행을 위임, 2026-10-24) | 설계자 판단 · 사용자 위임 | 하 |
 | 20 | component recipe | Tabs · Table · CodeBlock · Collapsible에 component 계층 recipe를 둔다. Prose는 두지 않는다 | 설계자 판단 | 하 |
 | 21 | `font-mono` | 계획 S-7(어휘 봉쇄의 예외)을 스펙 알려진 동작 28로 옮기고, tokens probe가 `font-mono` 생성을 확인한다 | 설계자 판단(소비 앱 설계 문서의 판단을 따랐다) | 하 |
 | 22 | 검증 화면 | verify-next에 서버 컴포넌트 라우트 `/components`를 새로 두고 다섯 개와 Chip · Icon을 올린다. AC-23 스크린샷 라우트(`/`)는 그대로 | 설계자 판단 | 하 |
@@ -252,6 +252,8 @@ MDX 본문은 원시 HTML 요소(`h2` · `p` · `ul` · `code` …)로 나온다
 ## 19. 토큰
 
 새 semantic 토큰을 두지 않는다. 쓰는 색은 전부 있는 것이다.
+
+구분선 확인(2026-10-24): 라이트 · 다크 `/components` 스크린샷을 보이고 권장안(지금 값 그대로)을 냈고, 사용자가 권장안대로 진행하라고 했다. 라이트 canvas 위 1.12:1 은 Tailwind 기본 `gray-200` 구분선과 같은 수준이라 받아들인다. 소비 앱에서 약하다는 근거가 생기면 `border.default` 를 올리거나 구분선 전용 토큰을 두는 것을 그때 다시 연다.
 
 | 쓰임 | 토큰 |
 |---|---|

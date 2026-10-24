@@ -137,7 +137,7 @@ R26 보류: 없음.
 - **검증 화면**: verify-next에 서버 컴포넌트 라우트를 새로 두고 다섯 개와, R25 뒤 화면에 없던 웹 Chip · Icon을 올려 Playwright로 확인한다. AC-23 스크린샷 화면은 그대로다
 - C-4(`"use client"` 대상), C-6(리셋 범위의 `font-mono` 예외), C-12(값 3종에 Tabs, 개폐 3종에 Collapsible), C-13(Tabs · Collapsible · Table · CodeBlock · Prose 매핑), C-17(children · ref 규칙) 보강, AC-7 목록과 검증 항목, AC-13 문구, Topology, Ontology, 알려진 동작 28~32 추가. 번호 유지, 삭제 · 재번호 없음
 
-R27 보류: 구분선 확인 하나 — Table · Tabs 구분선(`border.default`)이 라이트 canvas 위에서 약한 것(1.12:1)을 받아들일지 사용자가 판단한다(decisions-r27 19). publish 전에 정한다. R25 보류(데이터 값 `number` prop)는 그대로 사용자 판단으로 남는다 — Table 셀은 `ReactNode` 내용이라 그 질문을 열지 않는다.
+R27 보류: 없음. 구분선(`border.default`, 라이트 canvas 위 1.12:1)은 2026-10-24 스크린샷 확인 뒤 사용자 위임으로 지금 값을 받아들였다(decisions-r27 19). R25 보류(데이터 값 `number` prop)는 그대로 사용자 판단으로 남는다 — Table 셀은 `ReactNode` 내용이라 그 질문을 열지 않는다.
 
 ## Topology
 
