@@ -39,9 +39,9 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 ## 현재 코드 상태
 
 - `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 72(브랜드 × 스킴 글자 대비 포함)
-- `packages/web` — 컴포넌트 21개(Chip · Icon 은 R25 · `0.3.0`, Tabs · Table · CodeBlock · Prose · Collapsible 은 R27 · `0.5.0` 준비, 웹 전용), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 125(타입 테스트 포함)
+- `packages/web` — 컴포넌트 21개(Chip · Icon 은 R25 · `0.3.0`, Tabs · Table · CodeBlock · Prose · Collapsible 은 R27 · `0.5.0` 준비, 웹 전용), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 129(타입 테스트 포함)
 - `packages/native` — 컴포넌트 11개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` publish), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 26(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
-- `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 36 + 5(verify-next 는 구분선 스크린샷 2개를 더 건너뛴다 — `R27_DIVIDERS=1` 일 때만 돈다. `/components` 화면이 R27)
+- `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 37 + 5(verify-next 는 구분선 스크린샷 2개를 더 건너뛴다 — `R27_DIVIDERS=1` 일 때만 돈다. `/components` 화면이 R27)
 - `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 50(게이트 20 + DS 29 + smoke 1)
 - 검증 화면 스크린샷은 `docs/assets/` 에 있다 — 게이트 (7) 기기 확인 2장, AC-23 웹·RN 비교 4장, T-P1 npm 설치 확인 2장
 - 명령: `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack`(타르볼 설치 재검증) · `pnpm version:set <v>`. Node 22 에서 돌린다 — Node 20 이면 web 테스트가 jsdom 로딩에서 죽는다(구현 노트 N-18)
