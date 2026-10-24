@@ -154,7 +154,8 @@ Base UI 1.8.0 `Tabs.List` 기본값을 그대로 쓴다. 공개 prop으로 열�
 ## 11. CodeBlock 범위
 
 - **인라인 코드는 Prose의 일이다.** MDX 본문의 `` `코드` ``는 원시 `<code>`로 나오고 Prose가 칠한다(14). 블록과 인라인을 한 컴포넌트가 맡으면 `display` 같은 모드 prop이 생기고 두 모드의 의미가 다르다. Prose 밖 React 위젯의 인라인 코드 컴포넌트는 범위가 다섯으로 고정돼 있어 넣지 않는다(열지 않은 것)
-- 내용은 `children: string | string[]`이다. Text와 같은 글자 컴포넌트 규칙이라 `<CodeBlock>{source}</CodeBlock>`와 보간이 된다. 공백은 `pre`의 기본 `white-space: pre`가 지킨다. React는 배열 항목을 줄바꿈 없이 이어 붙이므로, 배열은 줄 배열로 보고 `\n`으로 join한다(JSDoc에 적는다, 알려진 동작 29)
+- 내용은 `children: string | string[]`이다. Text와 같은 글자 컴포넌트 규칙이라 `<CodeBlock>{source}</CodeBlock>`와 보간이 된다. 공백은 `pre`의 기본 `white-space: pre`가 지킨다. 배열은 Text처럼 그대로 렌더해 줄바꿈 없이 이어 붙는다. 줄 배열은 소비자가 `lines.join("\n")`으로 넘긴다(JSDoc에 적는다, 알려진 동작 29)
+- **설계자 판단, 최종 리뷰 뒤 고침.** 처음에는 배열을 줄 배열로 보고 `\n`으로 join했다. 최종 리뷰가 두 가지를 짚었다. `string[]`은 JSX 보간 `<CodeBlock>npm i {pkg}</CodeBlock>`가 만드는 값이라 `"npm i "`와 `pkg`가 두 줄로 깨지고, 같은 타입이 Text에서는 이어 붙임이라 같은 입력의 뜻이 컴포넌트마다 달랐다. 0.5.0이 나간 뒤에 바꾸면 같은 입력의 동작이 바뀌므로 publish 전에 정했다. 타입은 `string | string[]` 그대로다 — JSX 보간이 만드는 값을 받아야 하기 때문이다
 - MDX의 펜스 코드 블록은 `<pre><code>`로 나온다. `pre`의 자식이 엘리먼트라 MDX `components` 매핑으로 CodeBlock에 바로 넘길 수 없다. 그래서 펜스 코드는 Prose가 CodeBlock과 같은 recipe로 칠한다(15)
 - **문법 강조는 없다.** 강조에는 새 의존성과 색 토큰이 필요하고 레포에 선례가 없다(소비 앱 설계 문서 4.4의 설계자 판단). 언어를 받는 prop도 쓸 곳이 없어 두지 않는다
 - **복사 버튼은 없다.** 버튼이 들어오면 CodeBlock이 인터랙티브가 되어 `"use client"`, 클립보드 API, 버튼 라벨 문구가 따라온다. 범위가 고정돼 있다

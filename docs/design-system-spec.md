@@ -137,7 +137,7 @@ R26 보류: 없음.
 - **검증 화면**: verify-next에 서버 컴포넌트 라우트를 새로 두고 다섯 개와, R25 뒤 화면에 없던 웹 Chip · Icon을 올려 Playwright로 확인한다. AC-23 스크린샷 화면은 그대로다
 - C-4(`"use client"` 대상), C-6(리셋 범위의 `font-mono` 예외), C-12(값 3종에 Tabs, 개폐 3종에 Collapsible), C-13(Tabs · Collapsible · Table · CodeBlock · Prose 매핑), C-17(children · ref 규칙) 보강, AC-7 목록과 검증 항목, AC-13 문구, Topology, Ontology, 알려진 동작 28~32 추가. 번호 유지, 삭제 · 재번호 없음
 
-R27 보류: 없음. R25 보류(데이터 값 `number` prop)는 그대로 사용자 판단으로 남는다 — Table 셀은 `ReactNode` 내용이라 그 질문을 열지 않는다.
+R27 보류: 구분선 확인 하나 — Table · Tabs 구분선(`border.default`)이 라이트 canvas 위에서 약한 것(1.12:1)을 받아들일지 사용자가 판단한다(decisions-r27 19). publish 전에 정한다. R25 보류(데이터 값 `number` prop)는 그대로 사용자 판단으로 남는다 — Table 셀은 `ReactNode` 내용이라 그 질문을 열지 않는다.
 
 ## Topology
 
@@ -364,9 +364,9 @@ R21에서 수용한 동작이다. 나중에 버그로 재발견되지 않게 여
 26. **(R26)** RN DS 컴포넌트는 `Pretendard` 패밀리를 요청한다. 소비 앱이 등록하지 않으면 Android는 기본 글꼴로 조용히 떨어진다. iOS는 "Unrecognized font family" 메시지를 낸다고 알려져 있으나 기기에서 확인하지 못했다. 등록한 글꼴에 없는 무게는 가까운 무게로 그려진다.
 27. **(R26)** `text-brand`는 채움 색(`bg.brand`)이다. 글자로 쓰면 다크 surface 위 3.57:1이라 기준에 못 미친다. 브랜드 색 글자는 `text-fg-brand`를 쓴다. `text-brand`는 0.3.0 소비자 호환을 위해 남아 있다(색 키는 `@theme inline` 하나에서 `bg-` · `text-` · `border-`를 함께 만든다).
 28. **(R27)** `font-mono` · `font-serif`는 DS 토큰이 아니라 Tailwind 기본값이다. DS는 `--font-sans`만 덮어쓰고 `--font-*`를 리셋하지 않아(C-6) 두 클래스가 남는다. 어휘 봉쇄의 유일한 글꼴 예외이고, CodeBlock과 Prose의 코드가 `font-mono`(시스템 고정폭 글꼴 목록)를 쓴다. 한글은 시스템 글꼴로 대체된다. 소비자가 `:root`에서 `--font-mono`를 재선언하면 기술적으로 덮이지만 계약 밖이다(C-5c와 같은 지위). DS는 고정폭 글꼴을 소유하지 않고 로딩도 안내하지 않는다. 출처는 계획 S-7이다.
-29. **(R27)** CodeBlock은 문법 강조 · 복사 버튼 · 줄 번호가 없고 줄을 바꾸지 않는다. 긴 줄은 가로로 스크롤한다. `children`이 배열이면 줄 배열로 보고 `\n`으로 join한다(React 기본은 줄바꿈 없이 이어 붙인다). Table과 CodeBlock의 스크롤 영역은 넘치지 않아도 Tab 정지점이다(키보드로 스크롤하기 위해서다). `label`이 있으면 그 영역이 `role="region"`과 이름을 갖고, 없으면 이름 없는 포커스 영역이다. 인라인 코드 컴포넌트는 없다 — 인라인 코드는 Prose 안의 `<code>`가 칠해진다.
+29. **(R27)** CodeBlock은 문법 강조 · 복사 버튼 · 줄 번호가 없고 줄을 바꾸지 않는다. 긴 줄은 가로로 스크롤한다. `children`은 Text처럼 그대로 렌더한다 — `string[]`은 JSX 보간(`npm i {pkg}`)이 만드는 조각이라 줄바꿈 없이 이어 붙는다. 줄 배열은 소비자가 `lines.join("\n")`으로 넘긴다(최종 리뷰에서 join을 뺐다, decisions-r27 11). Table과 CodeBlock의 스크롤 영역은 넘치지 않아도 Tab 정지점이다(키보드로 스크롤하기 위해서다). `label`이 있으면 그 영역이 `role="region"`과 이름을 갖고, 없으면 이름 없는 포커스 영역이다. 인라인 코드 컴포넌트는 없다 — 인라인 코드는 Prose 안의 `<code>`가 칠해진다.
 30. **(R27)** Prose는 원시 요소를 특이성 0(`:where`)으로 칠한다. 안에 놓인 DS 컴포넌트(Text 제목, CodeBlock, Table)와 소비자가 원시 요소에 준 클래스가 Prose 규칙을 이긴다. 원시 `<table>`은 가로 스크롤 감싸개가 없어 넓으면 넘친다 — 넓은 표는 Table을 쓴다. Prose 안의 원시 `pre` · `table`(MDX 펜스 코드, 마크다운 표)은 Tab 정지점이 아니라 키보드로 가로 스크롤할 수 없다. MDX 소비자는 `components.pre`를 CodeBlock으로 넘기는 몇 줄짜리 어댑터(자식 `<code>`의 글자를 꺼내 `children`으로)를 쓸 수 있다. 선택자 표기는 Tailwind 4.3.3에서만 확인했다 — peer 범위는 `tailwindcss >=4.1`이다. `strong`은 무게를 글자 스텝 밖에서 줄 수 없어(C-6) 브라우저 `bolder` 그대로이고, `h4` 이하는 본문과 같다. 글 폭은 정하지 않는다(`className="max-w-prose"`).
-31. **(R27)** Tabs는 화살표가 포커스만 옮기고 Enter · Space가 탭을 바꾼다(Base UI 기본). 숨은 패널은 마운트하지 않아 탭을 바꾸면 그 패널 안의 상태가 사라지고 브라우저 찾기가 숨은 패널을 찾지 못한다. 가로 방향만 있다. Collapsible의 닫힌 패널도 마운트하지 않는다 — 찾기가 닫힌 답을 펼치지 않는다. 숨은 Tabs 패널과 닫힌 Collapsible 패널은 서버 HTML에도 없다 — Next 같은 서버 렌더 소비자에서 검색 엔진과 JS 없는 렌더가 그 내용을 보지 못한다. 높이 애니메이션은 없다.
+31. **(R27)** Tabs는 화살표가 포커스만 옮기고 Enter · Space가 탭을 바꾼다(Base UI 기본). 숨은 패널은 마운트하지 않아 탭을 바꾸면 그 패널 안의 상태가 사라지고 브라우저 찾기가 숨은 패널을 찾지 못한다. 가로 방향만 있다. 탭이 컨테이너보다 넓어져도 DS는 탭 목록을 스크롤하지 않는다(탭 버튼은 `whitespace-nowrap`이라 줄을 바꾸지 않고 넘친다). Collapsible의 닫힌 패널도 마운트하지 않는다 — 찾기가 닫힌 답을 펼치지 않는다. 숨은 Tabs 패널과 닫힌 Collapsible 패널은 서버 HTML에도 없다 — Next 같은 서버 렌더 소비자에서 검색 엔진과 JS 없는 렌더가 그 내용을 보지 못한다. 높이 애니메이션은 없다.
 32. **(R27)** Collapsible은 상자가 없다. 트리거 줄과 패널뿐이고, 상자로 보이려면 Card 안에 둔다. 채움 상자로 두면 안에 넣은 CodeBlock · 인라인 코드의 `surface-muted` 채움이 같은 색 위에서 사라진다. CodeBlock을 `surface-muted` 바탕(채운 영역) 위에 직접 두면 같은 이유로 채움이 보이지 않는다 — 그때는 `className="bg-surface"`를 준다. Table · Tabs의 구분선(`border.default`)은 `surface-muted`와 같은 값이라 채운 영역 위에 두면 선이 사라진다. 라이트 canvas 위에서도 1.12:1로 약하다.
 
 ## Non-Goals

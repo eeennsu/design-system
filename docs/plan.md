@@ -467,7 +467,7 @@ export type TableRow = { cells: ReactNode[] };
   Tabs: { label: string; items: TabItem[]; value?: string; defaultValue?: string;
           onValueChange?: (value: string) => void; className?: string };
   Table: { label?: string; columns: TableColumn[]; rows: TableRow[]; className?: string };
-  /** `children`이 배열이면 줄 배열로 보고 `\n`으로 join한다 — React는 배열 항목을 줄바꿈 없이 이어 붙인다. */
+  /** 배열은 Text처럼 줄바꿈 없이 이어 붙는다(JSX 보간 `npm i {pkg}`이 만드는 조각). 줄 배열은 `lines.join("\n")`으로 넘긴다(최종 리뷰). */
   CodeBlock: { children: string | string[]; label?: string; className?: string };
   Prose: { children: ReactNode; className?: string };
   Collapsible: { label: string; children: ReactNode; open?: boolean; defaultOpen?: boolean;
@@ -489,7 +489,7 @@ export type TableRow = { cells: ReactNode[] };
 
 | DS | Base UI 파트 | 처리 |
 |---|---|---|
-| Tabs | `Tabs.Root`(`value` · `defaultValue ?? items[0]?.value` · `onValueChange`) → `Tabs.List`(`aria-label={label}`) → 항목마다 `Tabs.Tab value`(`label` 렌더) → 항목마다 `Tabs.Panel value`(`content` 렌더) | `Tabs.Indicator`는 쓰지 않는다 — 밑줄은 탭 버튼의 `data-[active]:` 테두리다. `activateOnFocus` · `loopFocus` · `keepMounted`는 Base UI 기본(false · true · false). `onValueChange`는 둘째 인자를 버린다. `"use client"` |
+| Tabs | `Tabs.Root`(`value` · `defaultValue ?? items[0]?.value` · `onValueChange`) → `Tabs.List`(`aria-label={label}`) → 항목마다 `Tabs.Tab value`(`label` 렌더) → 항목마다 `Tabs.Panel value`(`content` 렌더) | `Tabs.Indicator`는 쓰지 않는다 — 밑줄은 탭 버튼의 `data-[active]:` 테두리다. `activateOnFocus` · `loopFocus` · `keepMounted`는 Base UI 기본(false · true · false). `onValueChange`는 둘째 인자를 버리고 문자열만 넘긴다 — 탭이 모두 사라지면 Base UI가 `null`을 알린다(최종 리뷰). `"use client"` |
 | Collapsible | `Collapsible.Root`(`open` · `defaultOpen` · `onOpenChange`) → `Collapsible.Trigger`(`label` + `Glyph name="chevron-down"`) → `Collapsible.Panel`(`children`) | `keepMounted` · `hiddenUntilFound`는 Base UI 기본(false). `onOpenChange`는 boolean 하나로 감싼다(Dialog와 같다). `"use client"` |
 
 - 두 Base UI 버튼은 `useButton`이 `type="button"`을 붙인다(`internals/use-button/useButton.js`). DS가 따로 넘기지 않는다
@@ -500,9 +500,9 @@ export type TableRow = { cells: ReactNode[] };
 |---|---|---|
 | Tabs | 루트 | `flex flex-col` + `className` |
 | | 목록 | `flex border-b border-border` |
-| | 탭 버튼 | `-mb-px px-4 py-2 text-md border-b-2 border-transparent text-fg-muted hover:text-fg data-[active]:border-brand data-[active]:text-fg` + 포커스 링(§4.6). `-mb-px`는 활성 밑줄 2px를 목록의 1px `border-b` 위에 겹친다 |
+| | 탭 버튼 | `-mb-px whitespace-nowrap px-4 py-2 text-md border-b-2 border-transparent text-fg-muted hover:text-fg data-[active]:border-brand data-[active]:text-fg` + 포커스 링(§4.6). `-mb-px`는 활성 밑줄 2px를 목록의 1px `border-b` 위에 겹친다. `whitespace-nowrap`은 좁은 폭에서 한국어 라벨이 음절마다 줄을 바꾸지 않게 한다(F-30과 같은 이유, 최종 리뷰) |
 | | 패널 | `pt-4` + 포커스 링 |
-| Table | 루트(스크롤 영역, `tabIndex={0}`. `label`이 있으면 `role="region"` + `aria-label={label}`) | `overflow-x-auto` + 포커스 링 + `className` |
+| Table | 루트(스크롤 영역, `tabIndex={0}`. `label`이 있으면 `role="region"` + `aria-label={label}`, 빈 문자열이면 CodeBlock처럼 속성을 내지 않는다 — `label \|\| undefined`) | `overflow-x-auto` + 포커스 링 + `className` |
 | | `table` | `w-full text-sm` (`border-collapse`는 preflight가 이미 준다) |
 | | `caption` | `text-start text-sm text-fg-muted pb-2` |
 | | `th` | `whitespace-nowrap px-3 py-2 text-start text-fg-muted border-b border-border`. `whitespace-nowrap`은 `th` · `td`에만 둔다 — `table`에 두면 `caption`도 줄을 못 바꾼다(decisions-r27 10: 넓은 표는 줄을 바꾸지 않고 가로로 스크롤한다) |
@@ -878,7 +878,7 @@ design-system/
 
 **T-W10 CodeBlock**
 - 읽을 파일: decisions-r27 9 · 10 · 11 · 12 · 21, 스펙 알려진 동작 28 · 29, 이 문서 §3.6 · §4.9
-- 할 일: `Contracts.CodeBlock`, `component/code-block.json`(키 `codeBlock` — `padding 4` · `text sm` · `radius lg`), `packages/web/src/code-block.tsx`. 루트는 늘 `<figure>`(채움 · 모서리 + `className`), `label`이 있으면 `<figcaption>`, 그 아래 `<pre tabIndex={0}><code>{children}</code></pre>`(`label`이 있으면 `pre`에 `role="region"` + `aria-label={label}`). `children`이 배열이면 `join("\n")`한다(JSDoc에 "줄 배열은 `\n`으로 join한다"). `"use client"` 없음
+- 할 일: `Contracts.CodeBlock`, `component/code-block.json`(키 `codeBlock` — `padding 4` · `text sm` · `radius lg`), `packages/web/src/code-block.tsx`. 루트는 늘 `<figure>`(채움 · 모서리 + `className`), `label`이 있으면 `<figcaption>`, 그 아래 `<pre tabIndex={0}><code>{children}</code></pre>`(`label`이 있으면 `pre`에 `role="region"` + `aria-label={label}`). `children`은 그대로 렌더한다(배열을 join하지 않는다 — 최종 리뷰. JSDoc에 "줄 배열은 `lines.join("\n")`으로 넘긴다"). `"use client"` 없음
 - **probe 추가**: `packages/tokens/tests/probe.test.ts`에 "`font-mono` · `font-serif`는 Tailwind 기본값으로 남는다(알려진 동작 28)" — `build(["font-mono", "font-serif"])` 출력에 두 규칙이 있다
 - 테스트: (1) `children` 문자열이 공백 · 줄바꿈 그대로 `code` 안에 있다(`textContent` 비교), 배열 `["a", "b"]`는 `"a\nb"`다, (2) `label`이 있으면 `figcaption`이 있고 `pre`가 `getByRole("region", { name: label })`로 찾힌다, 없으면 둘 다 없다, (3) `pre`가 `tabIndex=0` · `overflow-x-auto` · `bg-transparent` · `font-mono`, (4) 소비자 `className="bg-surface"`가 루트에서 `bg-surface-muted`를 밀어낸다(AC-11), (5) recipe — `pre`가 `p-4 text-sm`, 루트가 `rounded-lg`. 타입: `@ts-expect-error` 엘리먼트 `children`(`<CodeBlock>{<span />}</CodeBlock>`)
 - 완료 조건: 위 확인 명령 통과(tokens probe 포함)

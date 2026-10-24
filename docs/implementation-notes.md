@@ -31,7 +31,7 @@
 | v1 이후 | RN Textarea · Label · Badge · Box (N-16) | 완료 · `0.2.0` publish(2026-09-24) | `packages/native` 테스트 24개, verify-expo jest 39개(DS 18) |
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 | v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
-| v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 구현 · `0.5.0` 준비 완료(2026-10-24). publish 대기, 구분선 확인 대기 | tokens 72 · web 125 · native 26 · verify-expo 50 · verify-next 36(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
+| v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 구현 · `0.5.0` 준비 완료(2026-10-24). publish 대기, 구분선 확인 대기 | tokens 72 · web 129 · native 26 · verify-expo 50 · verify-next 37(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
 
 수동 확인 상태:
 
@@ -286,7 +286,8 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
 
 - **Table**: `columns` + `rows`(`{ cells }`) 데이터 방식. 루트 `div` 가 `overflow-x-auto` 와 `tabIndex=0` 을 갖고, `label` 이 있으면 `role="region"` · `aria-label` 과 `<caption>` 이 된다.
   `align="end"` 열은 `text-end tabular-nums` 다. 셀 recipe 는 component 토큰 `table`(px 3 · py 2 · text sm). 구현 중 한 번 고쳤다 — F-30
-- **CodeBlock**: `figure` 가 `bg-surface-muted rounded-lg`, 안의 `pre` 가 `font-mono` 와 `p-4`(component 토큰 `codeBlock`). `children` 이 배열이면 `\n` 으로 join 한다.
+- **CodeBlock**: `figure` 가 `bg-surface-muted rounded-lg`, 안의 `pre` 가 `font-mono` 와 `p-4`(component 토큰 `codeBlock`). `children` 은 Text 처럼 그대로 렌더한다 — 배열은 줄바꿈 없이 이어 붙고(JSX 보간 `npm i {pkg}` 가 만드는 조각), 줄 배열은 소비자가 `lines.join("\n")` 으로 넘긴다.
+  처음에는 `\n` 으로 join 했으나 최종 리뷰 뒤 뺐다(decisions-r27 11).
   `pre` 가 가로 스크롤 영역이라 `tabIndex=0`, `label` 이 있으면 `role="region"` 이다. 서버 컴포넌트다
 - **Prose**: 원시 요소를 정적 클래스 문자열의 `[:where(&)_h2]:…` 변형으로 칠한다. 특이성이 0 이라 안에 놓인 DS 컴포넌트와 소비자 클래스가 이긴다.
   recipe 토큰은 두지 않고 `pre` · `th` · `td` 가 CodeBlock · Table 과 같은 값을 쓴다(recipe 일치 테스트가 본다). 서버 컴포넌트다.
@@ -301,14 +302,15 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
 - **`font-mono`**: Tailwind 기본값으로 남는 것을 알려진 동작 28 로 옮기고 tokens probe 테스트가 `font-mono` · `font-serif` 생성을 본다. `packages/web/README.md` "어휘 위치"에도 한 줄 적었다
 - **검증 화면**: verify-next 에 서버 컴포넌트 라우트 `/components` 를 새로 두고 다섯 개와, R25 뒤 화면에 없던 웹 Chip · Icon 을 올렸다(§4 "다음"의 웹 Chip · Icon 항목 해소). 페이지에 `"use client"` 가 없어 Next 빌드와 렌더가 C-4 확인이다.
   `/`(AC-23 스크린샷 화면)는 그대로다. Playwright 는 Tabs · Collapsible 키보드, Table 정렬 · 줄 안 바꿈 · 가로 스크롤, CodeBlock 글꼴 · 채움, Prose 원시 요소와 안의 DS 컴포넌트, Chip · Icon 의 computed style 을 본다
-- **검증 결과**(2026-10-24, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 72(69 + 3: probe 의 `font-mono` · Prose `:where` 변형 · `-mb-px`), web 125(79 + 46: 컴포넌트 · recipe · 타입 · dist), native 26, verify-expo 50,
-  verify-vite 5, verify-next 36 통과 + 2 건너뜀(기존 18 + `/components` 18. 건너뛴 2 는 구분선 스크린샷으로 `R27_DIVIDERS=1` 일 때만 돈다). `docs/assets` 는 되돌렸다(F-25).
-  `pnpm verify:pack` 통과 — 세 패키지가 `0.5.0` 이고, 타르볼 설치 상태에서 verify-next 36 · verify-vite 5 · verify-expo 50 이 돈다(AC-18 · AC-16 · AC-17 재확인)
+- **검증 결과**(2026-10-24, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 72(69 + 3: probe 의 `font-mono` · Prose `:where` 변형 · `-mb-px`), web 125→129(79 + 46, 최종 리뷰 +4: 컴포넌트 · recipe · 타입 · dist), native 26, verify-expo 50,
+  verify-vite 5, verify-next 37 통과 + 2 건너뜀(기존 18 + `/components` 18 + 최종 리뷰 탭 nowrap 1. 건너뛴 2 는 구분선 스크린샷으로 `R27_DIVIDERS=1` 일 때만 돈다). `docs/assets` 는 되돌렸다(F-25).
+  `pnpm verify:pack` 통과 — 세 패키지가 `0.5.0` 이고, 타르볼 설치 상태에서 verify-next 37 · verify-vite 5 · verify-expo 50 이 돈다(AC-18 · AC-16 · AC-17 재확인)
 - **구분선 확인 — 대기.** `border.default` 는 `surface-muted` 와 같은 값이라 Table · Tabs 의 구분선이 라이트 canvas 위에서 1.12:1 로 약하고 채움 위에서는 사라진다(decisions-r27 19, 알려진 동작 32).
   라이트 · 다크 스크린샷을 `out/r27-dividers/{light,dark}.png` 에 만들었다(`R27_DIVIDERS=1 pnpm --filter verify-next test`, `out/` 은 gitignored). **사용자는 아직 받아들일지 정하지 않았다.**
   받아들이면 decisions-r27 19 를 그대로 둔다. 받아들이지 않으면 `border.default` 값을 올리거나(Card 경계 · Tooltip 테두리도 바뀐다) 구분선 전용 semantic 토큰을 새로 두는 것(C-5b 표면이 는다)이고, 어느 쪽이든 토큰 결정 뒤 Table · Tabs 를 다시 확인한다.
   publish 전에 정한다
-- 리뷰에서 미룬 것(막지 않는 지적): Table `th` 의 recipe 일치와 `label=""` 일 때 남는 빈 `aria-label`, Prose 선택자 중 단위 테스트가 존재를 단언하는 것은 일부(나머지는 verify-next 가 본다),
+- 최종 리뷰에서 고친 것: CodeBlock 이 배열을 join 하지 않는다(decisions-r27 11), Table `label=""` 이 `aria-label` 속성을 내지 않는다, Tabs 가 `onValueChange` 에 문자열만 넘기고 탭 버튼에 `whitespace-nowrap` 을 준다(탭 목록이 넘쳐도 DS 는 스크롤하지 않는다, 알려진 동작 31). 단위 테스트는 web 129, Playwright 는 verify-next 37 이 됐다
+- 리뷰에서 미룬 것(막지 않는 지적): Table `th` 의 recipe 일치, Prose 선택자 중 단위 테스트가 존재를 단언하는 것은 일부(나머지는 verify-next 가 본다),
   Prose 의 `rounded-lg` 가 안에 놓인 CodeBlock `pre` 에도 걸리는 것(포커스 윤곽 모서리뿐), 비제어 Tabs 에서 `items` 가 `[]` 에서 채워질 때의 Base UI 개발 경고,
   Tabs · Collapsible 높이 42 가 build-output 높이 테스트에 없는 것, Collapsible · Tabs `className` 병합 테스트가 겨루는 클래스 없이 존재만 보는 것, C-4 단언이 hydration 뒤 가시성만 보는 것
   (`javaScriptEnabled: false` 로 돌리면 서버 HTML 을 직접 증명한다)
@@ -559,15 +561,16 @@ T-V4 리뷰가 스크린샷으로 찾았다.
 Prose 의 원시 `th` · `td` 에도 주지 않았다. 마크다운 표는 가로 스크롤 감싸개가 없어 줄을 바꿔야 화면 밖으로 넘치지 않는다(알려진 동작 30).
 verify-next 의 `글자 th · td 는 줄을 바꾸지 않는다` 가 computed `white-space: nowrap` 을 본다.
 
-### F-31. jsdom 은 Enter 와 네이티브 button 의 Space 에서 click 을 만들지 않는다
+### F-31. jsdom 은 Enter 와 네이티브 button 의 Space 에서 click 을 만들지 않는다 — 단 Tabs 의 Space 는 증명된다
 
 Base UI 1.8.0 `useButton`(`internals/use-button/useButton.js`)은 네이티브 `<button>` 의 키보드 활성화를 브라우저에 맡긴다. Enter 와 Space 의 `click` 은
 브라우저가 합성하는 것이라 jsdom 에서 `keyDown` 을 보내도 `click` 이 나오지 않는다. 합성 `click` 을 직접 쏘면 키 처리가 아니라 `click` 핸들러를 시험하는 것이다.
-탭이 속한 composite(Tabs)는 다르다 — `useButton` 이 Space 의 `keydown` 에서 기본 동작을 막고 `click` 을 직접 디스패치한다. 그래서 같은 Space 라도
-Tabs 와 Collapsible 의 경로가 다르고, 단위 테스트는 어느 쪽도 실제 활성화를 증명하지 못한다.
+탭이 속한 composite(Tabs)는 다르다 — Base UI 가 Space 의 `keydown` 에서 `click` 을 직접 디스패치한다. 그래서 jsdom 에서도 Tabs 의 Space 는 증명된다.
 
-그래서 Tabs · Collapsible 단위 테스트는 `keyDown` 이 기본 동작을 취소하지 않는 것까지만 본다. Enter · Space 로 탭이 바뀌고 Collapsible 이 열리고 닫히는 것은
-`apps/verify-next/e2e/components.spec.ts` 의 Playwright 가 실제 브라우저에서 증명한다(스펙 알려진 동작 31 이 Enter · Space 를 약속한다).
+단위 테스트가 실제로 하는 일은 이렇다. Tabs 의 Enter 는 `keyDown` 뒤 `click` 을 직접 보낸다(Enter 의 click 합성은 브라우저 몫이다). Tabs 의 Space 는
+포커스한 비활성 탭에 `fireEvent.keyDown(tab, { key: " " })` 만 보내 탭이 활성화되는 것까지 본다. Collapsible 의 Space 는 네이티브 버튼 경로라 jsdom 이 증명하지 못해
+`keyDown` 이 기본 동작을 취소하지 않는 것까지만 본다. Enter 와 Collapsible Space 의 실제 활성화는 `apps/verify-next/e2e/components.spec.ts` 의 Playwright 가
+실제 브라우저에서 증명한다(스펙 알려진 동작 31 이 Enter · Space 를 약속한다).
 
 ## 4. 다음
 
@@ -575,11 +578,11 @@ Tabs 와 Collapsible 의 경로가 다르고, 단위 테스트는 어느 쪽도 
 - 남은 수동 확인: AC-16 비밀번호 자동완성 제안 UI(1절 수동 확인 상태 1)
 - npm 패키지 페이지가 비어 있다 — 세 패키지에 README 가 없고(루트 `README.md` 도 빈 파일) `package.json` 에
   `repository` 가 없다. publish 한 버전은 고칠 수 없으니 다음 버전에서 넣는다.
-  **web · native README 에 소비 규칙을 실었다(2026-10-19), 다음 publish 에 포함.** 남은 것은 tokens README 와 `repository`
+  **web · native README 에 소비 규칙을 실었고(2026-10-19) `0.4.1`(2026-10-21)로 publish 했다.** 남은 것은 tokens README 와 `repository` 다(둘 다 아직 없다)
 - `0.2.0`(N-16 의 RN 4개)은 2026-09-24 publish 했다
 - `0.3.0`(N-17)은 2026-09-25 publish 했다. pnpm 은 기본으로 main 브랜치에서만 publish 한다(`publish-branch`). 브랜치를 main 에 합친 뒤 낸다
 - 0.3.0 은 base 다크 · bakery 라이트의 글자색을 바꾼다. 릴리스 노트에 적고, AC-23 다크 스크린샷(`docs/assets/ac23-*-dark.png`)은 흰 글자로 남아 있어 다음 기기 확인 때 다시 찍는다
-- npm 패키지 페이지(README · `repository`)는 여전히 비어 있다. web · native README 에 소비 규칙을 실었다(2026-10-19), 다음 publish 에 포함
+- npm 패키지 페이지는 tokens README 와 `repository` 가 여전히 비어 있다. web · native README 의 소비 규칙은 `0.4.1`(2026-10-21)로 publish 했다
 - 스펙 C-20(293행)은 "next-themes 는 해석된 테마를 `light` / `dark` 클래스로 루트에 쓴다"고만 적는다. next-themes 0.4.6 의 `attribute` 기본값은
   `data-theme` 라서 `attribute="class"` 를 줘야 한다(verify-next `theme/page.tsx` 가 준다). web README 에는 이 조건을 적었다. 스펙은 고치지 않는다
 - ~~웹 Chip · Icon 은 verify-next 화면에 없다~~ — **해소(R27, N-19).** `/components` 에 올려 computed style(AC-11 웹 통합 계층)과 서버 컴포넌트 렌더(C-4)를 Playwright 가 본다(DS 재검증 테스트 공백 6)
