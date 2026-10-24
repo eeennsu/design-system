@@ -505,8 +505,8 @@ export type TableRow = { cells: ReactNode[] };
 | Table | 루트(스크롤 영역, `tabIndex={0}`. `label`이 있으면 `role="region"` + `aria-label={label}`) | `overflow-x-auto` + 포커스 링 + `className` |
 | | `table` | `w-full text-sm` (`border-collapse`는 preflight가 이미 준다) |
 | | `caption` | `text-start text-sm text-fg-muted pb-2` |
-| | `th` | `px-3 py-2 text-start text-fg-muted border-b border-border` |
-| | `tr` · `td` | 행마다 `<tr key={인덱스}>`, `row.cells`마다 `<td>`. `td`는 `px-3 py-2 text-fg border-b border-border` |
+| | `th` | `whitespace-nowrap px-3 py-2 text-start text-fg-muted border-b border-border`. `whitespace-nowrap`은 `th` · `td`에만 둔다 — `table`에 두면 `caption`도 줄을 못 바꾼다(decisions-r27 10: 넓은 표는 줄을 바꾸지 않고 가로로 스크롤한다) |
+| | `tr` · `td` | 행마다 `<tr key={인덱스}>`, `row.cells`마다 `<td>`. `td`는 `whitespace-nowrap px-3 py-2 text-sm text-fg border-b border-border` |
 | | `align="end"` 열 | `th` · `td` 모두 `text-end tabular-nums` (`Record<"start" \| "end", string>` 맵) |
 | CodeBlock | 루트 `figure` | `bg-surface-muted rounded-lg` + `className` |
 | | `figcaption` | `px-4 pt-3 text-sm text-fg-muted` |
@@ -529,7 +529,7 @@ export type TableRow = { cells: ReactNode[] };
 | pre | `[:where(&)_pre]:` + CodeBlock `pre`와 같은 값 + `bg-surface-muted rounded-lg` |
 | blockquote | `[:where(&)_blockquote]:` + `border-s-4 border-border ps-4 text-fg-muted` |
 | hr | `[:where(&)_hr]:border-border` |
-| th · td | `[:where(&)_th]:` · `[:where(&)_td]:` + Table `th` · `td`와 같은 값 |
+| th · td | `[:where(&)_th]:` · `[:where(&)_td]:` + Table `th` · `td`와 같은 값에 `text-sm`을 더한다(Table은 `table`에 `text-sm`이 있고 Prose에는 그 요소가 없다, T-W11). `whitespace-nowrap`은 더하지 않는다 — 마크다운 표는 줄을 바꿔도 된다 |
 | img | `[:where(&)_img]:max-w-full` |
 
 - 이 표기는 설치된 Tailwind 4.3.3에서 확인했다(2026-10-24, 독립 리뷰의 메모리 컴파일). `[:where(&)_h2]:text-xl` → `:where(.…) h2 {…}`, `[:where(&)>*+*]:mt-4` → `:where(.…) > * + *`, `_:not(pre)>code` · `_li+li` · `>*+h2`도 기대대로이고 Oxide 스캐너가 JS 문자열에서 후보를 뽑는다. peer 범위는 `tailwindcss >=4.1`이지만 확인한 것은 4.3.3뿐이라 T-W11의 probe를 회귀 가드로 둔다

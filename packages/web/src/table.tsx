@@ -34,7 +34,7 @@ export const Table: FC<TableProps> = ({ label, columns, rows, className }) => (
             <th
               key={columnIndex}
               scope="col"
-              className={cn("px-3 py-2 text-fg-muted border-b border-border", ALIGN[column.align ?? "start"])}
+              className={cn("whitespace-nowrap px-3 py-2 text-fg-muted border-b border-border", ALIGN[column.align ?? "start"])}
             >
               {column.label}
             </th>
@@ -48,7 +48,7 @@ export const Table: FC<TableProps> = ({ label, columns, rows, className }) => (
               <td
                 key={cellIndex}
                 className={cn(
-                  "px-3 py-2 text-sm text-fg border-b border-border",
+                  "whitespace-nowrap px-3 py-2 text-sm text-fg border-b border-border",
                   ALIGN[columns[cellIndex]?.align ?? "start"],
                 )}
               >

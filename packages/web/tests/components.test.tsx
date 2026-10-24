@@ -456,6 +456,15 @@ describe("R27 Table", () => {
     expect(cells[1]).not.toHaveClass("text-start");
   });
 
+  it("th · td 는 줄을 바꾸지 않고(whitespace-nowrap) caption 은 그렇지 않다", () => {
+    render(<Table label="지출" columns={columns} rows={rows} />);
+    for (const cell of [...screen.getAllByRole("columnheader"), ...screen.getAllByRole("cell")]) {
+      expect(cell).toHaveClass("whitespace-nowrap");
+    }
+    expect(screen.getByText("지출")).not.toHaveClass("whitespace-nowrap");
+    expect(screen.getByRole("table")).not.toHaveClass("whitespace-nowrap");
+  });
+
   it("th 는 scope=col 이고 행마다 cells 수만큼 td 가 나오며 셀에 엘리먼트를 넣을 수 있다", () => {
     render(<Table columns={columns} rows={rows} />);
     for (const head of screen.getAllByRole("columnheader")) expect(head).toHaveAttribute("scope", "col");

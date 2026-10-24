@@ -6,7 +6,7 @@
  * `screenshot.spec.ts` 는 `docs/assets/ac23-web-*.png` 를 덮어쓴다(F-25).
  */
 import { mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { colors } from "@eeennsu/tokens/brands/base";
 import { expect, type Page, test } from "@playwright/test";
 import { backgroundRgba, expectSameColor, toRgba } from "./color.js";
@@ -16,12 +16,6 @@ test.use({ viewport: { width: 393, height: 851 } });
 
 /** app/(app)/globals.css 가 재선언한 앱 전용 브랜드 값(verify.spec.ts 와 같다). */
 const appBrand = { light: "oklch(62% 0.19 145)", dark: "oklch(72% 0.16 145)" };
-
-const style = (page: Page, selector: string, property: string) =>
-  page
-    .locator(selector)
-    .first()
-    .evaluate((element, name) => getComputedStyle(element).getPropertyValue(name), property);
 
 test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
@@ -115,6 +109,13 @@ test.describe("Table", () => {
     expect(await region.locator("th").first().evaluate((element) => getComputedStyle(element).textAlign)).toBe("start");
   });
 
+  test("글자 th · td 는 줄을 바꾸지 않는다 (decisions-r27 10)", async ({ page }) => {
+    const region = page.getByRole("region", { name: "분기별 지출" });
+    for (const cell of [region.locator("th").first(), region.locator("td").first()]) {
+      expect(await cell.evaluate((element) => getComputedStyle(element).whiteSpace)).toBe("nowrap");
+    }
+  });
+
   test("393px 에서 가로로 넘치고 Tab 정지점이며 region 이름과 caption 이 label 이다", async ({ page }) => {
     const region = page.getByRole("region", { name: "분기별 지출" });
     const { scrollWidth, clientWidth } = await region.evaluate((element) => ({
@@ -198,9 +199,10 @@ test.describe("Chip · Icon", () => {
     await expect(selected).toHaveAttribute("aria-pressed", "true");
     await expect(idle).toHaveAttribute("aria-pressed", "false");
 
-    expectSameColor(await backgroundRgba(page, "button[aria-pressed='true']"), await toRgba(page, appBrand.light), "고른 칩");
+    const area = "section[aria-label='칩 영역']";
+    expectSameColor(await backgroundRgba(page, `${area} button[aria-pressed='true']`), await toRgba(page, appBrand.light), "고른 칩");
     expectSameColor(
-      await backgroundRgba(page, "button[aria-pressed='false']"),
+      await backgroundRgba(page, `${area} button[aria-pressed='false']`),
       await toRgba(page, colors.light.bg["surface-muted"]),
       "안 고른 칩",
     );
@@ -229,8 +231,10 @@ test.describe("구분선 증거 스크린샷", () => {
 
   for (const scheme of ["light", "dark"] as const) {
     test(`out/r27-dividers/${scheme}.png`, async ({ page }) => {
+      test.skip(!process.env.R27_DIVIDERS, "구분선 증거는 요청할 때만 찍는다");
       await page.emulateMedia({ colorScheme: scheme });
-      const outDir = join(process.cwd(), "..", "..", "out", "r27-dividers");
+      // 설정 파일은 apps/verify-next 에 있다. 레포 루트의 out/ 은 gitignored 다.
+      const outDir = join(dirname(test.info().config.configFile!), "..", "..", "out", "r27-dividers");
       mkdirSync(outDir, { recursive: true });
 
       const box = (await page.locator("section[aria-label='카드 안 표 영역']").boundingBox())!;
