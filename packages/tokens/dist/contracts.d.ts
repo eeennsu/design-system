@@ -236,9 +236,22 @@ export type Contracts<P extends Platform> = {
         onValueChange?: (value: string) => void;
         className?: string;
     };
+    /**
+     * 접고 펴는 패널 하나(R27, 웹 전용). `label` 은 트리거의 보이는 글자이자 접근성 이름이다(C-13).
+     * 개폐 3종은 오버레이와 같다(C-12) — `open` / `defaultOpen` / `onOpenChange`, 기본은 닫힘이고 닫힌 패널은 DOM 에 없다.
+     * 상자는 없다. 상자로 보이려면 Card 안에 둔다(알려진 동작 32).
+     */
+    Collapsible: {
+        label: string;
+        children: ReactNode;
+        open?: boolean;
+        defaultOpen?: boolean;
+        onOpenChange?: (open: boolean) => void;
+        className?: string;
+    };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs 는 R27. */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27. */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs", "Collapsible"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.

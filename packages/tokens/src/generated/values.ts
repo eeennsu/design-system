@@ -208,6 +208,12 @@ export const component = {
     "text": "sm",
     "radius": "lg"
   },
+  "collapsible": {
+    "paddingX": "3",
+    "paddingY": "2",
+    "text": "md",
+    "radius": "md"
+  },
   "dialog": {
     "padding": "6",
     "radius": "xl",

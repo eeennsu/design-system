@@ -150,6 +150,12 @@ export declare const component: {
         readonly text: "sm";
         readonly radius: "lg";
     };
+    readonly collapsible: {
+        readonly paddingX: "3";
+        readonly paddingY: "2";
+        readonly text: "md";
+        readonly radius: "md";
+    };
     readonly dialog: {
         readonly padding: "6";
         readonly radius: "xl";

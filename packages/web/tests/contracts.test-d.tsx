@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import { Badge, Button, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -187,10 +187,46 @@ describe("R27 Tabs 계약", () => {
   });
 });
 
+describe("R27 Collapsible 계약", () => {
+  it("개폐 3종은 Dialog 와 같은 모양이고 기본값은 계약이 아니라 구현이 가진다", () => {
+    expectTypeOf<Contracts<"web">["Collapsible"]["open"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Collapsible"]["defaultOpen"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Collapsible"]["onOpenChange"]>().toEqualTypeOf<
+      ((open: boolean) => void) | undefined
+    >();
+    expectTypeOf<Contracts<"web">["Collapsible"]["children"]>().toEqualTypeOf<ReactNode>();
+  });
+
+  it("값 콜백 이름과 number 열림은 받지 않는다", () => {
+    assertType(
+      <Collapsible label="답" open defaultOpen onOpenChange={(open: boolean) => void open}>
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error 개폐 3종만 있다 — onValueChange 는 값 입력 컴포넌트의 이름이다
+      <Collapsible label="답" onValueChange={() => undefined}>
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error open 은 boolean 이다 (C-14)
+      <Collapsible label="답" open={1}>
+        {null}
+      </Collapsible>,
+    );
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
   it("Tabs", () => {
     // @ts-expect-error label 필수
     assertType(<Tabs items={[]} />);
+  });
+
+  it("Collapsible", () => {
+    // @ts-expect-error label 필수
+    assertType(<Collapsible>{null}</Collapsible>);
   });
 
   it("인터랙티브 7개", () => {

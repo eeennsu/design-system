@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, CodeBlock, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -74,6 +74,13 @@ describe("Tabs", () => {
   it("탭 버튼이 토큰 recipe 와 같고 활성 밑줄이 목록 선 위에 겹친다 (R27)", () => {
     render(<Tabs label="언어" items={[{ value: "c", label: "C", content: "내용" }]} />);
     expect(screen.getByRole("tab")).toHaveClass(...expected(component.tabs), "-mb-px");
+  });
+});
+
+describe("Collapsible", () => {
+  it("트리거가 토큰 recipe 와 같다 (R27)", () => {
+    render(<Collapsible label="답 보기">{null}</Collapsible>);
+    expect(screen.getByRole("button")).toHaveClass(...expected(component.collapsible));
   });
 });
 

@@ -15,6 +15,7 @@ import {
   Card,
   Chip,
   CodeBlock,
+  Collapsible,
   Dialog,
   Drawer,
   Form,
@@ -633,5 +634,98 @@ describe("R27 Tabs", () => {
   it("소비자 className 이 루트에 병합된다", () => {
     const { container } = render(<Tabs label="언어" items={items} className="mt-6" />);
     expect(container.firstElementChild).toHaveClass("flex", "flex-col", "mt-6");
+  });
+});
+
+describe("R27 Collapsible", () => {
+  it("트리거가 role=button 이고 이름이 label 이며 기본은 닫힘이라 패널 내용이 DOM 에 없다", () => {
+    render(
+      <Collapsible label="답 보기">
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    expect(screen.getByRole("button", { name: "답 보기" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("답 내용")).toBeNull();
+  });
+
+  it("클릭하면 열려 aria-expanded=true 와 내용이 보이고 onOpenChange 가 boolean 하나로 불린다", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Collapsible label="답 보기" onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("답 내용")).toBeVisible();
+    expect(onOpenChange).toHaveBeenCalledTimes(1);
+    expect(onOpenChange.mock.calls[0]).toEqual([true]);
+    fireEvent.click(trigger);
+    expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("답 내용")).toBeNull();
+  });
+
+  it("defaultOpen 이면 처음부터 열려 있다", () => {
+    render(
+      <Collapsible label="답 보기" defaultOpen>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    expect(screen.getByRole("button", { name: "답 보기" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("답 내용")).toBeInTheDocument();
+  });
+
+  it("제어 — open 을 바꾸면 열리고 닫히며 클릭만으로는 바뀌지 않는다", () => {
+    const onOpenChange = vi.fn();
+    const { rerender } = render(
+      <Collapsible label="답 보기" open={false} onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    fireEvent.click(trigger);
+    expect(onOpenChange.mock.calls).toEqual([[true]]);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("답 내용")).toBeNull();
+    rerender(
+      <Collapsible label="답 보기" open onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("답 내용")).toBeInTheDocument();
+  });
+
+  it("트리거가 type=button 이다 (C-21)", () => {
+    render(<Collapsible label="답 보기">{null}</Collapsible>);
+    expect(screen.getByRole("button", { name: "답 보기" })).toHaveAttribute("type", "button");
+  });
+
+  it("꺾쇠는 보조 기술에서 숨고 트리거 이름에 들어가지 않는다", () => {
+    const { container } = render(<Collapsible label="답 보기">{null}</Collapsible>);
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("button")).toHaveAccessibleName("답 보기");
+  });
+
+  it("키보드 — 트리거는 네이티브 button 이라 Enter · Space keydown 을 취소하지 않고 jsdom 에서는 그것만으로 토글되지 않는다", () => {
+    render(<Collapsible label="답 보기">{null}</Collapsible>);
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    trigger.focus();
+    // true 는 기본 동작이 취소되지 않았다는 뜻이다. 브라우저가 이 기본 동작으로 click 을 합성한다.
+    expect(fireEvent.keyDown(trigger, { key: "Enter" })).toBe(true);
+    expect(fireEvent.keyDown(trigger, { key: " " })).toBe(true);
+    // jsdom 은 click 합성을 하지 않는다. 실제 Enter · Space 활성화는 T-V4 의 Playwright 가 본다.
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("소비자 className 이 루트에 병합된다", () => {
+    const { container } = render(
+      <Collapsible label="답 보기" className="mt-6">
+        {null}
+      </Collapsible>,
+    );
+    expect(container.firstElementChild).toHaveClass("mt-6");
   });
 });

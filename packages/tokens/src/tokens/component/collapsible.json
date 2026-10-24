@@ -1,0 +1,23 @@
+{
+  "$description": "Collapsible recipe(R27). 트리거 줄의 안쪽 여백 · 글자 · 모서리다. 투명 테두리 1px 를 더해 높이는 42 로 md 컨트롤과 같다.",
+  "component": {
+    "collapsible": {
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.3}"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.2}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.md}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.md}"
+      }
+    }
+  }
+}

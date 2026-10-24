@@ -5,6 +5,7 @@ import { ButtonGroup } from "./button-group.js";
 import { Card } from "./card.js";
 import { Chip } from "./chip.js";
 import { CodeBlock } from "./code-block.js";
+import { Collapsible } from "./collapsible.js";
 import { Dialog } from "./dialog.js";
 import { Drawer } from "./drawer.js";
 import { Form } from "./form.js";
@@ -18,7 +19,7 @@ import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
+export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
 export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
@@ -171,6 +172,14 @@ export declare const components: {
         value?: string;
         defaultValue?: string;
         onValueChange?: (value: string) => void;
+        className?: string;
+    }>;
+    Collapsible: import("react").FC<{
+        label: string;
+        children: import("react").ReactNode;
+        open?: boolean;
+        defaultOpen?: boolean;
+        onOpenChange?: (open: boolean) => void;
         className?: string;
     }>;
 };
