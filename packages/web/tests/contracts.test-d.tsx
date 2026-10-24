@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, Dialog, Icon, Input, Stack, Table, Text, components } from "../src/index.js";
+import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Stack, Table, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -138,6 +138,17 @@ describe("R27 Table 계약", () => {
     assertType(<Table columns={[{ label: "이름", align: "center" }]} rows={[]} />);
     // @ts-expect-error 행은 셀 배열의 배열이 아니라 { cells } 객체다
     assertType(<Table columns={[{ label: "이름" }]} rows={[["a"]]} />);
+  });
+});
+
+describe("R27 CodeBlock 계약", () => {
+  it("children 은 글자뿐이고 label 은 선택이다 (비인터랙티브)", () => {
+    expectTypeOf<Contracts<"web">["CodeBlock"]["children"]>().toEqualTypeOf<string | string[]>();
+    expectTypeOf<Contracts<"web">["CodeBlock"]["label"]>().toEqualTypeOf<string | undefined>();
+    assertType(<CodeBlock>{"const a = 1;"}</CodeBlock>);
+    assertType(<CodeBlock label="예제">{["a", "b"]}</CodeBlock>);
+    // @ts-expect-error 엘리먼트 children 은 막는다 (글자 컴포넌트 규칙)
+    assertType(<CodeBlock>{<span />}</CodeBlock>);
   });
 });
 

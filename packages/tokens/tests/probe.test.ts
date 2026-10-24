@@ -71,6 +71,12 @@ describe("AC-6b 열거 밖 어휘가 무효다 (알려진 동작 1)", () => {
     expect(hasRule(css, "mt-5")).toBe(false);
     expect(hasRule(css, "mt-4")).toBe(true);
   });
+
+  it("font-mono · font-serif 는 Tailwind 기본값으로 남는다 (알려진 동작 28, plan §9 S-7)", async () => {
+    const css = await build(["font-mono", "font-serif"]);
+    expect(hasRule(css, "font-mono")).toBe(true);
+    expect(hasRule(css, "font-serif")).toBe(true);
+  });
 });
 
 describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {

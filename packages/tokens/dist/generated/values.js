@@ -195,6 +195,11 @@ export const component = {
         "text": "sm",
         "radius": "full"
     },
+    "codeBlock": {
+        "padding": "4",
+        "text": "sm",
+        "radius": "lg"
+    },
     "dialog": {
         "padding": "6",
         "radius": "xl",

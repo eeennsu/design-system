@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, Dialog, Drawer, Input, Table, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Card, Chip, CodeBlock, Dialog, Drawer, Input, Table, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -67,6 +67,17 @@ describe("Table", () => {
   it("셀이 토큰 recipe 와 같다 (R27)", () => {
     render(<Table columns={[{ label: "이름" }]} rows={[{ cells: ["커피"] }]} />);
     expect(screen.getByRole("cell")).toHaveClass(...expected(component.table));
+  });
+});
+
+describe("CodeBlock", () => {
+  it("pre 가 padding · text 를, 루트가 radius 를 recipe 와 같게 가진다 (R27)", () => {
+    const { container } = render(<CodeBlock>{"a"}</CodeBlock>);
+    expect(container.querySelector("pre")).toHaveClass(
+      `p-${component.codeBlock.padding}`,
+      `text-${component.codeBlock.text}`,
+    );
+    expect(container.firstElementChild).toHaveClass(`rounded-${component.codeBlock.radius}`);
   });
 });
 

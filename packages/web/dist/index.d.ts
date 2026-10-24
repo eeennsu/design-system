@@ -4,6 +4,7 @@ import { Button } from "./button.js";
 import { ButtonGroup } from "./button-group.js";
 import { Card } from "./card.js";
 import { Chip } from "./chip.js";
+import { CodeBlock } from "./code-block.js";
 import { Dialog } from "./dialog.js";
 import { Drawer } from "./drawer.js";
 import { Form } from "./form.js";
@@ -15,7 +16,7 @@ import { Table } from "./table.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, Dialog, Drawer, Form, Icon, Input, Label, Stack, Table, Text, Textarea, Tooltip };
+export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Stack, Table, Text, Textarea, Tooltip };
 export type { TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
@@ -151,6 +152,11 @@ export declare const components: {
         label?: string;
         columns: import("@eeennsu/tokens").TableColumn[];
         rows: import("@eeennsu/tokens").TableRow[];
+        className?: string;
+    }>;
+    CodeBlock: import("react").FC<{
+        children: string | string[];
+        label?: string;
         className?: string;
     }>;
 };

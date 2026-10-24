@@ -145,6 +145,11 @@ export declare const component: {
         readonly text: "sm";
         readonly radius: "full";
     };
+    readonly codeBlock: {
+        readonly padding: "4";
+        readonly text: "sm";
+        readonly radius: "lg";
+    };
     readonly dialog: {
         readonly padding: "6";
         readonly radius: "xl";

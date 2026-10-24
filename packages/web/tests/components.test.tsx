@@ -14,6 +14,7 @@ import {
   ButtonGroup,
   Card,
   Chip,
+  CodeBlock,
   Dialog,
   Drawer,
   Form,
@@ -470,5 +471,47 @@ describe("R27 Table", () => {
     const root = container.firstElementChild!;
     expect(root).toHaveAttribute("tabindex", "0");
     expect(root).toHaveClass("overflow-x-auto", "mt-6");
+  });
+});
+
+describe("R27 CodeBlock", () => {
+  it("문자열은 공백과 줄바꿈 그대로 code 안에 있고, 배열은 \\n 으로 join 된다", () => {
+    const source = "if (a) {\n  b();\n}";
+    const { container, unmount } = render(<CodeBlock>{source}</CodeBlock>);
+    expect(container.querySelector("pre > code")!.textContent).toBe(source);
+    unmount();
+    const array = render(<CodeBlock>{["a", "b"]}</CodeBlock>);
+    expect(array.container.querySelector("pre > code")!.textContent).toBe("a\nb");
+  });
+
+  it("label 이 있으면 figcaption 글자이고 pre 가 region 이다", () => {
+    const { container } = render(<CodeBlock label="예제">{"x"}</CodeBlock>);
+    expect(container.querySelector("figcaption")).toHaveTextContent("예제");
+    expect(screen.getByRole("region", { name: "예제" }).tagName).toBe("PRE");
+  });
+
+  it("label 이 없거나 빈 문자열이면 figcaption 도 region 도 aria-label 도 없다", () => {
+    for (const label of [undefined, ""]) {
+      const { container, unmount } = render(<CodeBlock label={label}>{"x"}</CodeBlock>);
+      expect(container.querySelector("figcaption")).toBeNull();
+      expect(screen.queryByRole("region")).toBeNull();
+      expect(container.querySelector("pre")).not.toHaveAttribute("aria-label");
+      unmount();
+    }
+  });
+
+  it("pre 가 tabIndex=0 · overflow-x-auto · bg-transparent · font-mono 이고 루트는 figure 다", () => {
+    const { container } = render(<CodeBlock>{"x"}</CodeBlock>);
+    expect(container.firstElementChild!.tagName).toBe("FIGURE");
+    const pre = container.querySelector("pre")!;
+    expect(pre).toHaveAttribute("tabindex", "0");
+    expect(pre).toHaveClass("overflow-x-auto", "bg-transparent", "font-mono");
+  });
+
+  it("AC-11 소비자 className=bg-surface 가 루트의 bg-surface-muted 를 민다", () => {
+    const { container } = render(<CodeBlock className="bg-surface">{"x"}</CodeBlock>);
+    const root = container.firstElementChild!;
+    expect(root).toHaveClass("bg-surface");
+    expect(root).not.toHaveClass("bg-surface-muted");
   });
 });

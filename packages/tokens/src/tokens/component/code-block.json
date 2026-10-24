@@ -1,0 +1,19 @@
+{
+  "$description": "CodeBlock recipe(R27). pre 의 안쪽 여백 · 글자와 루트 figure 의 모서리다. Prose 의 pre 도 같은 값을 쓴다.",
+  "component": {
+    "codeBlock": {
+      "padding": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.4}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.sm}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.lg}"
+      }
+    }
+  }
+}

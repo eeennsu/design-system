@@ -199,9 +199,19 @@ export type Contracts<P extends Platform> = {
         rows: TableRow[];
         className?: string;
     };
+    /**
+     * 코드 블록 하나(R27, 웹 전용). 글자 컴포넌트라 `children` 은 `string | string[]` 이다.
+     * 줄 배열은 `\n` 으로 join 한다 — React 기본은 배열 항목을 줄바꿈 없이 이어 붙이기 때문이다.
+     * 비인터랙티브라 `label` 은 선택이고, 있으면 보이는 `<figcaption>` 이자 접근성 이름이다.
+     */
+    CodeBlock: {
+        children: string | string[];
+        label?: string;
+        className?: string;
+    };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table 은 R27. */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock 은 R27. */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.
