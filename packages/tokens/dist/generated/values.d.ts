@@ -192,6 +192,11 @@ export declare const component: {
         readonly paddingY: "2";
         readonly text: "sm";
     };
+    readonly tabs: {
+        readonly paddingX: "4";
+        readonly paddingY: "2";
+        readonly text: "md";
+    };
     readonly textarea: {
         readonly rows: {
             readonly sm: 3;

@@ -250,6 +250,11 @@ export const component = {
     "paddingY": "2",
     "text": "sm"
   },
+  "tabs": {
+    "paddingX": "4",
+    "paddingY": "2",
+    "text": "md"
+  },
   "textarea": {
     "rows": {
       "sm": 3,

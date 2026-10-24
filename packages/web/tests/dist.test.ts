@@ -23,6 +23,7 @@ const interactive = [
   "tooltip.js",
   "dialog.js",
   "drawer.js",
+  "tabs.js",
 ];
 
 const built = existsSync(join(dist, "index.js"));

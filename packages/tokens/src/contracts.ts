@@ -79,6 +79,9 @@ export type IconName =
   | "chart-pie"
   | "calendar";
 
+/** Tabs 항목. 탭 글자와 패널 내용을 한 항목에 묶는다(decisions-r27 2). */
+export type TabItem = { value: string; label: string; content: ReactNode };
+
 /** Table 열. `end` 는 숫자 열이다 — 머리글과 셀이 `text-end tabular-nums`(decisions-r27 8). */
 export type TableColumn = { label: string; align?: "start" | "end" };
 
@@ -248,9 +251,22 @@ export type Contracts<P extends Platform> = {
     children: ReactNode;
     className?: string;
   };
+  /**
+   * 탭 목록과 패널(R27, 웹 전용). 데이터 방식이라 항목이 `content` 를 가진다(decisions-r27 2).
+   * `label` 은 탭 목록(`role="tablist"`)의 접근성 이름이고 화면에 보이지 않는다(C-13). 항목의 `label` 이 탭 글자다.
+   * 값은 `string` 이고 비제어 기본은 첫 항목이다. 콜백은 값 하나만 받는다(C-12).
+   */
+  Tabs: {
+    label: string;
+    items: TabItem[];
+    value?: string;
+    defaultValue?: string;
+    onValueChange?: (value: string) => void;
+    className?: string;
+  };
 };
 
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose 는 R27. */
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs 는 R27. */
 export const webComponents = [
   "Button",
   "ButtonGroup",
@@ -271,6 +287,7 @@ export const webComponents = [
   "Table",
   "CodeBlock",
   "Prose",
+  "Tabs",
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**

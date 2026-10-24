@@ -4,7 +4,7 @@
  * 정지 상태의 클래스와 DOM 속성만 본다. computed style 비교는 T-V1 Playwright 몫이다.
  */
 import { createRef } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { FocusHandle } from "@eeennsu/tokens";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -24,6 +24,7 @@ import {
   Prose,
   Stack,
   Table,
+  Tabs,
   Text,
   Textarea,
   Tooltip,
@@ -550,5 +551,87 @@ describe("R27 Prose", () => {
     );
     expect(screen.getByRole("heading", { level: 2, name: "제목" })).toBeInTheDocument();
     expect(screen.getByText("x").tagName).toBe("CODE");
+  });
+});
+
+describe("R27 Tabs", () => {
+  const items = [
+    { value: "c", label: "C", content: <p>C 내용</p> },
+    { value: "ts", label: "TS", content: <p>TS 내용</p> },
+    { value: "py", label: "PY", content: <p>PY 내용</p> },
+  ];
+
+  it("label 이 tablist 의 접근성 이름이고 탭마다 role=tab 이며 이름이 항목 label 이다", () => {
+    render(<Tabs label="언어" items={items} />);
+    expect(screen.getByRole("tablist", { name: "언어" })).toBeInTheDocument();
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["C", "TS", "PY"]);
+    expect(screen.getByRole("tab", { name: "TS" })).toBeInTheDocument();
+    expect(screen.queryByText("언어")).toBeNull();
+  });
+
+  it("비제어 기본은 첫 항목이고 첫 패널 내용만 DOM 에 있다", () => {
+    render(<Tabs label="언어" items={items} />);
+    expect(screen.getByRole("tab", { name: "C" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "TS" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByText("C 내용")).toBeInTheDocument();
+    expect(screen.queryByText("TS 내용")).toBeNull();
+  });
+
+  it("defaultValue 로 비제어 첫 선택을 정한다", () => {
+    render(<Tabs label="언어" items={items} defaultValue="py" />);
+    expect(screen.getByRole("tab", { name: "PY" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("PY 내용")).toBeInTheDocument();
+  });
+
+  it("클릭으로 바꾸면 onValueChange 가 값 문자열 하나로 불린다", () => {
+    const onValueChange = vi.fn();
+    render(<Tabs label="언어" items={items} onValueChange={onValueChange} />);
+    fireEvent.click(screen.getByRole("tab", { name: "TS" }));
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange.mock.calls[0]).toEqual(["ts"]);
+    expect(screen.getByText("TS 내용")).toBeInTheDocument();
+    expect(screen.queryByText("C 내용")).toBeNull();
+  });
+
+  it("제어 — value 를 바꾸면 패널이 바뀌고 클릭만으로는 바뀌지 않는다", () => {
+    const onValueChange = vi.fn();
+    const { rerender } = render(<Tabs label="언어" items={items} value="c" onValueChange={onValueChange} />);
+    fireEvent.click(screen.getByRole("tab", { name: "TS" }));
+    expect(onValueChange.mock.calls).toEqual([["ts"]]);
+    expect(screen.getByText("C 내용")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "C" })).toHaveAttribute("aria-selected", "true");
+    rerender(<Tabs label="언어" items={items} value="ts" onValueChange={onValueChange} />);
+    expect(screen.getByText("TS 내용")).toBeInTheDocument();
+    expect(screen.queryByText("C 내용")).toBeNull();
+  });
+
+  it("키보드 — 화살표는 포커스만 옮기고 Enter 가 활성화하며 Home · End 로 처음과 끝에 간다", async () => {
+    render(<Tabs label="언어" items={items} />);
+    const [first, second, third] = screen.getAllByRole("tab") as [HTMLElement, HTMLElement, HTMLElement];
+    first.focus();
+    fireEvent.keyDown(first, { key: "ArrowRight" });
+    // Base UI 가 포커스를 queueMicrotask 로 옮긴다.
+    await waitFor(() => expect(second).toHaveFocus());
+    expect(second).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByText("C 내용")).toBeInTheDocument();
+    // jsdom 은 버튼 Enter 의 기본 동작(click 합성)을 하지 않아 click 을 직접 보낸다. 실제 Enter 는 verify-next 의 Playwright 가 본다.
+    fireEvent.keyDown(second, { key: "Enter" });
+    fireEvent.click(second);
+    expect(second).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("TS 내용")).toBeInTheDocument();
+    fireEvent.keyDown(second, { key: "End" });
+    await waitFor(() => expect(third).toHaveFocus());
+    fireEvent.keyDown(third, { key: "Home" });
+    await waitFor(() => expect(first).toHaveFocus());
+  });
+
+  it("탭 버튼이 type=button 이다 (C-21)", () => {
+    render(<Tabs label="언어" items={items} />);
+    for (const tab of screen.getAllByRole("tab")) expect(tab).toHaveAttribute("type", "button");
+  });
+
+  it("소비자 className 이 루트에 병합된다", () => {
+    const { container } = render(<Tabs label="언어" items={items} className="mt-6" />);
+    expect(container.firstElementChild).toHaveClass("flex", "flex-col", "mt-6");
   });
 });

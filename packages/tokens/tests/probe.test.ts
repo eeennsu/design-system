@@ -89,6 +89,14 @@ describe("R27 Prose 임의 변형이 특이성 0 선택자를 낸다 (decisions-
   });
 });
 
+describe("R27 Tabs 겹침 유틸리티가 리셋과 무관하게 남는다 (decisions-r27 6)", () => {
+  it("-mb-px 는 생성된다 (음수 px 는 정적 값)", async () => {
+    const css = await build(["-mb-px"]);
+    expect(hasRule(css, "-mb-px")).toBe(true);
+    expect(css).toMatch(/\.-mb-px\s*\{\s*margin-bottom: -1px/);
+  });
+});
+
 describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {
   it("base 와 bakery 의 차이가 semantic 색 선언 줄뿐이다", () => {
     const baseLines = tokenCss("base").split("\n");

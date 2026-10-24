@@ -231,6 +231,7 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
     expect(component.tooltip).toEqual({ paddingX: "2", paddingY: "1", text: "sm", radius: "sm" });
     expect(component.table).toEqual({ paddingX: "3", paddingY: "2", text: "sm" });
     expect(component.codeBlock).toEqual({ padding: "4", text: "sm", radius: "lg" });
+    expect(component.tabs).toEqual({ paddingX: "4", paddingY: "2", text: "md" });
   });
 
   it("컨트롤 높이는 2 x paddingY + lineHeight + 2 = 30 / 42 / 52 다 (plan D-6, R26 lg)", () => {

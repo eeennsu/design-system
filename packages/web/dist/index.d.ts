@@ -14,11 +14,12 @@ import { Label } from "./label.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
 import { Table } from "./table.js";
+import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Text, Textarea, Tooltip };
-export type { TableColumn, TableRow } from "@eeennsu/tokens";
+export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
+export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `webComponents` 와 같고
@@ -162,6 +163,14 @@ export declare const components: {
     }>;
     Prose: import("react").FC<{
         children: import("react").ReactNode;
+        className?: string;
+    }>;
+    Tabs: import("react").FC<{
+        label: string;
+        items: import("@eeennsu/tokens").TabItem[];
+        value?: string;
+        defaultValue?: string;
+        onValueChange?: (value: string) => void;
         className?: string;
     }>;
 };

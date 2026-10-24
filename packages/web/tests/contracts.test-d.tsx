@@ -16,8 +16,8 @@ import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import type { TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Prose, Stack, Table, Text, components } from "../src/index.js";
+import type { TabItem, TableColumn, TableRow } from "../src/index.js";
+import { Badge, Button, Chip, CodeBlock, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -165,7 +165,34 @@ describe("R27 Prose 계약", () => {
   });
 });
 
+describe("R27 Tabs 계약", () => {
+  const items: TabItem[] = [{ value: "c", label: "C", content: "내용" }];
+
+  it("진입점이 TabItem 을 타입 전용으로 다시 내보내고 값 3종은 string 이다", () => {
+    expectTypeOf<TabItem>().toEqualTypeOf<{ value: string; label: string; content: ReactNode }>();
+    expectTypeOf<Contracts<"web">["Tabs"]["items"]>().toEqualTypeOf<TabItem[]>();
+    expectTypeOf<Contracts<"web">["Tabs"]["value"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Contracts<"web">["Tabs"]["defaultValue"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Contracts<"web">["Tabs"]["onValueChange"]>().toEqualTypeOf<((value: string) => void) | undefined>();
+  });
+
+  it("값은 문자열이고 콜백은 값 하나를 받으며 항목은 content 가 필수다", () => {
+    assertType(<Tabs label="탭" items={items} value="c" defaultValue="c" onValueChange={(v: string) => void v} />);
+    // @ts-expect-error 값은 string 이다 (C-14)
+    assertType(<Tabs label="탭" items={items} value={1} />);
+    // @ts-expect-error 콜백 인자는 string 이다
+    assertType(<Tabs label="탭" items={items} onValueChange={(v: number) => void v} />);
+    // @ts-expect-error 항목에 content 가 필수다
+    assertType(<Tabs label="탭" items={[{ value: "c", label: "C" }]} />);
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
+  it("Tabs", () => {
+    // @ts-expect-error label 필수
+    assertType(<Tabs items={[]} />);
+  });
+
   it("인터랙티브 7개", () => {
     // @ts-expect-error label 필수
     assertType(<Button />);

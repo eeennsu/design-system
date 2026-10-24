@@ -14,12 +14,13 @@ import { Label } from "./label.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
 import { Table } from "./table.js";
+import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
 
-export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Text, Textarea, Tooltip };
-export type { TableColumn, TableRow } from "@eeennsu/tokens";
+export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
+export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 
 /**
@@ -46,4 +47,5 @@ export const components = {
   Table,
   CodeBlock,
   Prose,
+  Tabs,
 };

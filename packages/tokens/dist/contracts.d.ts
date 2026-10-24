@@ -45,6 +45,12 @@ type Press<P extends Platform> = P extends "web" ? {
  * 한쪽만 고치면 `Record<IconName, LucideIcon>` 이 컴파일 에러를 낸다.
  */
 export type IconName = "check" | "x" | "plus" | "minus" | "trash" | "pencil" | "search" | "chevron-down" | "chevron-up" | "chevron-left" | "chevron-right" | "arrow-left" | "arrow-right" | "menu" | "settings" | "user" | "mail" | "lock" | "eye" | "eye-off" | "info" | "alert-circle" | "loader" | "external-link" | "home" | "list" | "chart-pie" | "calendar";
+/** Tabs 항목. 탭 글자와 패널 내용을 한 항목에 묶는다(decisions-r27 2). */
+export type TabItem = {
+    value: string;
+    label: string;
+    content: ReactNode;
+};
 /** Table 열. `end` 는 숫자 열이다 — 머리글과 셀이 `text-end tabular-nums`(decisions-r27 8). */
 export type TableColumn = {
     label: string;
@@ -217,9 +223,22 @@ export type Contracts<P extends Platform> = {
         children: ReactNode;
         className?: string;
     };
+    /**
+     * 탭 목록과 패널(R27, 웹 전용). 데이터 방식이라 항목이 `content` 를 가진다(decisions-r27 2).
+     * `label` 은 탭 목록(`role="tablist"`)의 접근성 이름이고 화면에 보이지 않는다(C-13). 항목의 `label` 이 탭 글자다.
+     * 값은 `string` 이고 비제어 기본은 첫 항목이다. 콜백은 값 하나만 받는다(C-12).
+     */
+    Tabs: {
+        label: string;
+        items: TabItem[];
+        value?: string;
+        defaultValue?: string;
+        onValueChange?: (value: string) => void;
+        className?: string;
+    };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose 는 R27. */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs 는 R27. */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.

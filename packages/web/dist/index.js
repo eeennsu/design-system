@@ -14,10 +14,11 @@ import { Label } from "./label.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
 import { Table } from "./table.js";
+import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Text, Textarea, Tooltip };
+export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `webComponents` 와 같고
@@ -43,5 +44,6 @@ export const components = {
     Table,
     CodeBlock,
     Prose,
+    Tabs,
 };
 //# sourceMappingURL=index.js.map
