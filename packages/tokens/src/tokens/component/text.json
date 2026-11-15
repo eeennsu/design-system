@@ -41,6 +41,22 @@
           "lineHeight": "{primitive.typography.lineHeight.36}",
           "fontWeight": "{primitive.typography.fontWeight.bold}"
         }
+      },
+      "3xl": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.36}",
+          "lineHeight": "{primitive.typography.lineHeight.44}",
+          "fontWeight": "{primitive.typography.fontWeight.bold}"
+        }
+      },
+      "4xl": {
+        "$type": "typography",
+        "$value": {
+          "fontSize": "{primitive.typography.fontSize.48}",
+          "lineHeight": "{primitive.typography.lineHeight.56}",
+          "fontWeight": "{primitive.typography.fontWeight.bold}"
+        }
       }
     }
   }

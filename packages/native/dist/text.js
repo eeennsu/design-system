@@ -17,6 +17,8 @@ export const steps = {
     lg: "text-lg",
     xl: "text-xl",
     "2xl": "text-2xl",
+    "3xl": "text-3xl",
+    "4xl": "text-4xl",
 };
 /**
  * 텍스트. 웹은 `heading` 을 `h1~h3` 엘리먼트로 내지만 RN 에는 제목 엘리먼트가 없어

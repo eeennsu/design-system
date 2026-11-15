@@ -572,6 +572,25 @@ Base UI 1.8.0 `useButton`(`internals/use-button/useButton.js`)은 네이티브 `
 `keyDown` 이 기본 동작을 취소하지 않는 것까지만 본다. Enter 와 Collapsible Space 의 실제 활성화는 `apps/verify-next/e2e/components.spec.ts` 의 Playwright 가
 실제 브라우저에서 증명한다(스펙 알려진 동작 31 이 Enter · Space 를 약속한다).
 
+### F-32. JetBrains Mono 는 OFL 1.1 이고 웹 · Expo 배포처가 둘 다 있다
+
+R28 이 `--font-mono` 를 JetBrains Mono 로 덮기 전에 1차 출처에서 확인했다(2026-11-15, decisions-r28 8).
+
+- **라이선스**: SIL Open Font License 1.1(Copyright 2020 The JetBrains Mono Project Authors).
+  출처 https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/OFL.txt . 레포에 `LICENSE` 파일은 없다(404)
+- **웹**: npm `@fontsource/jetbrains-mono` 5.3.0(license `OFL-1.1`). `400.css` · `600.css` · `700.css` 와
+  `files/jetbrains-mono-latin-{400,600,700}-normal.woff2` 가 있고 CSS 가 `font-family: 'JetBrains Mono'` 를 선언한다 — 토큰 웹 스택의 첫 이름과 같다.
+  가변 글꼴판 `@fontsource-variable/jetbrains-mono` 5.3.0(`OFL-1.1`)도 있다.
+  출처 https://registry.npmjs.org/@fontsource/jetbrains-mono/latest , https://registry.npmjs.org/@fontsource-variable/jetbrains-mono/latest
+- **Expo**: npm `@expo-google-fonts/jetbrains-mono` 0.4.1(license `MIT AND OFL-1.1` — 패키지 코드가 MIT, 글꼴이 OFL).
+  무게별 export 는 `JetBrainsMono_400Regular` · `JetBrainsMono_600SemiBold` · `JetBrainsMono_700Bold`(100~800 과 이탤릭도 있다).
+  출처 https://registry.npmjs.org/@expo-google-fonts/jetbrains-mono/latest
+- **RN 등록 이름**: native 래퍼는 `--font-mono: JetBrainsMono;` 한 이름만 낸다. Expo 패키지의 export 이름으로 등록하면
+  (`useFonts({ JetBrainsMono_400Regular })`) 패밀리 이름이 `JetBrainsMono_400Regular` 가 되어 맞지 않는다. 키를 바꿔
+  `useFonts({ JetBrainsMono: JetBrainsMono_400Regular })` 처럼 `JetBrainsMono` 로 등록한다. 600 · 700 을 같은 이름 아래 무게별로
+  등록하는 방법은 Expo SDK 문서를 따른다 — **확인하지 않았다**(N-18 의 Pretendard 와 같은 단서다)
+- DS 는 어떤 글꼴 패키지에도 의존하지 않는다(C-7b). 위 패키지는 `font-mono` 를 쓰는 소비 앱이 고른다
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)

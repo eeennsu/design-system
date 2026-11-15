@@ -17,6 +17,21 @@
           "$extensions": {
             "ds.native": "Pretendard"
           }
+        },
+        "mono": {
+          "$type": "fontFamily",
+          "$value": [
+            "JetBrains Mono",
+            "ui-monospace",
+            "SFMono-Regular",
+            "Menlo",
+            "Consolas",
+            "monospace"
+          ],
+          "$description": "R28 DS 소유 고정폭 글꼴(OFL 1.1, 구현 노트 F-32). 로딩은 font-mono 를 쓰는 소비 앱 책임. 웹은 로딩하지 않으면 뒤의 시스템 고정폭 목록으로 떨어진다.",
+          "$extensions": {
+            "ds.native": "JetBrainsMono"
+          }
         }
       },
       "fontSize": {
@@ -39,6 +54,14 @@
         "28": {
           "$type": "dimension",
           "$value": "28px"
+        },
+        "36": {
+          "$type": "dimension",
+          "$value": "36px"
+        },
+        "48": {
+          "$type": "dimension",
+          "$value": "48px"
         }
       },
       "lineHeight": {
@@ -61,6 +84,14 @@
         "36": {
           "$type": "dimension",
           "$value": "36px"
+        },
+        "44": {
+          "$type": "dimension",
+          "$value": "44px"
+        },
+        "56": {
+          "$type": "dimension",
+          "$value": "56px"
         }
       },
       "fontWeight": {

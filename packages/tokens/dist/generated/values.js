@@ -11,7 +11,13 @@ export const spacing = {
     "12": "48px",
     "16": "64px",
     "20": "80px",
-    "24": "96px"
+    "24": "96px",
+    "32": "128px",
+    "40": "160px",
+    "48": "192px",
+    "64": "256px",
+    "80": "320px",
+    "96": "384px"
 };
 /** 모서리 반경 스케일. */
 export const radius = {
@@ -53,6 +59,16 @@ export const text = {
         "fontSize": "28px",
         "lineHeight": "36px",
         "fontWeight": 700
+    },
+    "3xl": {
+        "fontSize": "36px",
+        "lineHeight": "44px",
+        "fontWeight": 700
+    },
+    "4xl": {
+        "fontSize": "48px",
+        "lineHeight": "56px",
+        "fontWeight": 700
     }
 };
 /** 폰트 패밀리. 폰트 파일은 동봉하지 않는다 — 로딩은 소비 프로젝트 책임(C-7b, AC-6c). */
@@ -60,6 +76,10 @@ export const fontFamily = {
     "sans": {
         "web": "\"Pretendard Variable\", Pretendard, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
         "native": "Pretendard"
+    },
+    "mono": {
+        "web": "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "native": "JetBrainsMono"
     }
 };
 /**
@@ -101,7 +121,13 @@ export const twMergeConfig = {
         "12",
         "16",
         "20",
-        "24"
+        "24",
+        "32",
+        "40",
+        "48",
+        "64",
+        "80",
+        "96"
     ],
     "radius": [
         "sm",
@@ -120,7 +146,14 @@ export const twMergeConfig = {
         "md",
         "lg",
         "xl",
-        "2xl"
+        "2xl",
+        "3xl",
+        "4xl"
+    ],
+    "font-weight": [
+        "normal",
+        "semibold",
+        "bold"
     ]
 };
 /** @theme inline 색 키 → :root 변수 이름. C-5b 공개 계약의 실체다. */

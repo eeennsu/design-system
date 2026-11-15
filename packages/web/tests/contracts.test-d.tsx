@@ -41,11 +41,17 @@ describe("AC-9 · AC-10 전역 축", () => {
     expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger">();
   });
 
-  it("Size 는 5단이고 컨트롤은 부분집합이다", () => {
-    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl">();
+  it("Size 는 7단(R28)이고 컨트롤은 부분집합이다", () => {
+    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl">();
     expectTypeOf<ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
     expectTypeOf<Contracts<"web">["Button"]["size"]>().toEqualTypeOf<ControlSize | undefined>();
     expectTypeOf<Contracts<"web">["Text"]["size"]>().toEqualTypeOf<Size | undefined>();
+  });
+
+  it("Text 는 R28 스텝 4xl 까지 받고 그 밖은 거부한다", () => {
+    assertType(<Text size="4xl">큰 제목</Text>);
+    // @ts-expect-error 7단 밖의 스텝
+    assertType(<Text size="5xl">큰 제목</Text>);
   });
 
   it("Badge 는 variant · size 의 부분집합만 받는다", () => {

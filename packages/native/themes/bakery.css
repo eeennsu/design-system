@@ -35,11 +35,14 @@
   --text-lg--line-height: 1.4444444444444444;
   --text-xl--line-height: 1.3636363636363635;
   --text-2xl--line-height: 1.2857142857142858;
+  --text-3xl--line-height: 1.2222222222222223;
+  --text-4xl--line-height: 1.1666666666666667;
 }
 
-/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */
+/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26 · R28). */
 @theme {
   --font-sans: Pretendard;
+  --font-mono: JetBrainsMono;
 }
 
 /* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */

@@ -39,6 +39,15 @@ describe("설정이 빌드 산출물에서 나온다", () => {
     ]);
   });
 
+  it("spacing 16키 + 영점 · text 7키 · 굵기 3키다 (R28)", () => {
+    expect(twMergeConfig.spacing).toEqual([
+      "0", "1", "2", "3", "4", "6", "8", "12", "16", "20", "24", "32", "40", "48", "64", "80", "96",
+    ]);
+    expect(twMergeConfig.text).toEqual(["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"]);
+    // tailwind-merge 3 의 theme 키 이름은 `font-weight` 다(DefaultThemeGroupIds).
+    expect(twMergeConfig["font-weight"]).toEqual(["normal", "semibold", "bold"]);
+  });
+
   it("색 키와 text 크기 키가 겹치지 않는다 (C-6)", () => {
     const overlap = twMergeConfig.color.filter((key) => twMergeConfig.text.includes(key));
     expect(overlap).toEqual([]);
@@ -77,6 +86,17 @@ describe("병합 규칙", () => {
     expect(cn("rounded-md", "rounded-2xl")).toBe("rounded-md rounded-2xl");
     // xl 은 R26 에서 DS 키가 됐다 — 같은 그룹이라 뒤가 이긴다
     expect(cn("rounded-md", "rounded-xl")).toBe("rounded-xl");
+  });
+
+  it("R28 굵기 · 간격 · 큰 제목 키가 같은 그룹으로 병합된다", () => {
+    expect(cn("font-normal", "font-bold")).toBe("font-bold");
+    expect(cn("h-64", "h-96")).toBe("h-96");
+    expect(cn("mt-4", "mt-5")).toBe("mt-4 mt-5");
+    expect(cn("text-md", "text-4xl")).toBe("text-4xl");
+  });
+
+  it("미등록 굵기 키는 DS 굵기를 밀어내지 않는다 (font-medium 은 무효, C-6 R28)", () => {
+    expect(cn("font-semibold", "font-medium")).toBe("font-semibold font-medium");
   });
 
   it("알려진 동작: text-base 는 tailwind-merge 에 하드코딩돼 DS 크기를 밀어낸다 (§9 S-18)", () => {

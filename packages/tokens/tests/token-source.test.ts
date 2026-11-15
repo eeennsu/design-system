@@ -147,6 +147,14 @@ describe("AC-6c fontFamily 토큰", () => {
     expect((token["$extensions"] as Json)["ds.native"]).toBe("Pretendard");
   });
 
+  it("fontFamily.mono 가 JetBrains Mono 웹 스택과 RN 이름을 갖는다 (C-7b R28)", () => {
+    const node = getNode(source.primitive, "primitive.typography.fontFamily.mono");
+    expect(isToken(node)).toBe(true);
+    const token = node as Json;
+    expect(token["$value"]).toEqual(["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]);
+    expect((token["$extensions"] as Json)["ds.native"]).toBe("JetBrainsMono");
+  });
+
   it("레포 패키지에 폰트 파일이 없다 (로딩은 소비 프로젝트 책임)", () => {
     const fontExtensions = [".woff", ".woff2", ".ttf", ".otf", ".eot"];
     const found: string[] = [];
@@ -164,6 +172,19 @@ describe("AC-6c fontFamily 토큰", () => {
 });
 
 describe("component 계층 인벤토리", () => {
+  it("text 스텝이 7단이다 (C-7b R28)", () => {
+    const root = getNode(loadDir(join(tokensDir, "component")), "component.text");
+    expect(Object.keys(root as Json).filter((key) => !key.startsWith("$"))).toEqual([
+      "sm",
+      "md",
+      "lg",
+      "xl",
+      "2xl",
+      "3xl",
+      "4xl",
+    ]);
+  });
+
   it("plan §3.8 의 10개 컴포넌트와 Chip(구현 노트 N-17) · Table · CodeBlock · Tabs · Collapsible(R27)이 있다", () => {
     const root = getNode(loadDir(join(tokensDir, "component")), "component");
     expect(Object.keys(root as Json).sort()).toEqual([
