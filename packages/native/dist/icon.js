@@ -97,6 +97,10 @@ const tones = {
     default: "text-fg",
     muted: "text-fg-muted",
     danger: "text-fg-danger",
+    brand: "text-fg-brand",
+    success: "text-fg-success",
+    warning: "text-fg-warning",
+    info: "text-fg-info",
 };
 /**
  * 공개 Icon 의 뼈대. className 이 푼 style(여백 · 배치 · 변형 · 투명도)은 이 View 가 한 번만 받고,

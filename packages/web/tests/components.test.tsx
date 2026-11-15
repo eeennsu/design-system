@@ -423,6 +423,24 @@ describe("AC-11 병합 — 소비자 className 이 이긴다", () => {
   });
 });
 
+describe("R28 tone", () => {
+  it.each([
+    ["brand", "text-fg-brand"],
+    ["success", "text-fg-success"],
+    ["warning", "text-fg-warning"],
+    ["info", "text-fg-info"],
+  ] as const)("Text · Icon tone=%s 가 %s 클래스를 갖는다", (tone, cls) => {
+    render(
+      <>
+        <Text tone={tone}>글</Text>
+        <Icon name="info" tone={tone} label="아이콘" />
+      </>,
+    );
+    expect(screen.getByText("글")).toHaveClass(cls);
+    expect(screen.getByLabelText("아이콘")).toHaveClass(cls);
+  });
+});
+
 describe("R27 Table", () => {
   const columns = [{ label: "이름" }, { label: "금액", align: "end" as const }];
   const rows = [{ cells: ["커피", "4,500"] }, { cells: [<code key="c">tea</code>, "3,000"] }];

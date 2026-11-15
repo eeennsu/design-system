@@ -100,6 +100,10 @@ const tones: Record<Tone, string> = {
   default: "text-fg",
   muted: "text-fg-muted",
   danger: "text-fg-danger",
+  brand: "text-fg-brand",
+  success: "text-fg-success",
+  warning: "text-fg-warning",
+  info: "text-fg-info",
 };
 
 /**

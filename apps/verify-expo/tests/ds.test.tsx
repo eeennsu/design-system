@@ -23,6 +23,7 @@ const APP_BRAND_DARK = "#5bbe62";
 /** 재선언하지 않은 값 — DS 기본을 그대로 따라야 한다(AC-26 격리). */
 const DS_DANGER_LIGHT = "#e7000b";
 const DS_FG_LIGHT = "#101828";
+const DS_WARNING_LIGHT = "#973c00"; // amber-800 (R28, 아래 실행으로 확정)
 const DS_SURFACE_LIGHT = "#fff";
 const DS_SURFACE_DARK = "#18181b"; // zinc-900 (R26)
 const DS_SURFACE_MUTED_LIGHT = "#e5e7eb"; // gray-200 (R26 채움 톤)
@@ -143,6 +144,11 @@ describe("AC-11 RN절 · AC-25 className 병합", () => {
       fontWeight: 700,
       color: DS_FG_LIGHT,
     });
+  });
+
+  test("Text tone=warning 이 fg.warning 색이다(R28)", async () => {
+    await mount(<Text tone="warning">주의</Text>);
+    expect(rootStyle()).toMatchObject({ color: DS_WARNING_LIGHT });
   });
 });
 

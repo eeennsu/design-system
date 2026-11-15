@@ -5,6 +5,10 @@ const tones = {
     default: "text-fg",
     muted: "text-fg-muted",
     danger: "text-fg-danger",
+    brand: "text-fg-brand",
+    success: "text-fg-success",
+    warning: "text-fg-warning",
+    info: "text-fg-info",
 };
 /** 스텝 하나가 크기·행간·무게를 함께 바꾼다(C-6 복합 폰트 변수). */
 const steps = {

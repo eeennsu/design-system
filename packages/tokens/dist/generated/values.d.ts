@@ -105,14 +105,23 @@ export declare const semanticVariables: {
     readonly danger: "--bg-danger";
     readonly "danger-hover": "--bg-danger-hover";
     readonly overlay: "--bg-overlay";
+    readonly "brand-subtle": "--bg-brand-subtle";
+    readonly "success-subtle": "--bg-success-subtle";
+    readonly "warning-subtle": "--bg-warning-subtle";
+    readonly "info-subtle": "--bg-info-subtle";
+    readonly "danger-subtle": "--bg-danger-subtle";
     readonly fg: "--fg-default";
     readonly "fg-muted": "--fg-muted";
     readonly "fg-brand": "--fg-brand";
     readonly "fg-danger": "--fg-danger";
+    readonly "fg-success": "--fg-success";
+    readonly "fg-warning": "--fg-warning";
+    readonly "fg-info": "--fg-info";
     readonly "fg-on-brand": "--fg-on-brand";
     readonly "fg-on-danger": "--fg-on-danger";
     readonly border: "--border-default";
     readonly "border-focus": "--border-focus";
+    readonly "border-surface": "--border-surface";
 };
 /**
  * component 계층 recipe. 값은 스케일 키이며 클래스 조립은 컴포넌트 구현이 한다

@@ -130,9 +130,9 @@ describe("AC-1 단일 소스와 참조 해석", () => {
     expect(signature("bakery")).toEqual(signature("base"));
   });
 
-  it("semantic 색은 그룹 3개 · 17개다 (R26 fg.brand)", () => {
+  it("semantic 색은 그룹 3개 · 26개다 (R28 상태색)", () => {
     const entries = semanticEntries(source, "base", "light");
-    expect(entries).toHaveLength(17);
+    expect(entries).toHaveLength(26);
     expect([...new Set(entries.map((entry) => entry.group))]).toEqual([...SEMANTIC_GROUPS]);
   });
 });

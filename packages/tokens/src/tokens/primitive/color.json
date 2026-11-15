@@ -1,5 +1,5 @@
 {
-  "$description": "primitive 색 램프. Tailwind CSS v4.3.3 기본 팔레트 복사본(gray · blue · red · amber · zinc)에 DS 반 단계(gray-550 · blue-550 · blue-650, R26)를 더했다. 전 브랜드 공유이며 이름 안정성을 보장하지 않는다(알려진 동작 13).",
+  "$description": "primitive 색 램프. Tailwind CSS v4.3.3 기본 팔레트 복사본(gray · blue · red · amber · zinc · green · orange · sky(R28))에 DS 반 단계(gray-550 · blue-550 · blue-650, R26)를 더했다. 전 브랜드 공유이며 이름 안정성을 보장하지 않는다(알려진 동작 13).",
   "primitive": {
     "color": {
       "gray": {
@@ -243,6 +243,49 @@
           "$type": "color",
           "$value": "oklch(14.1% 0.005 285.823)"
         }
+      },
+      "green": {
+        "50": { "$type": "color", "$value": "oklch(98.2% 0.018 155.826)" },
+        "100": { "$type": "color", "$value": "oklch(96.2% 0.044 156.743)" },
+        "200": { "$type": "color", "$value": "oklch(92.5% 0.084 155.995)" },
+        "300": { "$type": "color", "$value": "oklch(87.1% 0.15 154.449)" },
+        "400": { "$type": "color", "$value": "oklch(79.2% 0.209 151.711)" },
+        "500": { "$type": "color", "$value": "oklch(72.3% 0.219 149.579)" },
+        "600": { "$type": "color", "$value": "oklch(62.7% 0.194 149.214)" },
+        "700": { "$type": "color", "$value": "oklch(52.7% 0.154 150.069)" },
+        "800": { "$type": "color", "$value": "oklch(44.8% 0.119 151.328)" },
+        "900": { "$type": "color", "$value": "oklch(39.3% 0.095 152.535)" },
+        "950": { "$type": "color", "$value": "oklch(26.6% 0.065 152.934)" }
+      },
+      "orange": {
+        "50": { "$type": "color", "$value": "oklch(98% 0.016 73.684)" },
+        "100": { "$type": "color", "$value": "oklch(95.4% 0.038 75.164)" },
+        "200": { "$type": "color", "$value": "oklch(90.1% 0.076 70.697)" },
+        "300": { "$type": "color", "$value": "oklch(83.7% 0.128 66.29)" },
+        "400": { "$type": "color", "$value": "oklch(75% 0.183 55.934)" },
+        "500": { "$type": "color", "$value": "oklch(70.5% 0.213 47.604)" },
+        "600": { "$type": "color", "$value": "oklch(64.6% 0.222 41.116)" },
+        "700": { "$type": "color", "$value": "oklch(55.3% 0.195 38.402)" },
+        "800": { "$type": "color", "$value": "oklch(47% 0.157 37.304)" },
+        "900": { "$type": "color", "$value": "oklch(40.8% 0.123 38.172)" },
+        "950": { "$type": "color", "$value": "oklch(26.6% 0.079 36.259)" }
+      },
+      "sky": {
+        "50": { "$type": "color", "$value": "oklch(97.7% 0.013 236.62)" },
+        "100": { "$type": "color", "$value": "oklch(95.1% 0.026 236.824)" },
+        "200": { "$type": "color", "$value": "oklch(90.1% 0.058 230.902)" },
+        "300": { "$type": "color", "$value": "oklch(82.8% 0.111 230.318)" },
+        "400": { "$type": "color", "$value": "oklch(74.6% 0.16 232.661)" },
+        "500": { "$type": "color", "$value": "oklch(68.5% 0.169 237.323)" },
+        "600": { "$type": "color", "$value": "oklch(58.8% 0.158 241.966)" },
+        "700": { "$type": "color", "$value": "oklch(50% 0.134 242.749)" },
+        "800": { "$type": "color", "$value": "oklch(44.3% 0.11 240.79)" },
+        "900": { "$type": "color", "$value": "oklch(39.1% 0.09 240.876)" },
+        "950": { "$type": "color", "$value": "oklch(29.3% 0.066 243.157)" }
+      },
+      "transparent": {
+        "$type": "color",
+        "$value": "oklch(0% 0 0 / 0)"
       },
       "white": {
         "$type": "color",

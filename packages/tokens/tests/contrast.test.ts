@@ -57,6 +57,19 @@ const textPairs = (s: Scheme): [string, string, string][] => [
   ["fg.brand / bg.surface (R26)", s.fg.brand, s.bg.surface],
   ["fg.danger / bg.canvas", s.fg.danger, s.bg.canvas],
   ["fg.danger / bg.surface", s.fg.danger, s.bg.surface],
+  // R28 상태색 (decisions-r28 12)
+  ...(["success", "warning", "info"] as const).flatMap((tone): [string, string, string][] => [
+    [`fg.${tone} / bg.canvas`, s.fg[tone], s.bg.canvas],
+    [`fg.${tone} / bg.surface`, s.fg[tone], s.bg.surface],
+    [`fg.${tone} / bg.${tone}-subtle`, s.fg[tone], s.bg[`${tone}-subtle`]],
+  ]),
+  ["fg.brand / bg.brand-subtle", s.fg.brand, s.bg["brand-subtle"]],
+  ["fg.danger / bg.danger-subtle", s.fg.danger, s.bg["danger-subtle"]],
+  ...(["brand", "success", "warning", "info", "danger"] as const).map((tone): [string, string, string] => [
+    `fg.default / bg.${tone}-subtle`,
+    s.fg.default,
+    s.bg[`${tone}-subtle`],
+  ]),
   ["fg.on-brand / bg.brand", s.fg["on-brand"], s.bg.brand],
   ["fg.on-brand / bg.brand-hover", s.fg["on-brand"], s.bg["brand-hover"]],
   ["fg.on-danger / bg.danger", s.fg["on-danger"], s.bg.danger],

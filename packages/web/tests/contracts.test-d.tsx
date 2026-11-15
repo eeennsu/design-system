@@ -36,9 +36,9 @@ describe("C-17 맵 동등성", () => {
 });
 
 describe("AC-9 · AC-10 전역 축", () => {
-  it("variant 4개 · tone 3개가 전역 집합이다", () => {
+  it("variant 4개 · tone 7개(R28)가 전역 집합이다", () => {
     expectTypeOf<Variant>().toEqualTypeOf<"primary" | "secondary" | "ghost" | "danger">();
-    expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger">();
+    expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger" | "brand" | "success" | "warning" | "info">();
   });
 
   it("Size 는 7단(R28)이고 컨트롤은 부분집합이다", () => {
