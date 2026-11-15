@@ -236,3 +236,70 @@ describe("(9) 테스트 환경 className 해석 — 통과(컴포넌트 출처 �
     expect(props.className).toBe("bg-brand");
   });
 });
+
+/*
+ * R28 착수 게이트 (스펙 C-19 (R28), plan R28 Task 3). native R28 구현 전에 잰다.
+ * 판정과 측정값은 docs/gate-c19.md "R28 착수 게이트" 절에 있다.
+ *
+ * native dist 가 아직 쓰지 않는 클래스(h-64 · max-h-96 · font-* 등)는 소비자 소스가
+ * 쓴 것과 같은 조건이 되도록 `@source inline(…)` 으로 생성시킨다(게이트 (2) 의 dark: 와 같은 방식).
+ */
+const R28_SOURCE = `@source inline("rounded-md h-64 max-h-96 text-md text-lg text-4xl font-normal font-bold font-mono");`;
+
+async function r28View(className: string, extraCss = "") {
+  await cleanup();
+  registerCSS(await compileGlobalCss(`${R28_SOURCE}\n${extraCss}`));
+  setColorScheme(null);
+  await render(<View testID="probe" className={className} />);
+  return screen.getByTestId("probe");
+}
+
+async function r28Text(className: string) {
+  await cleanup();
+  registerCSS(await compileGlobalCss(R28_SOURCE));
+  setColorScheme(null);
+  await render(
+    <Text testID="probe" className={className}>
+      x
+    </Text>,
+  );
+  return screen.getByTestId("probe");
+}
+
+describe("R28 게이트 (1) :root radius 재선언 — C-5c RN", () => {
+  test("DS import 뒤 :root { --radius-md: 2px } 가 rounded-md 를 2 로 바꾼다", async () => {
+    const probe = await r28View("rounded-md", ":root { --radius-md: 2px; }");
+    expect(probe).toHaveStyle({ borderRadius: 2 });
+  });
+
+  test("대조군 — 재선언 없이 rounded-md 는 12", async () => {
+    expect(await r28View("rounded-md")).toHaveStyle({ borderRadius: 12 });
+  });
+});
+
+// plan Task 3 은 fontWeight 를 문자열("400")로 적었지만 react-native-css 3.0.7 은 숫자를 낸다(게이트 (5) 와 같다).
+describe("R28 게이트 (2) 유틸리티 굵기가 스텝 굵기를 이긴다", () => {
+  test.each(["text-lg font-normal", "font-normal text-lg"])("%s → 400", async (className) => {
+    expect(await r28Text(className)).toHaveStyle({ fontWeight: 400 });
+  });
+
+  test.each(["text-md font-bold", "font-bold text-md"])("%s → 700", async (className) => {
+    expect(await r28Text(className)).toHaveStyle({ fontWeight: 700 });
+  });
+});
+
+describe("R28 게이트 (3) font-mono 는 래퍼의 한 이름", () => {
+  test("font-mono → fontFamily JetBrainsMono", async () => {
+    expect(await r28Text("font-mono")).toHaveStyle({ fontFamily: "JetBrainsMono" });
+  });
+});
+
+describe("R28 게이트 (4) 새 간격 키 · 새 타이포 스텝", () => {
+  test("h-64 max-h-96 → height 256 · maxHeight 384", async () => {
+    expect(await r28View("h-64 max-h-96")).toHaveStyle({ height: 256, maxHeight: 384 });
+  });
+
+  test("text-4xl → fontSize 48 · lineHeight 56(배수 line-height)", async () => {
+    expect(await r28Text("text-4xl")).toHaveStyle({ fontSize: 48, lineHeight: 56 });
+  });
+});

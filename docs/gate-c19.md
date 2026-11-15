@@ -307,3 +307,26 @@ Metro 빌드에서는 `withNativewind` 의 `globalClassNamePolyfill: true` 가 `
 | 다크 | ![web dark](assets/ac23-web-dark.png) | ![rn dark](assets/ac23-rn-dark.png) |
 
 브랜드 초록(소비자 재선언) · danger 빨강(DS 기본) · 카드 표면과 테두리 · 입력 높이 · 요소 순서가 같고, `mt-6` 를 준 "변경" 버튼만 양쪽에서 같은 만큼 내려간다. 차이는 두 가지다 — RN 은 placeholder 색이 플랫폼 기본이고(N-13), 웹은 `Label` 컴포넌트를 쓰지만 RN v1 에는 Label 이 없어 `Text` 로 대신했다(AC-20 의 5개에 Label 이 없다)
+
+## R28 착수 게이트 (2026-11-15)
+
+스펙 C-19 (R28), plan R28 Task 3. native R28 구현(Task 4 · 9 · 10 · 12) 전에 verify-expo 에서 쟀다. 판정 수단은 기존 게이트와 같다 — `compileGlobalCss(extraCss)` 로 래퍼 한 줄 CSS 를 컴파일해 `registerCSS` 하고 `react-native-css/components` 의 `View` · `Text` 를 jest(jest-expo + RNTL 14)에서 렌더해 `toHaveStyle` 로 본다. 테스트는 `apps/verify-expo/tests/gate.test.tsx` 의 `describe("R28 게이트 …")` 넷(9건)이다.
+
+- 버전: nativewind 5.0.0-preview.4 · react-native-css 3.0.7 · Expo SDK 57(RN 0.86.3). 기존 게이트와 같다
+- native dist 가 아직 쓰지 않는 클래스(`h-64` · `max-h-96` · `font-normal` · `font-bold` · `font-mono`)가 있어 컴파일에 `@source inline("rounded-md h-64 max-h-96 text-md text-lg text-4xl font-normal font-bold font-mono")` 를 더했다. 소비자 소스가 그 클래스를 쓴 것과 같은 조건이다(게이트 (2) 의 `dark:` 와 같은 방식)
+- **기기 확인은 하지 않았다.** jest 측정만이다
+- 우회는 없다 — native 래퍼 · 생성물 무변경
+
+| 항목 | 판정 | 측정값 |
+|---|---|---|
+| (1) `:root { --radius-md: 2px; }` 재선언 → `rounded-md` | **통과** | `borderRadius: 2`. 대조군(재선언 없음) `12` |
+| (2) 유틸리티 굵기가 스텝 굵기를 이긴다(순서 무관) | **통과** | `text-lg font-normal` · `font-normal text-lg` → `fontWeight: 400`(`fontSize 18` · `lineHeight 26`). `text-md font-bold` · `font-bold text-md` → `fontWeight: 700`(`fontSize 16` · `lineHeight 24`). 대조군 `text-lg` 단독 `600`, `text-md` 단독 `400` |
+| (3) `font-mono` → 래퍼의 한 이름 | **통과** | `fontFamily: "JetBrainsMono"` |
+| (4) 새 간격 키 · 새 타이포 스텝 | **통과** | `h-64 max-h-96` → `height 256` · `maxHeight 384`. `text-4xl` → `fontSize 48` · `lineHeight 56` · `fontWeight 700`(배수 line-height `1.1666…` 가 기존 스텝과 같은 식으로 나온다) |
+
+- (1) 은 런타임 해석이다 — 컴파일 결과가 `.rounded-md { border-radius: var(--radius-md) }` 라 값이 빌드 때 박히지 않고 `:root` 재선언을 따른다. C-5c RN 은 웹과 같은 통로로 열린다
+- (2) 가 순서와 무관한 이유: `.font-normal` · `.font-bold` 가 `font-weight` 와 함께 `--tw-font-weight` 를 내고, `.text-<step>` 은 `font-weight: var(--tw-font-weight, var(--text-<step>--font-weight))` 라 유틸리티 쪽 변수가 있으면 그것을 쓴다
+- plan Task 3 은 `fontWeight` 를 문자열(`"400"` · `"700"`)로 적었지만 react-native-css 3.0.7 은 숫자(`400` · `700`)를 낸다. 동작 실패가 아니라 값 타입 표기 차이라 단언을 숫자로 썼다(기존 게이트 (5) · `ds.test.tsx` 도 숫자로 단언한다)
+- verify-expo 테스트 51 → 60
+
+native R28 태스크 착수 조건은 없다.
