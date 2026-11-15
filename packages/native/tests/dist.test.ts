@@ -41,6 +41,15 @@ describe.skipIf(!built)("dist 검사", () => {
     expect(icon).toMatch(/from "lucide-react-native\/icons\/check";/);
   });
 
+  it("R28 컴포넌트는 react-native-css/components 출처를 쓴다 — react-native 직접 출처면 className 이 풀리지 않는다(F-11)", () => {
+    for (const file of ["link.js", "callout.js"]) {
+      expect(existsSync(join(dist, file)), file).toBe(true);
+      const source = readFileSync(join(dist, file), "utf8");
+      expect(source, file).toMatch(/from "react-native-css\/components";/);
+      expect(source, file).not.toMatch(/import \{[^}]*\b(View|Text|Pressable)\b[^}]*\} from "react-native";/);
+    }
+  });
+
   it('"use client" 를 쓰지 않는다 — RN 에는 서버 컴포넌트 경계가 없다', () => {
     for (const file of readdirSync(dist).filter((name) => name.endsWith(".js"))) {
       expect(readFileSync(join(dist, file), "utf8"), file).not.toContain('"use client"');

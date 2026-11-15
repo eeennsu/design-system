@@ -8,7 +8,7 @@
  * DS 컴포넌트에는 `testID` prop 이 없다(AC-11a: 스프레드 없음). 그래서 조회는
  * 접근성 이름·텍스트·렌더 트리로 한다 — 소비자가 실제로 쓸 수 있는 것과 같은 경로다.
  */
-import { Badge, Box, Button, Card, Chip, Icon, Input, Label, Stack, Text, Textarea } from "@eeennsu/native";
+import { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Text, Textarea } from "@eeennsu/native";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
@@ -37,6 +37,12 @@ const DS_BORDER_SURFACE = "#0000";
 const DS_RADIUS_XL = 20;
 /** base 라이트 fg.warning — amber-800 의 jest 환산값(F-15). R28 상태색 */
 const DS_FG_WARNING_LIGHT = "#973c00";
+/** base 라이트 fg.brand — blue 계열의 jest 환산값(F-15). 앱은 bg.brand 만 재선언해 이 값은 DS 기본이다. R28 Link */
+const DS_FG_BRAND_LIGHT = "#1b64da";
+/** base 라이트 fg.danger — red-700 의 jest 환산값(F-15). R28 Callout 제목 */
+const DS_FG_DANGER_LIGHT = "#c10007";
+/** base 라이트 bg.info-subtle — sky-50 의 jest 환산값(F-15). R28 Callout 채움 */
+const DS_BG_INFO_SUBTLE_LIGHT = "#f0f9ff";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -438,5 +444,81 @@ describe("R28 표면 경계선 · Badge Chip 모서리", () => {
   test("Badge 모서리는 radius xl(20)이다", async () => {
     await mount(<Badge>신규</Badge>);
     expect(rootStyle()).toMatchObject({ borderRadius: DS_RADIUS_XL });
+  });
+});
+
+describe("R28 Link", () => {
+  test("accessibilityRole link 이고 label 이 이름이자 보이는 글이다", async () => {
+    await mount(<Link label="다음 단계" onPress={() => {}} />);
+    expect(screen.getByRole("link", { name: "다음 단계" })).toBeTruthy();
+    expect(screen.getByText("다음 단계")).toBeTruthy();
+  });
+
+  test("누르면 onPress 가 인자 없이 한 번 불린다", async () => {
+    const onPress = jest.fn();
+    await mount(<Link label="다음" onPress={onPress} />);
+    await fireEvent.press(screen.getByRole("link", { name: "다음" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onPress).toHaveBeenCalledWith();
+  });
+
+  test("기본 tone · size 는 brand · md 이고 글자가 Pretendard 다", async () => {
+    await mount(<Link label="다음" onPress={() => {}} />);
+    expect(screen.getByText("다음").props.style).toMatchObject({
+      fontFamily: "Pretendard",
+      fontSize: 16,
+      lineHeight: 24,
+      color: DS_FG_BRAND_LIGHT,
+    });
+  });
+
+  test("className 은 표면(Pressable)에 붙고, 기본으로 부모 폭으로 늘지 않으며 누르는 동안 투명도가 내려간다", async () => {
+    await mount(<Link label="다음" tone="muted" size="sm" onPress={() => {}} className="mt-6" />);
+    const link = screen.getByRole("link", { name: "다음" });
+    expect(link.props.style).toMatchObject({ alignSelf: "flex-start", marginTop: 24 });
+    expect(screen.getByText("다음").props.style).toMatchObject({ fontSize: 14, color: DS_FG_MUTED_LIGHT });
+    await fireEvent(link, "pressIn");
+    expect(screen.getByRole("link", { name: "다음" }).props.style).toMatchObject({ opacity: 0.8 });
+  });
+});
+
+describe("R28 Callout", () => {
+  test("기본 tone 은 info 채움이고 테두리가 없다", async () => {
+    await mount(
+      <Callout>
+        <Text>본문</Text>
+      </Callout>,
+    );
+    const style = rootStyle();
+    expect(style).toMatchObject({ backgroundColor: DS_BG_INFO_SUBTLE_LIGHT, padding: 16, flexDirection: "row" });
+    expect(style.borderWidth ?? 0).toBe(0);
+    expect(style.borderLeftWidth ?? 0).toBe(0);
+    expect(screen.getByText("본문")).toBeTruthy();
+  });
+
+  test("제목은 tone 의 fg 색 · semibold 이고 아이콘은 꾸밈이라 숨는다", async () => {
+    await mount(
+      <Callout tone="danger" title="주의" icon="alert-circle">
+        <Text>되돌릴 수 없다</Text>
+      </Callout>,
+    );
+    expect(screen.getByText("주의").props.style).toMatchObject({
+      fontFamily: "Pretendard",
+      fontSize: 16,
+      fontWeight: 600,
+      color: DS_FG_DANGER_LIGHT,
+    });
+    expect(screen.queryByRole("image")).toBeNull();
+    expect(JSON.stringify(screen.toJSON())).toContain(`"stroke":"${DS_FG_DANGER_LIGHT}"`);
+  });
+
+  test("title · icon 이 없으면 children 만 그린다", async () => {
+    await mount(
+      <Callout tone="success">
+        <Text>저장했다</Text>
+      </Callout>,
+    );
+    expect(JSON.stringify(screen.toJSON())).not.toContain("RNSVGSvgView");
+    expect(screen.getAllByText(/./)).toHaveLength(1);
   });
 });
