@@ -28,8 +28,8 @@ export const Chip: FC<ChipProps> = ({ label, selected = false, disabled = false,
     // 계약은 `() => void` 다. 누름 이벤트 객체를 넘기지 않는다.
     onPress={onPress && (() => onPress())}
     className={cn(
-      "flex-row items-center justify-center border px-4 py-2 rounded-full min-w-12",
-      selected ? "border-brand bg-brand hover:bg-brand-hover" : "border-transparent bg-surface-muted hover:bg-surface-hover",
+      "flex-row items-center justify-center border px-4 py-2 rounded-xl min-w-12",
+      selected ? "border-brand bg-brand hover:bg-brand-hover" : "border-border-surface bg-surface-muted hover:bg-surface-hover",
       // 누르는 동안은 색이 아니라 투명도다 — 소비자가 배경을 바꿔도 따라간다(Button 과 같다)
       "active:opacity-80",
       disabled && "opacity-50",

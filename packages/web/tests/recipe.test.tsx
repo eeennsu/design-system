@@ -54,12 +54,20 @@ describe("Badge", () => {
       expect(screen.getByText("표시")).toHaveClass(...expected(component.badge[size]));
     });
   }
+
+  it("모서리 recipe 는 radius xl 이다 (R28)", () => {
+    expect([component.badge.sm.radius, component.badge.md.radius]).toEqual(["xl", "xl"]);
+  });
 });
 
 describe("Chip", () => {
   it("토큰 recipe 와 같다 (N-17)", () => {
     render(<Chip label="식비" />);
     expect(screen.getByRole("button")).toHaveClass(...expected(component.chip));
+  });
+
+  it("모서리 recipe 는 radius xl 이다 (R28)", () => {
+    expect(component.chip.radius).toBe("xl");
   });
 });
 

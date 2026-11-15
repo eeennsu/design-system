@@ -6,13 +6,13 @@
         "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.2}" },
         "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.0}" },
         "text": { "$type": "typography", "$value": "{component.text.sm}" },
-        "radius": { "$type": "dimension", "$value": "{primitive.radius.full}" }
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.xl}" }
       },
       "md": {
         "paddingX": { "$type": "dimension", "$value": "{primitive.spacing.3}" },
         "paddingY": { "$type": "dimension", "$value": "{primitive.spacing.1}" },
         "text": { "$type": "typography", "$value": "{component.text.sm}" },
-        "radius": { "$type": "dimension", "$value": "{primitive.radius.full}" }
+        "radius": { "$type": "dimension", "$value": "{primitive.radius.xl}" }
       }
     }
   }

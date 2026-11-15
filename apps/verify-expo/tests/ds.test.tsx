@@ -31,6 +31,10 @@ const DS_ON_BRAND = "#fff";
 const DS_ON_BRAND_DARK = "#fff";
 const DS_FG_MUTED_LIGHT = "#5a6374"; // gray-550 (R26)
 const DS_FG_MUTED_DARK = "#9f9fa9"; // zinc-400 (R26)
+/** border.surface — base 는 투명 `oklch(0% 0 0 / 0)` 이고 jest 환산값은 4자리 hex 다(F-15). R28 */
+const DS_BORDER_SURFACE = "#0000";
+/** base radius xl. R28 Badge · Chip 모서리 */
+const DS_RADIUS_XL = 20;
 /** base 라이트 fg.warning — amber-800 의 jest 환산값(F-15). R28 상태색 */
 const DS_FG_WARNING_LIGHT = "#973c00";
 
@@ -238,8 +242,8 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     );
     const food = screen.getByRole("button", { name: "식비" });
     expect(food.props.accessibilityState).toMatchObject({ selected: true });
-    // component 토큰 chip: px 4 · py 2 · radius full (높이 38 = 8 + 줄 높이 20 + 8 + 테두리 2)
-    expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: 9999 });
+    // component 토큰 chip: px 4 · py 2 · radius xl(R28) (높이 38 = 8 + 줄 높이 20 + 8 + 테두리 2)
+    expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: DS_RADIUS_XL });
     expect(JSON.stringify(food.props.style)).toMatch(/"padding(Horizontal|Inline|Left)":16/);
     expect(JSON.stringify(food.props.style)).toMatch(/"padding(Vertical|Block|Top)":8/);
     expect(screen.getByText("식비").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });
@@ -392,5 +396,47 @@ describe("R28 tone", () => {
   test("Text tone=warning 이 fg.warning 색이다", async () => {
     await mount(<Text tone="warning">주의</Text>);
     expect(rootStyle()).toMatchObject({ color: DS_FG_WARNING_LIGHT });
+  });
+});
+
+describe("R28 표면 경계선 · Badge Chip 모서리", () => {
+  test("Card 는 1px 테두리를 갖고 색은 border.surface(base 투명)다", async () => {
+    await mount(
+      <Card>
+        <Text>내용</Text>
+      </Card>,
+    );
+    expect(rootStyle()).toMatchObject({ borderWidth: 1, borderColor: DS_BORDER_SURFACE });
+  });
+
+  test("Input · Textarea 의 쉬는 테두리는 border.surface 이고 invalid 의 danger 가 그것을 이긴다(F-28)", async () => {
+    await mount(<Input label="이름" />);
+    expect(screen.getByLabelText("이름").props.style).toMatchObject({ borderColor: DS_BORDER_SURFACE });
+
+    await mount(<Textarea label="메모" />);
+    expect(screen.getByLabelText("메모").props.style).toMatchObject({ borderColor: DS_BORDER_SURFACE });
+
+    await mount(<Input label="이메일" invalid />);
+    expect(screen.getByLabelText("이메일").props.style).toMatchObject({ borderColor: DS_DANGER_LIGHT });
+
+    await mount(<Textarea label="사유" invalid />);
+    expect(screen.getByLabelText("사유").props.style).toMatchObject({ borderColor: DS_DANGER_LIGHT });
+  });
+
+  test("고르지 않은 Chip 테두리는 border.surface, 고른 Chip 은 brand 다", async () => {
+    await mount(<Chip label="배달" />);
+    expect(screen.getByRole("button", { name: "배달" }).props.style).toMatchObject({
+      borderColor: DS_BORDER_SURFACE,
+    });
+
+    await mount(<Chip label="식비" selected />);
+    expect(screen.getByRole("button", { name: "식비" }).props.style).toMatchObject({
+      borderColor: APP_BRAND_LIGHT,
+    });
+  });
+
+  test("Badge 모서리는 radius xl(20)이다", async () => {
+    await mount(<Badge>신규</Badge>);
+    expect(rootStyle()).toMatchObject({ borderRadius: DS_RADIUS_XL });
   });
 });

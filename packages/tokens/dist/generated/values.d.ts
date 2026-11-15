@@ -133,13 +133,13 @@ export declare const component: {
             readonly paddingX: "2";
             readonly paddingY: "0";
             readonly text: "sm";
-            readonly radius: "full";
+            readonly radius: "xl";
         };
         readonly md: {
             readonly paddingX: "3";
             readonly paddingY: "1";
             readonly text: "sm";
-            readonly radius: "full";
+            readonly radius: "xl";
         };
     };
     readonly button: {
@@ -173,7 +173,7 @@ export declare const component: {
         readonly paddingX: "4";
         readonly paddingY: "2";
         readonly text: "sm";
-        readonly radius: "full";
+        readonly radius: "xl";
     };
     readonly codeBlock: {
         readonly padding: "4";

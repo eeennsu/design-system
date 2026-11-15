@@ -101,6 +101,19 @@ describe("AC-7 Text · Label · Badge · Card", () => {
     expect(screen.getByText("이메일").getAttribute("for")).toBe("email");
   });
 
+  it("Badge · Chip 모서리는 rounded-xl 이다 (R28)", () => {
+    render(
+      <Stack>
+        <Badge>신규</Badge>
+        <Chip label="식비" />
+      </Stack>,
+    );
+    expect(screen.getByText("신규")).toHaveClass("rounded-xl");
+    expect(screen.getByText("신규")).not.toHaveClass("rounded-full");
+    expect(screen.getByRole("button", { name: "식비" })).toHaveClass("rounded-xl");
+    expect(screen.getByRole("button", { name: "식비" })).not.toHaveClass("rounded-full");
+  });
+
   it("Badge variant 3개가 각자 semantic 색을 쓴다", () => {
     const { rerender } = render(<Badge variant="primary">신규</Badge>);
     expect(screen.getByText("신규")).toHaveClass("bg-brand", "text-fg-on-brand");
@@ -118,8 +131,9 @@ describe("AC-7 Text · Label · Badge · Card", () => {
     );
     const card = screen.getByText("내용").parentElement;
     expect(card).toHaveClass("bg-surface", "rounded-xl", "p-6");
-    // R26: 테두리 · 그림자 없이 canvas 와의 명도 차이로 구분된다(알려진 동작 24)
-    expect(card).not.toHaveClass("border", "shadow-sm");
+    // R28: 테두리 1px 은 border.surface(base 는 투명)다 — 소비자가 :root 로 선을 켤 수 있다(알려진 동작 24)
+    expect(card).toHaveClass("border", "border-border-surface");
+    expect(card).not.toHaveClass("shadow-sm");
   });
 });
 
@@ -190,7 +204,10 @@ describe("N-17 Chip · Icon", () => {
     expect(screen.getByRole("button", { name: "식비" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "배달" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "식비" })).toHaveClass("bg-brand", "text-fg-on-brand");
-    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface-muted", "border-transparent");
+    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface-muted", "border-border-surface");
+    expect(screen.getByRole("button", { name: "배달" })).not.toHaveClass("border-transparent");
+    expect(screen.getByRole("button", { name: "식비" })).toHaveClass("border-brand");
+    expect(screen.getByRole("button", { name: "식비" })).not.toHaveClass("border-border-surface");
   });
 
   it("Chip onClick 이 인자 없이 호출되고, 상태는 소비자가 바꾼다", () => {
@@ -305,6 +322,25 @@ describe("AC-7 Input · Textarea (C-11 매핑)", () => {
     const input = screen.getByLabelText("이메일");
     expect(input).toHaveClass("border-danger");
     expect(input).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("쉬는 테두리는 border-border-surface 이고 invalid 의 border-danger 가 병합으로 그것을 민다 (R28, F-28)", () => {
+    render(
+      <Stack>
+        <Input label="이름" />
+        <Textarea label="메모" />
+        <Input label="이메일" invalid />
+        <Textarea label="사유" invalid />
+      </Stack>,
+    );
+    for (const name of ["이름", "메모"]) {
+      expect(screen.getByLabelText(name)).toHaveClass("border", "border-border-surface");
+      expect(screen.getByLabelText(name)).not.toHaveClass("border-transparent");
+    }
+    for (const name of ["이메일", "사유"]) {
+      expect(screen.getByLabelText(name)).toHaveClass("border-danger");
+      expect(screen.getByLabelText(name)).not.toHaveClass("border-border-surface");
+    }
   });
 
   it("Textarea size 가 행수 3 / 5 / 8 이다 (plan D-14)", () => {
