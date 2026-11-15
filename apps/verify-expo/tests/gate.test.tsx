@@ -236,3 +236,52 @@ describe("(9) 테스트 환경 className 해석 — 통과(컴포넌트 출처 �
     expect(props.className).toBe("bg-brand");
   });
 });
+
+async function textStyleOf(className: string) {
+  await cleanup();
+  // 탐지 대상 소스가 없어 probe 클래스를 직접 생성시킨다(소비자 소스가 쓴 것과 같다).
+  registerCSS(await compileGlobalCss(`@source inline("${className}");`));
+  setColorScheme(null);
+  await render(<Text testID="probe" className={className} />);
+  return screen.getByTestId("probe").props.style;
+}
+
+describe("R28 게이트 (1) :root 의 --radius-md 재선언 — C-5c RN", () => {
+  test("재선언하면 rounded-md 가 따라간다", async () => {
+    expect(await styleOf("rounded-md", { extraCss: ":root { --radius-md: 2px; }" })).toMatchObject({
+      borderRadius: 2,
+    });
+  });
+
+  test("대조군: 재선언 없으면 12", async () => {
+    expect(await styleOf("rounded-md")).toMatchObject({ borderRadius: 12 });
+  });
+});
+
+describe("R28 게이트 (2) text-* 와 font-* 굵기 합성", () => {
+  // react-native-css 는 fontWeight 를 숫자로 낸다("400" 문자열이 아니다).
+  test.each([
+    ["text-lg font-normal", 400],
+    ["font-normal text-lg", 400],
+    ["text-md font-bold", 700],
+    ["font-bold text-md", 700],
+  ])("%s -> fontWeight %s", async (className, weight) => {
+    expect(await textStyleOf(className)).toMatchObject({ fontWeight: weight });
+  });
+});
+
+describe("R28 게이트 (3) font-mono", () => {
+  test("fontFamily 가 JetBrainsMono", async () => {
+    expect(await textStyleOf("font-mono")).toMatchObject({ fontFamily: "JetBrainsMono" });
+  });
+});
+
+describe("R28 게이트 (4) 큰 간격 · text-4xl", () => {
+  test("h-64 max-h-96", async () => {
+    expect(await styleOf("h-64 max-h-96", { extraCss: `@source inline("h-64 max-h-96");` })).toMatchObject({ height: 256, maxHeight: 384 });
+  });
+
+  test("text-4xl 은 48 / 56", async () => {
+    expect(await textStyleOf("text-4xl")).toMatchObject({ fontSize: 48, lineHeight: 56 });
+  });
+});

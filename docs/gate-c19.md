@@ -307,3 +307,17 @@ Metro 빌드에서는 `withNativewind` 의 `globalClassNamePolyfill: true` 가 `
 | 다크 | ![web dark](assets/ac23-web-dark.png) | ![rn dark](assets/ac23-rn-dark.png) |
 
 브랜드 초록(소비자 재선언) · danger 빨강(DS 기본) · 카드 표면과 테두리 · 입력 높이 · 요소 순서가 같고, `mt-6` 를 준 "변경" 버튼만 양쪽에서 같은 만큼 내려간다. 차이는 두 가지다 — RN 은 placeholder 색이 플랫폼 기본이고(N-13), 웹은 `Label` 컴포넌트를 쓰지만 RN v1 에는 Label 이 없어 `Text` 로 대신했다(AC-20 의 5개에 Label 이 없다)
+
+## R28 착수 게이트 (2026-11-15)
+
+스펙 C-19 (R28) 의 RN 착수 게이트 4항목. native 컴포넌트를 고치는 태스크 전에 `apps/verify-expo/tests/gate.test.tsx` 의 `R28 게이트 (1)~(4)` 로 측정했다. 버전은 nativewind 5.0.0-preview.4 · react-native-css 3.0.7 · Expo SDK 57. **기기 화면 확인은 하지 않았다** — jest-expo 해석값만 본다. 네 항목 모두 통과했고 native 래퍼 우회는 필요 없었다.
+
+| 항목 | 판정 | 측정값 |
+|---|---|---|
+| (1) `:root { --radius-md: 2px; }` 재선언 → `rounded-md` | 통과 | `borderRadius` 2. 재선언 없는 대조군 12 |
+| (2) `text-*` · `font-*` 굵기 합성 | 통과 | `text-lg font-normal` · `font-normal text-lg` → `fontWeight` 400. `text-md font-bold` · 순서 바꾼 것 → 700. 순서와 무관하다 |
+| (3) `font-mono` | 통과 | `fontFamily` `JetBrainsMono` |
+| (4) 큰 간격 · `text-4xl` | 통과 | `h-64 max-h-96` → `height` 256 · `maxHeight` 384. `text-4xl` → `fontSize` 48 · `lineHeight` 56 |
+
+- `fontWeight` 는 문자열 `"400"` 이 아니라 숫자 `400` 으로 나온다. RN 은 둘 다 받으므로 단언을 숫자로 썼다.
+- 게이트 CSS 는 소스 탐지가 꺼져 있어 DS dist 에 없는 클래스는 생성되지 않는다. (2)(3)(4) 의 probe 클래스는 `@source inline("…")` 로 생성시켰다. 소비자 소스가 그 클래스를 쓰는 것과 같은 조건이다.
