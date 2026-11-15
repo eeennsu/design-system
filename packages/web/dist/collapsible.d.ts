@@ -11,6 +11,7 @@ type CollapsibleProps = Contracts<"web">["Collapsible"];
  * `disabled` 는 `Root` 로 넘긴다(R28). Base UI 1.8.0 트리거는 비활성에도 포커스를 받는 방식이라
  * native `disabled` 속성 대신 `aria-disabled="true"` 와 `data-disabled` 를 달고 클릭을 막는다.
  * 모양은 그 `data-disabled` 선택자로 Button 비활성과 같은 투명도다. 열린 채 비활성이면 열린 그대로다.
+ * 포커스를 받으므로 투명도가 포커스 외곽선에도 걸린다 — Tab 으로 닿은 비활성 트리거의 외곽선은 흐리다.
  */
 export declare const Collapsible: FC<CollapsibleProps>;
 export {};

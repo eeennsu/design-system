@@ -25,10 +25,12 @@ const doneText = _jsx("span", { className: "sr-only", children: ", \uC644\uB8CC"
  * 펼친 단계는 `border-l-2 border-brand` 막대, 남은 단계는 표시가 없다. 번호 · 원 · 연결선 · 상자를 그리지 않는다(decisions-r28 17).
  * `onValueChange` 가 있을 때만 지난 단계 줄 글이 `type="button"` 버튼이고 콜백은 값 하나만 받는다(C-12).
  * 화살표 이동은 없고 버튼의 Tab 순서를 따른다.
+ * `role="list"` 는 preflight 의 `list-style: none` 에서 WebKit 이 목록 역할을 빼는 것을 막는다.
+ * 항목 `value` 는 서로 달라야 한다(React key 이자 단계 식별자다).
  */
 export const Stepper = ({ label, items, value, reached, onValueChange, className }) => {
     const states = stepStates(items, value, reached);
-    return (_jsx("ol", { "aria-label": label, className: cn("flex flex-col", className), children: items.map((item, i) => {
+    return (_jsx("ol", { role: "list", "aria-label": label, className: cn("flex flex-col", className), children: items.map((item, i) => {
             const state = states[i];
             return (_jsxs("li", { "aria-current": state === "current" ? "step" : undefined, className: "flex gap-3 py-2", children: [_jsxs("span", { className: "flex h-6 w-4 shrink-0 items-center justify-center", children: [state === "done" ? _jsx(Glyph, { name: "check", size: "sm", className: "text-fg-muted" }) : null, state === "current" ? _jsx("span", { className: "h-full border-l-2 border-brand" }) : null] }), _jsxs("div", { className: "min-w-0 flex-1", children: [state === "done" && onValueChange ? (_jsxs("button", { type: "button", onClick: () => onValueChange(item.value), className: "text-start text-md text-fg-muted hover:text-fg rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus", children: [item.label, doneText] })) : state === "done" ? (_jsxs("p", { className: "text-md text-fg-muted", children: [item.label, doneText] })) : state === "current" ? (_jsx("p", { className: "text-md font-semibold text-fg", children: item.label })) : (_jsx("p", { className: "text-md text-fg-muted", children: item.label })), state === "current" && item.content !== undefined ? _jsx("div", { className: "mt-2", children: item.content }) : null] })] }, item.value));
         }) }));

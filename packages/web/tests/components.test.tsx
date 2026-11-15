@@ -842,7 +842,7 @@ describe("R28 Collapsible variant · disabled", () => {
     );
     const trigger = screen.getByRole("button", { name: "답 보기" });
     expect(trigger).toHaveClass("border", "border-transparent", "py-2", "text-md", "text-fg-muted", "hover:text-fg");
-    expect(trigger).not.toHaveClass("px-3", "rounded-md", "hover:bg-surface-hover", "bg-surface-muted");
+    for (const cls of ["px-3", "rounded-md", "hover:bg-surface-hover", "bg-surface-muted"]) expect(trigger).not.toHaveClass(cls);
     const panel = screen.getByText("답 내용").parentElement;
     expect(panel).toHaveClass("pt-2");
     expect(panel).not.toHaveClass("px-3");
@@ -933,7 +933,8 @@ describe("R28 Link", () => {
     expect(screen.getByRole("link", { name: "기본" })).toHaveClass("text-fg-brand", "text-md");
     const small = screen.getByRole("link", { name: "작은" });
     expect(small).toHaveClass("text-fg-muted", "text-sm");
-    expect(small).not.toHaveClass("text-fg-brand", "text-md");
+    expect(small).not.toHaveClass("text-fg-brand");
+    expect(small).not.toHaveClass("text-md");
   });
 
   it("밑줄은 hover · 포커스에서만 보이고 포커스 외곽선이 있다", () => {
@@ -991,6 +992,8 @@ describe("R28 Callout", () => {
       </Callout>,
     );
     expect(screen.getByText("참고")).toHaveClass("font-semibold");
+    // 제목과 본문 사이는 내용 열의 gap-1 이다(preflight 가 p 여백을 지운다)
+    expect(screen.getByText("참고").parentElement).toHaveClass("flex", "flex-col", "gap-1");
     rerender(
       <Callout>
         <p>본문</p>
@@ -1088,6 +1091,8 @@ describe("R28 Stepper", () => {
   it("<ol> 이고 접근성 이름이 label 이며 label 은 보이지 않는다", () => {
     render(<Stepper label="풀이 단계" items={items} value="a" />);
     const list = screen.getByRole("list", { name: "풀이 단계" });
+    // WebKit 이 list-style: none 인 ol 의 목록 역할을 빼지 않게 명시한다
+    expect(list).toHaveAttribute("role", "list");
     expect(list.tagName).toBe("OL");
     expect(list).toHaveClass("flex", "flex-col");
     expect(screen.getAllByRole("listitem")).toHaveLength(4);

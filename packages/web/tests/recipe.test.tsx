@@ -96,7 +96,8 @@ describe("Collapsible", () => {
     const { paddingY, text, paddingX, radius } = component.collapsible;
     render(<Collapsible label="답 보기">{null}</Collapsible>);
     expect(screen.getByRole("button")).toHaveClass(...expected({ paddingY, text }));
-    expect(screen.getByRole("button")).not.toHaveClass(`px-${paddingX}`, `rounded-${radius}`);
+    expect(screen.getByRole("button")).not.toHaveClass(`px-${paddingX}`);
+    expect(screen.getByRole("button")).not.toHaveClass(`rounded-${radius}`);
   });
 });
 
