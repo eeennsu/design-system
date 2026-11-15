@@ -48,7 +48,7 @@ export const inputSizes: Record<ControlSize, string> = {
  * R26 부터 테두리는 투명이고 칸은 `surface-muted` 채움으로 보인다(알려진 동작 25). 글꼴은 `font-sans`(C-7b R26).
  */
 export const controlBase =
-  "w-full font-sans bg-surface-muted text-fg border border-transparent focus:border-border-focus";
+  "w-full font-sans bg-surface-muted text-fg border border-border-surface focus:border-border-focus";
 
 /** 오류 테두리는 포커스 중에도 danger 로 둔다 — 웹은 테두리가 아니라 outline 으로 포커스를 그린다. */
 export const invalidBorder = "border-danger focus:border-danger";

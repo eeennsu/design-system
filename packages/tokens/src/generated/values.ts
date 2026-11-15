@@ -212,13 +212,13 @@ export const component = {
       "paddingX": "2",
       "paddingY": "0",
       "text": "sm",
-      "radius": "full"
+      "radius": "xl"
     },
     "md": {
       "paddingX": "3",
       "paddingY": "1",
       "text": "sm",
-      "radius": "full"
+      "radius": "xl"
     }
   },
   "button": {
@@ -252,7 +252,7 @@ export const component = {
     "paddingX": "4",
     "paddingY": "2",
     "text": "sm",
-    "radius": "full"
+    "radius": "xl"
   },
   "codeBlock": {
     "padding": "4",

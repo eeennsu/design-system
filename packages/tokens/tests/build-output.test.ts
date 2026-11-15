@@ -228,8 +228,8 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
 
   it("나머지 컴포넌트", () => {
     expect(component.badge).toEqual({
-      sm: { paddingX: "2", paddingY: "0", text: "sm", radius: "full" },
-      md: { paddingX: "3", paddingY: "1", text: "sm", radius: "full" },
+      sm: { paddingX: "2", paddingY: "0", text: "sm", radius: "xl" },
+      md: { paddingX: "3", paddingY: "1", text: "sm", radius: "xl" },
     });
     expect(component.icon).toEqual({ size: { sm: 16, md: 20, lg: 24 } });
     expect(component.card).toEqual({ padding: "6", radius: "xl" });

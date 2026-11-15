@@ -17,8 +17,8 @@ const foregrounds = {
 };
 /** 투명 테두리는 웹과 같이 Input 과 높이를 맞추기 위해서다(plan D-6). */
 const boxes = {
-    sm: "px-2 py-0 rounded-full",
-    md: "px-3 py-1 rounded-full",
+    sm: "px-2 py-0 rounded-xl",
+    md: "px-3 py-1 rounded-xl",
 };
 /**
  * 짧은 상태 표시. 웹은 `inline-flex` 라 블록 흐름에서 글자 폭만큼 줄지만 RN 에는 인라인이 없다 —
@@ -26,5 +26,5 @@ const boxes = {
  * `className="self-start"` 를 준다. 기본값으로 넣지 않는 이유는 `align="center"` 인 가로 Stack 에서
  * 세로 가운데 정렬을 깨뜨리기 때문이다.
  */
-export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx(View, { className: cn("flex-row items-center border border-transparent", surfaces[variant], boxes[size], className), children: _jsx(RNText, { className: cn("font-sans", foregrounds[variant], "text-sm"), children: children }) }));
+export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx(View, { className: cn("flex-row items-center border border-border-surface", surfaces[variant], boxes[size], className), children: _jsx(RNText, { className: cn("font-sans", foregrounds[variant], "text-sm"), children: children }) }));
 //# sourceMappingURL=badge.js.map

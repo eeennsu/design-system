@@ -34,7 +34,7 @@ export const inputSizes = {
  * 기본색이었다(N-13). 이제 `StyledTextInput` 이 `placeholderClassName` 으로 같은 토큰 색을 낸다(N-17).
  * R26 부터 테두리는 투명이고 칸은 `surface-muted` 채움으로 보인다(알려진 동작 25). 글꼴은 `font-sans`(C-7b R26).
  */
-export const controlBase = "w-full font-sans bg-surface-muted text-fg border border-transparent focus:border-border-focus";
+export const controlBase = "w-full font-sans bg-surface-muted text-fg border border-border-surface focus:border-border-focus";
 /** 오류 테두리는 포커스 중에도 danger 로 둔다 — 웹은 테두리가 아니라 outline 으로 포커스를 그린다. */
 export const invalidBorder = "border-danger focus:border-danger";
 /** placeholder 글자색. 웹 Input 의 `placeholder:text-fg-muted` 와 같은 토큰이다. */

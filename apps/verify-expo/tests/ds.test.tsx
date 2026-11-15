@@ -112,6 +112,13 @@ describe("AC-19 (c) 색 구성표", () => {
     await mount(<Card>{null}</Card>, "dark");
     expect(rootStyle()).toMatchObject({ backgroundColor: DS_SURFACE_DARK });
   });
+
+  test("R28 Card 는 1px 경계선을 투명 border.surface 로 그린다", async () => {
+    await mount(<Card>{null}</Card>, "light");
+    expect(rootStyle()).toMatchObject({ borderWidth: 1 });
+    expect(rootStyle().borderColor).not.toBe(DS_DANGER_LIGHT);
+    expect(rootStyle().borderColor).toMatch(/transparent|rgba(s*d+,s*d+,s*d+,s*0)|#[0-9a-f]{6}00|0$/i);
+  });
 });
 
 describe("AC-11 RN절 · AC-25 className 병합", () => {
@@ -215,6 +222,11 @@ describe("N-16 추가 4개 — Textarea · Label · Badge · Box", () => {
     expect(screen.getByText("신규").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });
   });
 
+  test("R28 Badge 모서리는 xl(20)이다", async () => {
+    await mount(<Badge variant="primary">신규</Badge>);
+    expect(rootStyle()).toMatchObject({ borderRadius: 20 });
+  });
+
   test("Badge 기본은 secondary · sm 이다", async () => {
     await mount(<Badge>기본</Badge>);
     expect(rootStyle()).toMatchObject({
@@ -242,8 +254,8 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
     );
     const food = screen.getByRole("button", { name: "식비" });
     expect(food.props.accessibilityState).toMatchObject({ selected: true });
-    // component 토큰 chip: px 4 · py 2 · radius full (높이 38 = 8 + 줄 높이 20 + 8 + 테두리 2)
-    expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: 9999 });
+    // component 토큰 chip: px 4 · py 2 · radius xl (높이 38 = 8 + 줄 높이 20 + 8 + 테두리 2)
+    expect(food.props.style).toMatchObject({ backgroundColor: APP_BRAND_LIGHT, borderRadius: 20 });
     expect(JSON.stringify(food.props.style)).toMatch(/"padding(Horizontal|Inline|Left)":16/);
     expect(JSON.stringify(food.props.style)).toMatch(/"padding(Vertical|Block|Top)":8/);
     expect(screen.getByText("식비").props.style).toMatchObject({ color: DS_ON_BRAND, fontSize: 14 });

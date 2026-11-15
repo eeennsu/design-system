@@ -190,7 +190,19 @@ describe("N-17 Chip · Icon", () => {
     expect(screen.getByRole("button", { name: "식비" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "배달" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "식비" })).toHaveClass("bg-brand", "text-fg-on-brand");
-    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface-muted", "border-transparent");
+    expect(screen.getByRole("button", { name: "배달" })).toHaveClass("bg-surface-muted", "border-border-surface", "rounded-xl");
+    expect(screen.getByRole("button", { name: "배달" })).not.toHaveClass("border-transparent");
+    expect(screen.getByRole("button", { name: "식비" })).toHaveClass("border-brand");
+  });
+
+  it("Card 와 Badge 가 표면 경계선 · 모서리 xl 을 갖는다 (R28)", () => {
+    render(
+      <Card>
+        <Badge>표시</Badge>
+      </Card>,
+    );
+    expect(screen.getByText("표시").parentElement).toHaveClass("border", "border-border-surface");
+    expect(screen.getByText("표시")).toHaveClass("rounded-xl", "border-border-surface");
   });
 
   it("Chip onClick 이 인자 없이 호출되고, 상태는 소비자가 바꾼다", () => {
@@ -304,7 +316,21 @@ describe("AC-7 Input · Textarea (C-11 매핑)", () => {
     render(<Input label="이메일" kind="email" invalid />);
     const input = screen.getByLabelText("이메일");
     expect(input).toHaveClass("border-danger");
+    expect(input).not.toHaveClass("border-border-surface");
     expect(input).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("Input · Textarea 기본 테두리가 border-surface 다 (R28)", () => {
+    render(
+      <>
+        <Input label="이름" />
+        <Textarea label="메모" />
+      </>,
+    );
+    for (const el of [screen.getByLabelText("이름"), screen.getByLabelText("메모")]) {
+      expect(el).toHaveClass("border-border-surface");
+      expect(el).not.toHaveClass("border-transparent");
+    }
   });
 
   it("Textarea size 가 행수 3 / 5 / 8 이다 (plan D-14)", () => {

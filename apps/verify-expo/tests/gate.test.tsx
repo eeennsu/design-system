@@ -95,7 +95,7 @@ describe("(3) @source — 통과", () => {
     expect(hasClass(css, "text-fg-muted")).toBe(true); // Text tone="muted"
     expect(hasClass(css, "bg-danger")).toBe(true); // Button variant="danger"
     expect(hasClass(css, "rounded-xl")).toBe(true); // Card (R26, 이전 rounded-lg)
-    expect(hasClass(css, "rounded-full")).toBe(true); // Badge (N-16 에서 추가)
+    expect(hasClass(css, "border-border-surface")).toBe(true); // Card · Badge (R28, 이전 rounded-full)
   });
 
   test("DS 가 쓰지 않는 클래스는 생성되지 않는다", async () => {
