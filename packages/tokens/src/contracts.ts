@@ -283,9 +283,32 @@ export type Contracts<P extends Platform> = {
     variant?: Extract<Variant, "ghost" | "secondary">;
     className?: string;
   };
+  /**
+   * 혼자 놓이는 링크(R28 — 내비, 목차, 카드 안의 이동). `label` 이 보이는 글이자 접근성 이름이고 `children` 은 없다(C-13).
+   * 이동 수단이 플랫폼마다 갈린다 — 웹은 `<a href>` 문서 이동, RN 은 `accessibilityRole="link"` 누름(C-12).
+   * 색 · 크기는 Text 와 같은 `tone` · `size` 축이고 기본은 `brand` · `md` 다. 문단 속 링크는 Prose `a` 를 쓴다(알려진 동작 33).
+   */
+  Link: {
+    label: string;
+    tone?: Tone;
+    size?: TypographyStep;
+    className?: string;
+  } & (P extends "web" ? { href: string } : { onPress: () => void });
+  /**
+   * 본문 흐름에서 한 구역을 짚는 연한 채움 상자(R28). 비인터랙티브라 `label` 이 없고 `title` 이 보이는 제목이다.
+   * `children` 은 웹 `ReactNode`(MDX 문단이 문자열로 온다), RN 은 컨테이너 규칙이다(C-17).
+   * `tone` 은 상태 다섯 개이고 기본은 `info` 다. `icon` 은 기본값이 없다 — 뜻은 `title` 이나 본문 글이 전한다(알려진 동작 37).
+   */
+  Callout: {
+    children: P extends "web" ? ReactNode : ElementChildren;
+    tone?: Extract<Tone, "info" | "success" | "warning" | "danger" | "brand">;
+    title?: string;
+    icon?: IconName;
+    className?: string;
+  };
 };
 
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27. */
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27, Link · Callout 은 R28. */
 export const webComponents = [
   "Button",
   "ButtonGroup",
@@ -308,6 +331,8 @@ export const webComponents = [
   "Prose",
   "Tabs",
   "Collapsible",
+  "Link",
+  "Callout",
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**

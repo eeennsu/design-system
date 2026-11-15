@@ -185,11 +185,12 @@ describe("component 계층 인벤토리", () => {
     ]);
   });
 
-  it("plan §3.8 의 10개 컴포넌트와 Chip(구현 노트 N-17) · Table · CodeBlock · Tabs · Collapsible(R27)이 있다", () => {
+  it("plan §3.8 의 10개 컴포넌트와 Chip(구현 노트 N-17) · Table · CodeBlock · Tabs · Collapsible(R27) · Callout(R28)이 있다", () => {
     const root = getNode(loadDir(join(tokensDir, "component")), "component");
     expect(Object.keys(root as Json).sort()).toEqual([
       "badge",
       "button",
+      "callout",
       "card",
       "chip",
       "codeBlock",

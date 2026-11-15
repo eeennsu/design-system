@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -126,6 +126,14 @@ describe("Prose", () => {
       `[:where(&)_td]:py-${table.paddingY}`,
       `[:where(&)_td]:text-${table.text}`,
     );
+  });
+});
+
+describe("Callout", () => {
+  it("루트가 padding · radius · gap · text 를 recipe 와 같게 가진다 (R28)", () => {
+    render(<Callout>{"글"}</Callout>);
+    const { padding, radius, gap, text } = component.callout;
+    expect(screen.getByRole("note")).toHaveClass(`p-${padding}`, `rounded-${radius}`, `gap-${gap}`, `text-${text}`);
   });
 });
 

@@ -1,0 +1,23 @@
+{
+  "$description": "Callout recipe(R28). 루트 상자의 안쪽 여백 · 모서리 · 아이콘 열과 내용 열 사이 간격 · 글자다. 테두리는 없다(알려진 동작 37).",
+  "component": {
+    "callout": {
+      "padding": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.4}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.lg}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.3}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.md}"
+      }
+    }
+  }
+}

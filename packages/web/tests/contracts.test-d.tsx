@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -248,7 +248,54 @@ describe("R28 Collapsible disabled · variant 계약", () => {
   });
 });
 
+describe("R28 Link 계약", () => {
+  it("label · href 필수, tone · size 는 Text 와 같은 축이고 이동은 href 하나다", () => {
+    expectTypeOf<Contracts<"web">["Link"]["label"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Link"]["href"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Link"]["tone"]>().toEqualTypeOf<Tone | undefined>();
+    expectTypeOf<Contracts<"web">["Link"]["size"]>().toEqualTypeOf<Size | undefined>();
+    expectTypeOf<Contracts<"web">["Link"]>().not.toHaveProperty("onClick");
+    expectTypeOf<Contracts<"web">["Link"]>().not.toHaveProperty("onPress");
+    assertType(<Link label="다음" href="/next" tone="muted" size="sm" className="mt-2" />);
+    // @ts-expect-error href 필수
+    assertType(<Link label="다음" />);
+    // @ts-expect-error 웹 Link 는 누름 이벤트를 받지 않는다 — 이동은 href 다
+    assertType(<Link label="다음" href="/next" onClick={() => {}} />);
+    // @ts-expect-error children 이 없다 — 글은 label 이다
+    assertType(<Link label="다음" href="/next">다음</Link>);
+  });
+});
+
+describe("R28 Callout 계약", () => {
+  it("children 은 ReactNode, tone 은 상태 다섯 개, title · icon 은 선택이다", () => {
+    expectTypeOf<Contracts<"web">["Callout"]["children"]>().toEqualTypeOf<ReactNode>();
+    expectTypeOf<Contracts<"web">["Callout"]["tone"]>().toEqualTypeOf<
+      "info" | "success" | "warning" | "danger" | "brand" | undefined
+    >();
+    expectTypeOf<Contracts<"web">["Callout"]["title"]>().toEqualTypeOf<string | undefined>();
+    assertType(<Callout>{"글"}</Callout>);
+    assertType(
+      <Callout tone="danger" title="주의" icon="alert-circle">
+        <p>글</p>
+      </Callout>,
+    );
+    // @ts-expect-error muted 는 Callout tone 이 아니다
+    assertType(<Callout tone="muted">{"글"}</Callout>);
+    // @ts-expect-error default 는 Callout tone 이 아니다
+    assertType(<Callout tone="default">{"글"}</Callout>);
+    // @ts-expect-error 목록에 없는 아이콘 이름
+    assertType(<Callout icon="nope">{"글"}</Callout>);
+    // @ts-expect-error children 은 필수다
+    assertType(<Callout />);
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
+  it("Link", () => {
+    // @ts-expect-error label 필수
+    assertType(<Link href="/next" />);
+  });
+
   it("Tabs", () => {
     // @ts-expect-error label 필수
     assertType(<Tabs items={[]} />);
