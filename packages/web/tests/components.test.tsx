@@ -202,7 +202,7 @@ describe("N-17 Chip · Icon", () => {
       </Card>,
     );
     expect(screen.getByText("표시").parentElement).toHaveClass("border", "border-border-surface");
-    expect(screen.getByText("표시")).toHaveClass("rounded-xl", "border-border-surface");
+    expect(screen.getByText("표시")).toHaveClass("rounded-xl", "border-transparent");
   });
 
   it("Chip onClick 이 인자 없이 호출되고, 상태는 소비자가 바꾼다", () => {

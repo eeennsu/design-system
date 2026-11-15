@@ -37,7 +37,7 @@ const boxes: Record<BadgeSize, string> = {
 export const Badge: FC<BadgeProps> = ({ children, variant = "secondary", size = "sm", className }) => (
   <View
     className={cn(
-      "flex-row items-center border border-border-surface",
+      "flex-row items-center border border-transparent",
       surfaces[variant],
       boxes[size],
       className,

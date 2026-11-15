@@ -116,8 +116,7 @@ describe("AC-19 (c) 색 구성표", () => {
   test("R28 Card 는 1px 경계선을 투명 border.surface 로 그린다", async () => {
     await mount(<Card>{null}</Card>, "light");
     expect(rootStyle()).toMatchObject({ borderWidth: 1 });
-    expect(rootStyle().borderColor).not.toBe(DS_DANGER_LIGHT);
-    expect(rootStyle().borderColor).toMatch(/transparent|rgba(s*d+,s*d+,s*d+,s*0)|#[0-9a-f]{6}00|0$/i);
+    expect(rootStyle().borderColor).toBe("#0000"); // jest-converted transparent
   });
 });
 

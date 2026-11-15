@@ -45,7 +45,7 @@ export const inputSizes: Record<ControlSize, string> = {
  * 포커스되면 테두리가 `border-focus` 색이 된다(plan D-9. 0.2.0 까지 빠져 있었다, N-17).
  * 웹 Input 의 `placeholder:text-fg-muted` 는 react-native-css 가 옮기지 않아 0.2.0 까지 플랫폼
  * 기본색이었다(N-13). 이제 `StyledTextInput` 이 `placeholderClassName` 으로 같은 토큰 색을 낸다(N-17).
- * R26 부터 테두리는 투명이고 칸은 `surface-muted` 채움으로 보인다(알려진 동작 25). 글꼴은 `font-sans`(C-7b R26).
+ * R28 부터 평소 테두리 색은 `--border-surface` 다(R26 은 투명). 칸은 `surface-muted` 채움으로 보인다(알려진 동작 25). 글꼴은 `font-sans`(C-7b R26).
  */
 export const controlBase =
   "w-full font-sans bg-surface-muted text-fg border border-border-surface focus:border-border-focus";

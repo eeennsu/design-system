@@ -23,7 +23,7 @@ const sizes: Record<BadgeSize, string> = {
 export const Badge: FC<BadgeProps> = ({ children, variant = "secondary", size = "sm", className }) => (
   <span
     className={cn(
-      "inline-flex items-center border border-border-surface",
+      "inline-flex items-center border border-transparent",
       variants[variant],
       sizes[size],
       className,

@@ -13,5 +13,5 @@ const sizes = {
     sm: "px-2 py-0 text-sm rounded-xl",
     md: "px-3 py-1 text-sm rounded-xl",
 };
-export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx("span", { className: cn("inline-flex items-center border border-border-surface", variants[variant], sizes[size], className), children: children }));
+export const Badge = ({ children, variant = "secondary", size = "sm", className }) => (_jsx("span", { className: cn("inline-flex items-center border border-transparent", variants[variant], sizes[size], className), children: children }));
 //# sourceMappingURL=badge.js.map
