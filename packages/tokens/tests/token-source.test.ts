@@ -147,6 +147,17 @@ describe("AC-6c fontFamily 토큰", () => {
     expect((token["$extensions"] as Json)["ds.native"]).toBe("Pretendard");
   });
 
+  it("fontFamily.mono 가 JetBrains Mono 스택과 RN 이름을 갖는다 (R28)", () => {
+    const token = getNode(source.primitive, "primitive.typography.fontFamily.mono") as Json;
+    expect((token["$value"] as unknown[])[0]).toBe("JetBrains Mono");
+    expect((token["$extensions"] as Json)["ds.native"]).toBe("JetBrainsMono");
+  });
+
+  it("component text 스텝에 3xl · 4xl 이 있다 (R28)", () => {
+    const root = getNode(loadDir(join(tokensDir, "component")), "component.text") as Json;
+    expect(Object.keys(root).filter((key) => !key.startsWith("$"))).toEqual(["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"]);
+  });
+
   it("레포 패키지에 폰트 파일이 없다 (로딩은 소비 프로젝트 책임)", () => {
     const fontExtensions = [".woff", ".woff2", ".ttf", ".otf", ".eot"];
     const found: string[] = [];

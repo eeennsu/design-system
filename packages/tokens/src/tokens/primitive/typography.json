@@ -17,6 +17,21 @@
           "$extensions": {
             "ds.native": "Pretendard"
           }
+        },
+        "mono": {
+          "$type": "fontFamily",
+          "$value": [
+            "JetBrains Mono",
+            "ui-monospace",
+            "SFMono-Regular",
+            "Menlo",
+            "Consolas",
+            "monospace"
+          ],
+          "$description": "R28. 로딩은 소비 프로젝트 책임(구현 노트 F-32).",
+          "$extensions": {
+            "ds.native": "JetBrainsMono"
+          }
         }
       },
       "fontSize": {
@@ -39,6 +54,14 @@
         "28": {
           "$type": "dimension",
           "$value": "28px"
+        },
+        "36": {
+          "$type": "dimension",
+          "$value": "36px"
+        },
+        "48": {
+          "$type": "dimension",
+          "$value": "48px"
         }
       },
       "lineHeight": {
@@ -61,6 +84,14 @@
         "36": {
           "$type": "dimension",
           "$value": "36px"
+        },
+        "44": {
+          "$type": "dimension",
+          "$value": "44px"
+        },
+        "56": {
+          "$type": "dimension",
+          "$value": "56px"
         }
       },
       "fontWeight": {

@@ -11,6 +11,12 @@ export declare const spacing: {
     readonly "16": "64px";
     readonly "20": "80px";
     readonly "24": "96px";
+    readonly "32": "128px";
+    readonly "40": "160px";
+    readonly "48": "192px";
+    readonly "64": "256px";
+    readonly "80": "320px";
+    readonly "96": "384px";
 };
 /** 모서리 반경 스케일. */
 export declare const radius: {
@@ -53,12 +59,26 @@ export declare const text: {
         readonly lineHeight: "36px";
         readonly fontWeight: 700;
     };
+    readonly "3xl": {
+        readonly fontSize: "36px";
+        readonly lineHeight: "44px";
+        readonly fontWeight: 700;
+    };
+    readonly "4xl": {
+        readonly fontSize: "48px";
+        readonly lineHeight: "56px";
+        readonly fontWeight: 700;
+    };
 };
 /** 폰트 패밀리. 폰트 파일은 동봉하지 않는다 — 로딩은 소비 프로젝트 책임(C-7b, AC-6c). */
 export declare const fontFamily: {
     readonly sans: {
         readonly web: "\"Pretendard Variable\", Pretendard, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif";
         readonly native: "Pretendard";
+    };
+    readonly mono: {
+        readonly web: "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+        readonly native: "JetBrainsMono";
     };
 };
 /**
@@ -72,6 +92,7 @@ export declare const twMergeConfig: {
     radius: string[];
     shadow: string[];
     text: string[];
+    "font-weight": string[];
 };
 /** @theme inline 색 키 → :root 변수 이름. C-5b 공개 계약의 실체다. */
 export declare const semanticVariables: {

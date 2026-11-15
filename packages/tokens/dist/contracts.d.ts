@@ -3,10 +3,10 @@ import type { ReactElement, ReactNode, Ref } from "react";
 export type Platform = "web" | "native";
 /** 전역 축 1 — 의도 4개 고정(C-8). 컴포넌트별 부분집합은 Extract 로 좁힌다. */
 export type Variant = "primary" | "secondary" | "ghost" | "danger";
-/** 전역 축 2 — t-shirt 5단(C-7a). 간격 어휘(숫자 키)와 의도적으로 분리한다. */
-export type Size = "sm" | "md" | "lg" | "xl" | "2xl";
+/** 전역 축 2 — t-shirt 7단(C-7a, R28). 간격 어휘(숫자 키)와 의도적으로 분리한다. */
+export type Size = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 /**
- * 글자 크기 · 행간 · 무게를 함께 바꾸는 타이포 스텝. `Size` 5단 전부를 쓰며
+ * 글자 크기 · 행간 · 무게를 함께 바꾸는 타이포 스텝. `Size` 7단(R28) 전부를 쓰며
  * Text 전용 의미다(C-7b). 유틸리티 하나(`text-lg`)가 세 속성을 적용한다.
  */
 export type TypographyStep = Size;

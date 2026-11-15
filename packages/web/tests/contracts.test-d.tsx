@@ -41,8 +41,8 @@ describe("AC-9 · AC-10 전역 축", () => {
     expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger">();
   });
 
-  it("Size 는 5단이고 컨트롤은 부분집합이다", () => {
-    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl">();
+  it("Size 는 7단(R28)이고 컨트롤은 부분집합이다", () => {
+    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl">();
     expectTypeOf<ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
     expectTypeOf<Contracts<"web">["Button"]["size"]>().toEqualTypeOf<ControlSize | undefined>();
     expectTypeOf<Contracts<"web">["Text"]["size"]>().toEqualTypeOf<Size | undefined>();
@@ -251,6 +251,12 @@ describe("AC-15 · AC-15a 값 형태", () => {
   it("tone 은 enum 키만 받는다", () => {
     // @ts-expect-error 색 리터럴은 tone 이 아니다
     assertType(<Text tone="#333">본문</Text>);
+  });
+
+  it("Text size 는 7단(R28)까지만 받는다", () => {
+    assertType(<Text size="4xl">제목</Text>);
+    // @ts-expect-error 5xl 은 없다
+    assertType(<Text size="5xl">제목</Text>);
   });
 
   it("icon 은 목록에 있는 이름 문자열만 받는다", () => {

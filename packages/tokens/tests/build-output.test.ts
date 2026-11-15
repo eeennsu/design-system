@@ -133,6 +133,13 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
     expect(output("web/themes/base.css")).not.toContain("--font-sans");
   });
 
+  it("native 래퍼는 --font-mono 와 3xl · 4xl 배수를 낸다 (R28)", () => {
+    const native = output("native/themes/base.css");
+    expect(native).toContain("--font-mono: JetBrainsMono;");
+    expect(native).toContain(`--text-3xl--line-height: ${44 / 36};`);
+    expect(native).toContain(`--text-4xl--line-height: ${56 / 48};`);
+  });
+
   it("토큰 CSS 와 web 래퍼는 무변경이다 — 배수는 native 래퍼에만 있다", () => {
     expect(output("tokens/themes/base.css")).toContain("--text-xl--line-height: 30px;");
     expect(output("web/themes/base.css")).not.toContain("line-height");

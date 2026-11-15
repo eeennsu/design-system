@@ -12,7 +12,13 @@
       "12": { "$type": "dimension", "$value": "48px" },
       "16": { "$type": "dimension", "$value": "64px" },
       "20": { "$type": "dimension", "$value": "80px" },
-      "24": { "$type": "dimension", "$value": "96px" }
+      "24": { "$type": "dimension", "$value": "96px" },
+      "32": { "$type": "dimension", "$value": "128px" },
+      "40": { "$type": "dimension", "$value": "160px" },
+      "48": { "$type": "dimension", "$value": "192px" },
+      "64": { "$type": "dimension", "$value": "256px" },
+      "80": { "$type": "dimension", "$value": "320px" },
+      "96": { "$type": "dimension", "$value": "384px" }
     }
   }
 }

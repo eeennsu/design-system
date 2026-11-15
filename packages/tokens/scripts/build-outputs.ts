@@ -16,7 +16,7 @@ export const STATIC_COLORS = ["inherit", "current", "transparent"] as const;
 export const MODES = ["light", "dark"] as const;
 export type Mode = (typeof MODES)[number];
 
-export const TEXT_STEPS = ["sm", "md", "lg", "xl", "2xl"] as const;
+export const TEXT_STEPS = ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"] as const;
 export type TextStep = (typeof TEXT_STEPS)[number];
 
 /** DS-local $type. DTCG 표준 타입 + 원시 유틸리티 클래스 조각(className). */
@@ -280,19 +280,22 @@ function cssFontStack(stack: readonly unknown[]): string {
     .join(", ");
 }
 
-function fontFamilyOf(primitive: Json): { sans: { web: string; native: string } } {
-  const node = getNode(primitive, "primitive.typography.fontFamily.sans");
-  if (!isToken(node)) throw new Error("primitive.typography.fontFamily.sans 없음");
-  const stack = node["$value"];
-  if (!Array.isArray(stack)) throw new Error("fontFamily.sans 는 배열이어야 한다");
-  const extensions = node["$extensions"];
-  const native = isRecord(extensions) ? extensions["ds.native"] : undefined;
-  return {
-    sans: {
+type FontFamilyValue = { web: string; native: string };
+
+function fontFamilyOf(primitive: Json): { sans: FontFamilyValue; mono: FontFamilyValue } {
+  const read = (name: "sans" | "mono"): FontFamilyValue => {
+    const node = getNode(primitive, `primitive.typography.fontFamily.${name}`);
+    if (!isToken(node)) throw new Error(`primitive.typography.fontFamily.${name} 없음`);
+    const stack = node["$value"];
+    if (!Array.isArray(stack)) throw new Error(`fontFamily.${name} 는 배열이어야 한다`);
+    const extensions = node["$extensions"];
+    const native = isRecord(extensions) ? extensions["ds.native"] : undefined;
+    return {
       web: cssFontStack(stack),
-      native: expectString(native, "fontFamily.sans.$extensions.ds.native"),
-    },
+      native: expectString(native, `fontFamily.${name}.$extensions.ds.native`),
+    };
   };
+  return { sans: read("sans"), mono: read("mono") };
 }
 
 // ----------------------------------------------------- component 계층 (§3.8)
@@ -408,6 +411,9 @@ function tokenCss(source: TokenSource, brand: Brand): string {
   lines.push("  --shadow-*: initial;");
   lines.push("  --text-*: initial;");
   lines.push("  --font-weight-*: initial;");
+  lines.push("  --font-weight-normal: 400;");
+  lines.push("  --font-weight-semibold: 600;");
+  lines.push("  --font-weight-bold: 700;");
   lines.push("");
   for (const [key, value] of Object.entries(spacing)) lines.push(`  --spacing-${key}: ${value};`);
   lines.push("");
@@ -423,6 +429,7 @@ function tokenCss(source: TokenSource, brand: Brand): string {
   }
   lines.push("");
   lines.push(`  --font-sans: ${fontFamily.sans.web};`);
+  lines.push(`  --font-mono: ${fontFamily.mono.web};`);
   lines.push("}");
   lines.push("");
   lines.push("/* inline 은 색만 — var() 참조여야 :root 재선언이 클래스까지 전파된다(C-5b). */");
@@ -504,7 +511,9 @@ function nativeWrapperCss(source: TokenSource, brand: Brand): string {
   lines.push("");
   lines.push("/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */");
   lines.push("@theme {");
-  lines.push(`  --font-sans: ${fontFamilyOf(source.primitive).sans.native};`);
+  const nativeFonts = fontFamilyOf(source.primitive);
+  lines.push(`  --font-sans: ${nativeFonts.sans.native};`);
+  lines.push(`  --font-mono: ${nativeFonts.mono.native};`);
   lines.push("}");
   lines.push("");
   lines.push("/* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */");
@@ -564,6 +573,8 @@ function valuesTs(source: TokenSource): string {
     radius: Object.keys(radius),
     shadow: Object.keys(shadow),
     text: [...TEXT_STEPS],
+    // tailwind-merge v3 의 theme 키 이름은 `font-weight` 다(types.d.ts DefaultThemeGroupIds).
+    "font-weight": ["normal", "semibold", "bold"],
   };
 
   const semanticVariables: Record<string, string> = {};

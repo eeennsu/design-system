@@ -55,6 +55,18 @@ describe("병합 규칙", () => {
     expect(cnExtend("mt-4", "mt-5")).toBe("mt-5");
   });
 
+  it("R28 굵기 · 큰 간격 · 큰 제목은 같은 그룹에서 뒤가 이긴다", () => {
+    expect(cn("font-normal", "font-bold")).toBe("font-bold");
+    expect(cn("h-64", "h-96")).toBe("h-96");
+    expect(cn("mt-4", "mt-5")).toBe("mt-4 mt-5");
+    expect(cn("text-md", "text-4xl")).toBe("text-4xl");
+  });
+
+  it("굵기 키는 theme 이름 font-weight 로 낸다 — 미등록 medium 은 밀어내지 않는다 (R28)", () => {
+    expect(twMergeConfig["font-weight"]).toEqual(["normal", "semibold", "bold"]);
+    expect(cn("font-medium", "font-bold")).toBe("font-medium font-bold");
+  });
+
   it("같은 그룹의 등록된 색은 뒤가 이긴다 (소비자 className 승리)", () => {
     expect(cn("bg-brand", "bg-danger")).toBe("bg-danger");
   });
