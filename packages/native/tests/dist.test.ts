@@ -42,12 +42,16 @@ describe.skipIf(!built)("dist 검사", () => {
   });
 
   it("R28 컴포넌트는 react-native-css/components 출처를 쓴다 — react-native 직접 출처면 className 이 풀리지 않는다(F-11)", () => {
-    for (const file of ["link.js", "callout.js"]) {
+    for (const file of ["link.js", "callout.js", "stepper.js"]) {
       expect(existsSync(join(dist, file)), file).toBe(true);
       const source = readFileSync(join(dist, file), "utf8");
       expect(source, file).toMatch(/from "react-native-css\/components";/);
       expect(source, file).not.toMatch(/import \{[^}]*\b(View|Text|Pressable)\b[^}]*\} from "react-native";/);
     }
+  });
+
+  it("step-states.js 는 react-native 를 불러오지 않는다 — vitest 가 직접 import 한다", () => {
+    expect(readFileSync(join(dist, "step-states.js"), "utf8")).not.toMatch(/from "react-native/);
   });
 
   it('"use client" 를 쓰지 않는다 — RN 에는 서버 컴포넌트 경계가 없다', () => {

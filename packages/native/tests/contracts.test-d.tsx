@@ -14,6 +14,7 @@ import type {
   Tone,
   Variant,
 } from "@eeennsu/tokens";
+import type { StepItem as PlatformStepItem } from "@eeennsu/tokens";
 import { nativeComponents } from "@eeennsu/tokens";
 import type { FC } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
@@ -29,10 +30,12 @@ import {
   Label,
   Link,
   Stack,
+  Stepper,
   Text,
   Textarea,
   components,
 } from "../src/index.js";
+import type { StepItem } from "../src/index.js";
 
 /**
  * AC-21 "실제로 깨지는지" 확인 — 2026-09-08 수동 1회. 되돌렸다.
@@ -49,7 +52,7 @@ describe("C-17 맵 동등성", () => {
     expectTypeOf(components).toEqualTypeOf<{ [K in NativeKey]: FC<Contracts<"native">[K]> }>();
   });
 
-  it("키 목록이 맵의 키와 같다 — v1 핵심 5개(AC-20) + 4개(N-16) + Chip · Icon(N-17) + Link · Callout(R28)", () => {
+  it("키 목록이 맵의 키와 같다 — v1 핵심 5개(AC-20) + 4개(N-16) + Chip · Icon(N-17) + Link · Callout · Stepper(R28)", () => {
     expectTypeOf<(typeof nativeComponents)[number]>().toEqualTypeOf<keyof typeof components>();
     expectTypeOf<NativeKey>().toEqualTypeOf<
       | "Button"
@@ -65,6 +68,7 @@ describe("C-17 맵 동등성", () => {
       | "Box"
       | "Link"
       | "Callout"
+      | "Stepper"
     >();
   });
 
@@ -203,6 +207,40 @@ describe("R28 Callout 계약 — children 은 컨테이너 규칙이다", () => 
     assertType(<Callout tone="muted">{null}</Callout>);
     // @ts-expect-error children 은 필수다
     assertType(<Callout />);
+  });
+});
+
+describe("R28 Stepper 계약 — 항목 content 는 컨테이너 규칙이다", () => {
+  const items: StepItem[] = [{ value: "a", label: "하나", content: <Text>내용</Text> }, { value: "b", label: "둘" }];
+
+  it("진입점이 StepItem 을 native 로 고정해 다시 내보낸다", () => {
+    expectTypeOf<StepItem>().toEqualTypeOf<PlatformStepItem<"native">>();
+    expectTypeOf<StepItem>().toEqualTypeOf<{ value: string; label: string; content?: ElementChildren }>();
+    expectTypeOf<Contracts<"native">["Stepper"]["items"]>().toEqualTypeOf<StepItem[]>();
+  });
+
+  it("items 말고는 웹과 prop 이 같다 — 제어 전용 value · onValueChange", () => {
+    expectTypeOf<Omit<Contracts<"native">["Stepper"], "items">>().toEqualTypeOf<
+      Omit<Contracts<"web">["Stepper"], "items">
+    >();
+    expectTypeOf<Contracts<"native">["Stepper"]>().not.toHaveProperty("defaultValue");
+    assertType(<Stepper label="단계" items={items} value="a" reached="b" onValueChange={(v: string) => void v} className="mt-4" />);
+  });
+
+  it("문자열 content · 값 누락 · number 값 · defaultValue 는 타입 에러다", () => {
+    // @ts-expect-error RN content 는 Text 밖 문자열을 받지 않는다(C-17)
+    const bad: StepItem = { value: "a", label: "하나", content: "문자열" };
+    void bad;
+    // @ts-expect-error value 필수 (제어 전용)
+    assertType(<Stepper label="단계" items={items} />);
+    // @ts-expect-error 값은 string 이다 (C-14)
+    assertType(<Stepper label="단계" items={items} value={1} />);
+    // @ts-expect-error 제어 전용이라 defaultValue 가 없다
+    assertType(<Stepper label="단계" items={items} value="a" defaultValue="a" />);
+    // @ts-expect-error 콜백 인자는 string 이다
+    assertType(<Stepper label="단계" items={items} value="a" onValueChange={(v: number) => void v} />);
+    // @ts-expect-error label 필수
+    assertType(<Stepper items={items} value="a" />);
   });
 });
 

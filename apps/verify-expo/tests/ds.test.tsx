@@ -8,7 +8,7 @@
  * DS 컴포넌트에는 `testID` prop 이 없다(AC-11a: 스프레드 없음). 그래서 조회는
  * 접근성 이름·텍스트·렌더 트리로 한다 — 소비자가 실제로 쓸 수 있는 것과 같은 경로다.
  */
-import { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Text, Textarea } from "@eeennsu/native";
+import { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Stepper, Text, Textarea } from "@eeennsu/native";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
@@ -531,5 +531,88 @@ describe("R28 Callout", () => {
     );
     expect(JSON.stringify(screen.toJSON())).not.toContain("RNSVGSvgView");
     expect(screen.getAllByText(/./)).toHaveLength(1);
+  });
+});
+
+type HostNode = { type: string; props: Record<string, unknown>; children: (HostNode | string)[] | null };
+
+/** 렌더 트리에서 조건에 맞는 호스트 노드를 모두 모은다. DS 컴포넌트에 testID 가 없어 style 로 찾는다. */
+function findAllHost(predicate: (node: HostNode) => boolean): HostNode[] {
+  const found: HostNode[] = [];
+  const walk = (node: HostNode | string | null) => {
+    if (!node || typeof node === "string") return;
+    if (predicate(node)) found.push(node);
+    for (const child of node.children ?? []) walk(child);
+  };
+  const tree = screen.toJSON() as HostNode | HostNode[] | null;
+  for (const root of Array.isArray(tree) ? tree : [tree]) walk(root);
+  return found;
+}
+
+describe("R28 Stepper", () => {
+  const items = [
+    { value: "a", label: "하나", content: <Text>하나 내용</Text> },
+    { value: "b", label: "둘", content: <Text>둘 내용</Text> },
+    { value: "c", label: "셋", content: <Text>셋 내용</Text> },
+  ];
+
+  test("목록은 label 을 접근성 이름으로 갖고, 펼친 단계만 content 를 그린다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="b" />);
+    expect(screen.getByLabelText("가입 단계")).toBeTruthy();
+    expect(screen.getByText("둘 내용")).toBeTruthy();
+    expect(screen.queryByText("하나 내용")).toBeNull();
+    expect(screen.queryByText("셋 내용")).toBeNull();
+  });
+
+  test("지난 단계는 '완료' 를 붙인 버튼이고 누르면 그 값 하나가 간다", async () => {
+    const onValueChange = jest.fn();
+    await mount(<Stepper label="가입 단계" items={items} value="b" onValueChange={onValueChange} />);
+    const done = screen.getByRole("button", { name: /완료/ });
+    expect(done.props.accessibilityLabel).toBe("하나, 완료");
+    await fireEvent.press(done);
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith("a");
+    // 펼친 단계와 남은 단계는 버튼이 아니다
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: /둘/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /셋/ })).toBeNull();
+  });
+
+  test("onValueChange 가 없으면 버튼이 없고, 지난 단계는 여전히 '완료' 로 읽힌다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="c" />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByLabelText("하나, 완료")).toBeTruthy();
+    expect(screen.getByLabelText("둘, 완료")).toBeTruthy();
+  });
+
+  test("펼친 단계 글은 selected 이고 semibold · fg, 다른 단계 글은 fg-muted 다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="b" />);
+    const current = screen.getByText("둘");
+    expect(current.props.accessibilityState).toMatchObject({ selected: true });
+    expect(current.props.style).toMatchObject({ fontFamily: "Pretendard", fontSize: 16, fontWeight: 600, color: DS_FG_LIGHT });
+    expect(screen.getByText("셋").props.style).toMatchObject({ color: DS_FG_MUTED_LIGHT });
+    expect(screen.getByText("셋").props.accessibilityState).toBeUndefined();
+    expect(screen.getByText("하나").props.style).toMatchObject({ color: DS_FG_MUTED_LIGHT });
+  });
+
+  test("펼친 단계 표시는 2px brand 막대, 지난 단계 표시는 muted 체크, 남은 단계는 표시가 없다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="b" />);
+    const bars = findAllHost((node) => (node.props.style as Record<string, unknown> | undefined)?.borderLeftWidth === 2);
+    expect(bars).toHaveLength(1);
+    // react-native-css 는 border-<색> 을 네 변 공통 borderColor 로 낸다 — 폭이 왼쪽뿐이라 왼쪽만 보인다
+    expect(bars[0]?.props.style).toMatchObject({ borderColor: APP_BRAND_LIGHT });
+    const checks = findAllHost((node) => node.type === "RNSVGSvgView");
+    expect(checks).toHaveLength(1);
+    expect(checks[0]?.props.stroke).toBe(DS_FG_MUTED_LIGHT);
+  });
+
+  test("어긋난 입력에도 던지지 않는다 — 없는 value 는 전부 남은 단계, 빈 items 는 빈 목록", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="z" reached="c" onValueChange={() => {}} />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.queryByText("둘 내용")).toBeNull();
+    expect(screen.getByText("둘").props.style).toMatchObject({ color: DS_FG_MUTED_LIGHT });
+
+    await mount(<Stepper label="빈 단계" items={[]} value="a" />);
+    expect(screen.getByLabelText("빈 단계")).toBeTruthy();
   });
 });
