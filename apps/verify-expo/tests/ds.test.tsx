@@ -43,6 +43,10 @@ const DS_FG_BRAND_LIGHT = "#1b64da";
 const DS_FG_DANGER_LIGHT = "#c10007";
 /** base 라이트 bg.info-subtle — sky-50 의 jest 환산값(F-15). R28 Callout 채움 */
 const DS_BG_INFO_SUBTLE_LIGHT = "#f0f9ff";
+/** base 라이트 fg.success — green-800 의 jest 환산값(F-15). R28 상태색 */
+const DS_FG_SUCCESS_LIGHT = "#016630";
+/** base 라이트 fg.info — sky-700 의 jest 환산값(F-15). R28 상태색 */
+const DS_FG_INFO_LIGHT = "#0069a8";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -402,6 +406,33 @@ describe("R28 tone", () => {
   test("Text tone=warning 이 fg.warning 색이다", async () => {
     await mount(<Text tone="warning">주의</Text>);
     expect(rootStyle()).toMatchObject({ color: DS_FG_WARNING_LIGHT });
+  });
+});
+
+/*
+ * R28 Task 12 — 검증 앱 화면에 올린 것 중 앞 태스크가 단언하지 않은 것만 본다.
+ * tone=warning(R28 tone) · Badge · Chip 모서리(N-17 · R28 표면 경계선)는 위에 있다.
+ * text-4xl · 굵기 유틸리티는 게이트 (2)·(4) 가 소비자 클래스로 쟀고, 여기서는 DS Text 를 거친 값을 본다.
+ */
+describe("R28", () => {
+  test.each([
+    ["brand", DS_FG_BRAND_LIGHT],
+    ["success", DS_FG_SUCCESS_LIGHT],
+    ["info", DS_FG_INFO_LIGHT],
+  ] as const)("Text tone=%s 이 fg.%s 색이다", async (tone, color) => {
+    await mount(<Text tone={tone}>상태</Text>);
+    expect(rootStyle()).toMatchObject({ color });
+  });
+
+  test("Text size=4xl 은 fontSize 48 · lineHeight 56 이다", async () => {
+    await mount(<Text size="4xl">R28</Text>);
+    expect(rootStyle()).toMatchObject({ fontFamily: "Pretendard", fontSize: 48, lineHeight: 56 });
+  });
+
+  // plan 은 "600" 으로 적었지만 react-native-css 3.0.7 은 숫자를 낸다(게이트 (2) 주석).
+  test("Text className=font-semibold 가 md 스텝 굵기를 600 으로 바꾼다", async () => {
+    await mount(<Text className="font-semibold">본문</Text>);
+    expect(rootStyle()).toMatchObject({ fontSize: 16, fontWeight: 600 });
   });
 });
 
