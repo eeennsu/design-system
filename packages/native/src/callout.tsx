@@ -28,6 +28,8 @@ const fills: Record<CalloutTone, string> = {
  * - RN `View` 는 세로 flex 라 루트가 `flex-row` 이고, 아이콘 열은 `h-6`(text-md 행간 24px) 안에서
  *   `justify-center` 로 20px 아이콘을 첫 줄에 맞춘다
  *
+ * 내용 열은 `gap-1` 로 제목과 `children` 사이를 4px 띄운다(웹과 같다).
+ *
  * 아이콘은 공개 `Icon` 에 Callout `tone` 을 그대로 넘긴다. `label` 이 없어 꾸밈으로 숨는다.
  */
 export const Callout: FC<CalloutProps> = ({ children, tone = "info", title, icon, className }) => (
@@ -37,7 +39,7 @@ export const Callout: FC<CalloutProps> = ({ children, tone = "info", title, icon
         <Icon name={icon} size="md" tone={tone} />
       </View>
     ) : null}
-    <View className="min-w-0 flex-1">
+    <View className="min-w-0 flex-1 gap-1">
       {title ? <RNText className={cn("font-sans text-md font-semibold", tones[tone])}>{title}</RNText> : null}
       {children}
     </View>

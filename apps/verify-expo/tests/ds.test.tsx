@@ -512,6 +512,17 @@ describe("R28 Callout", () => {
     expect(JSON.stringify(screen.toJSON())).toContain(`"stroke":"${DS_FG_DANGER_LIGHT}"`);
   });
 
+  test("내용 열은 제목과 children 사이를 4px 띄운다", async () => {
+    await mount(
+      <Callout title="주의">
+        <Text>본문</Text>
+      </Callout>,
+    );
+    const column = screen.getByText("주의").parent;
+    if (!column) throw new Error("내용 열이 없다");
+    expect(JSON.stringify(column.props.style)).toMatch(/"(gap|rowGap)":4/);
+  });
+
   test("title · icon 이 없으면 children 만 그린다", async () => {
     await mount(
       <Callout tone="success">

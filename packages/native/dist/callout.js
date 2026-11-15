@@ -22,7 +22,9 @@ const fills = {
  * - RN `View` 는 세로 flex 라 루트가 `flex-row` 이고, 아이콘 열은 `h-6`(text-md 행간 24px) 안에서
  *   `justify-center` 로 20px 아이콘을 첫 줄에 맞춘다
  *
+ * 내용 열은 `gap-1` 로 제목과 `children` 사이를 4px 띄운다(웹과 같다).
+ *
  * 아이콘은 공개 `Icon` 에 Callout `tone` 을 그대로 넘긴다. `label` 이 없어 꾸밈으로 숨는다.
  */
-export const Callout = ({ children, tone = "info", title, icon, className }) => (_jsxs(View, { className: cn("flex-row gap-3 rounded-lg p-4", fills[tone], className), children: [icon ? (_jsx(View, { className: "h-6 shrink-0 justify-center", children: _jsx(Icon, { name: icon, size: "md", tone: tone }) })) : null, _jsxs(View, { className: "min-w-0 flex-1", children: [title ? _jsx(RNText, { className: cn("font-sans text-md font-semibold", tones[tone]), children: title }) : null, children] })] }));
+export const Callout = ({ children, tone = "info", title, icon, className }) => (_jsxs(View, { className: cn("flex-row gap-3 rounded-lg p-4", fills[tone], className), children: [icon ? (_jsx(View, { className: "h-6 shrink-0 justify-center", children: _jsx(Icon, { name: icon, size: "md", tone: tone }) })) : null, _jsxs(View, { className: "min-w-0 flex-1 gap-1", children: [title ? _jsx(RNText, { className: cn("font-sans text-md font-semibold", tones[tone]), children: title }) : null, children] })] }));
 //# sourceMappingURL=callout.js.map
