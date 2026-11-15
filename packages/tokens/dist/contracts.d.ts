@@ -250,6 +250,8 @@ export type Contracts<P extends Platform> = {
         open?: boolean;
         defaultOpen?: boolean;
         onOpenChange?: (open: boolean) => void;
+        disabled?: boolean;
+        variant?: Extract<Variant, "ghost" | "secondary">;
         className?: string;
     };
 };

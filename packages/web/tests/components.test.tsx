@@ -804,6 +804,64 @@ describe("R27 Collapsible", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("기본(ghost) 트리거는 가로 여백 · 모서리 · hover 채움이 없고 패널에 px-3 이 없다", () => {
+    render(
+      <Collapsible label="답 보기" defaultOpen>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    expect(trigger).toHaveClass("text-fg-muted", "hover:text-fg");
+    expect(trigger).not.toHaveClass("px-3", "rounded-md", "hover:bg-surface-hover");
+    expect(screen.getByText("답 내용").parentElement).not.toHaveClass("px-3");
+  });
+
+  it("variant=secondary 는 채운 트리거와 px-3 패널이고 패널은 채우지 않는다", () => {
+    render(
+      <Collapsible label="답 보기" variant="secondary" defaultOpen>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    expect(screen.getByRole("button", { name: "답 보기" })).toHaveClass(
+      "px-3",
+      "rounded-md",
+      "bg-surface-muted",
+      "text-fg",
+      "hover:bg-surface-hover",
+    );
+    const panel = screen.getByText("답 내용").parentElement!;
+    expect(panel).toHaveClass("px-3");
+    expect(panel.className).not.toMatch(/(^|s)bg-/);
+  });
+
+  it("disabled 면 클릭해도 열리지 않고 onOpenChange 가 불리지 않는다", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Collapsible label="답 보기" disabled onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    expect(trigger).toHaveAttribute("data-disabled");
+    expect(trigger).toHaveAttribute("aria-disabled", "true");
+    expect(trigger).toHaveClass("opacity-50", "pointer-events-none");
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it("defaultOpen disabled 면 열린 채로 남는다", () => {
+    render(
+      <Collapsible label="답 보기" defaultOpen disabled>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("답 내용")).toBeInTheDocument();
+  });
+
   it("소비자 className 이 루트에 병합된다", () => {
     const { container } = render(
       <Collapsible label="답 보기" className="mt-6">

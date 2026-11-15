@@ -197,6 +197,17 @@ describe("R27 Collapsible 계약", () => {
     expectTypeOf<Contracts<"web">["Collapsible"]["children"]>().toEqualTypeOf<ReactNode>();
   });
 
+  it("disabled · variant 는 ghost | secondary 만 받는다", () => {
+    expectTypeOf<Contracts<"web">["Collapsible"]["disabled"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Collapsible"]["variant"]>().toEqualTypeOf<"ghost" | "secondary" | undefined>();
+    assertType(
+      // @ts-expect-error primary 는 Collapsible variant 가 아니다
+      <Collapsible label="답" variant="primary">
+        {null}
+      </Collapsible>,
+    );
+  });
+
   it("값 콜백 이름과 number 열림은 받지 않는다", () => {
     assertType(
       <Collapsible label="답" open defaultOpen onOpenChange={(open: boolean) => void open}>

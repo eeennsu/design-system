@@ -78,8 +78,8 @@ describe("Tabs", () => {
 });
 
 describe("Collapsible", () => {
-  it("트리거가 토큰 recipe 와 같다 (R27)", () => {
-    render(<Collapsible label="답 보기">{null}</Collapsible>);
+  it("secondary 트리거가 토큰 recipe 와 같다 (R27)", () => {
+    render(<Collapsible label="답 보기" variant="secondary">{null}</Collapsible>);
     expect(screen.getByRole("button")).toHaveClass(...expected(component.collapsible));
   });
 });

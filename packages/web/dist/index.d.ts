@@ -180,6 +180,8 @@ export declare const components: {
         open?: boolean;
         defaultOpen?: boolean;
         onOpenChange?: (open: boolean) => void;
+        disabled?: boolean;
+        variant?: Extract<import("@eeennsu/tokens").Variant, "ghost" | "secondary">;
         className?: string;
     }>;
 };
