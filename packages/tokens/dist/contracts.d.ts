@@ -64,6 +64,15 @@ export type TableRow = {
     cells: ReactNode[];
 };
 /**
+ * Stepper 단계(R28). `value` 로 단계를 가리키고(number 가 아니다, C-14) `label` 이 줄 글이다.
+ * `content` 는 펼친 단계에서만 그 줄 아래에 그린다 — 웹 `ReactNode`, RN 은 컨테이너 규칙이다(C-17).
+ */
+export type StepItem<P extends Platform> = {
+    value: string;
+    label: string;
+    content?: P extends "web" ? ReactNode : ElementChildren;
+};
+/**
  * 컴포넌트 prop 계약. 웹·RN 구현이 이 맵을 그대로 만족해야 한다(C-17, AC-21).
  * 닫힌 type 리터럴로 두는 이유: AC-11a · AC-15 의 mapped type 테스트가
  * "선언된 키 전부"를 순회할 수 있어야 한다.
@@ -282,9 +291,22 @@ export type Contracts<P extends Platform> = {
         icon?: IconName;
         className?: string;
     };
+    /**
+     * 세로 단계 목록(R28). `label` 은 목록의 접근성 이름이고 보이지 않는다(C-13).
+     * 제어 전용이다 — `value`(펼친 단계)가 필수이고 `defaultValue` 가 없다(C-12). `reached` 는 가장 멀리 간 단계이고
+     * 없거나 `value` 보다 앞이면 `value` 를 따른다. `onValueChange` 가 있을 때만 지난 단계 줄이 눌린다(알려진 동작 36).
+     */
+    Stepper: {
+        label: string;
+        items: StepItem<P>[];
+        value: string;
+        reached?: string;
+        onValueChange?: (value: string) => void;
+        className?: string;
+    };
 };
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27, Link · Callout 은 R28. */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs", "Collapsible", "Link", "Callout"];
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27, Link · Callout · Stepper 는 R28. */
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs", "Collapsible", "Link", "Callout", "Stepper"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.

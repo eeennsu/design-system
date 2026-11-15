@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Stepper, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -134,6 +134,17 @@ describe("Callout", () => {
     render(<Callout>{"글"}</Callout>);
     const { padding, radius, gap, text } = component.callout;
     expect(screen.getByRole("note")).toHaveClass(`p-${padding}`, `rounded-${radius}`, `gap-${gap}`, `text-${text}`);
+  });
+});
+
+describe("Stepper", () => {
+  it("줄이 paddingY · gap 을, 표시 자리가 markerWidth 를, 줄 글이 text 를 recipe 와 같게 가진다 (R28)", () => {
+    render(<Stepper label="단계" items={[{ value: "a", label: "하나" }]} value="a" />);
+    const { paddingY, gap, markerWidth, text } = component.stepper;
+    const row = screen.getByRole("listitem");
+    expect(row).toHaveClass(`py-${paddingY}`, `gap-${gap}`);
+    expect(row.firstElementChild).toHaveClass(`w-${markerWidth}`);
+    expect(screen.getByText("하나")).toHaveClass(`text-${text}`);
   });
 });
 

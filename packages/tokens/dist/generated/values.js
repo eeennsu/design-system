@@ -300,6 +300,12 @@ export const component = {
             "radius": "md"
         }
     },
+    "stepper": {
+        "paddingY": "2",
+        "gap": "3",
+        "markerWidth": "4",
+        "text": "md"
+    },
     "table": {
         "paddingX": "3",
         "paddingY": "2",

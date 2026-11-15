@@ -26,12 +26,14 @@ import {
   Link,
   Prose,
   Stack,
+  Stepper,
   Table,
   Tabs,
   Text,
   Textarea,
   Tooltip,
 } from "../src/index.js";
+import { stepStates } from "../src/stepper.js";
 
 describe("AC-8 Stack · Box", () => {
   it("direction · align · justify · wrap 이 클래스로 간다", () => {
@@ -1042,5 +1044,136 @@ describe("R28 Callout", () => {
     const note = screen.getByRole("note");
     expect(note).toHaveClass("p-6", "mt-4");
     expect(note).not.toHaveClass("p-4");
+  });
+});
+
+describe("R28 Stepper — stepStates", () => {
+  const items = [{ value: "a" }, { value: "b" }, { value: "c" }, { value: "d" }];
+
+  it("reached 가 없으면 value 앞은 지난, value 는 펼친, 뒤는 남은 단계다", () => {
+    expect(stepStates(items, "b")).toEqual(["done", "current", "upcoming", "upcoming"]);
+  });
+
+  it("reached 까지는 value 뒤라도 지난 단계다", () => {
+    expect(stepStates(items, "b", "d")).toEqual(["done", "current", "done", "done"]);
+  });
+
+  it("reached 가 value 보다 앞이면 value 를 따른다", () => {
+    expect(stepStates(items, "c", "a")).toEqual(["done", "done", "current", "upcoming"]);
+  });
+
+  it("value 가 어느 항목과도 맞지 않으면 전부 남은 단계다 (던지지 않는다)", () => {
+    expect(stepStates(items, "z")).toEqual(["upcoming", "upcoming", "upcoming", "upcoming"]);
+    expect(stepStates(items, "z", "c")).toEqual(["upcoming", "upcoming", "upcoming", "upcoming"]);
+  });
+
+  it("reached 가 없는 항목이면 value 를 따른다", () => {
+    expect(stepStates(items, "b", "z")).toEqual(["done", "current", "upcoming", "upcoming"]);
+  });
+
+  it("빈 items 는 빈 배열이다", () => {
+    expect(stepStates([], "a")).toEqual([]);
+    expect(stepStates([], "a", "b")).toEqual([]);
+  });
+});
+
+describe("R28 Stepper", () => {
+  const items = [
+    { value: "a", label: "레지스터 초기화", content: <p>A 내용</p> },
+    { value: "b", label: "명령어 읽기", content: <p>B 내용</p> },
+    { value: "c", label: "레지스터 값 읽기", content: <p>C 내용</p> },
+    { value: "d", label: "메모리 쓰기", content: <p>D 내용</p> },
+  ];
+
+  it("<ol> 이고 접근성 이름이 label 이며 label 은 보이지 않는다", () => {
+    render(<Stepper label="풀이 단계" items={items} value="a" />);
+    const list = screen.getByRole("list", { name: "풀이 단계" });
+    expect(list.tagName).toBe("OL");
+    expect(list).toHaveClass("flex", "flex-col");
+    expect(screen.getAllByRole("listitem")).toHaveLength(4);
+    expect(screen.queryByText("풀이 단계")).toBeNull();
+  });
+
+  it("펼친 단계 항목만 aria-current=step 이고 그 content 만 DOM 에 있다", () => {
+    render(<Stepper label="단계" items={items} value="c" reached="d" />);
+    const rows = screen.getAllByRole("listitem");
+    expect(rows.map((row) => row.getAttribute("aria-current"))).toEqual([null, null, "step", null]);
+    expect(screen.getByText("C 내용")).toBeInTheDocument();
+    expect(screen.getByText("C 내용").parentElement).toHaveClass("mt-2");
+    for (const other of ["A 내용", "B 내용", "D 내용"]) expect(screen.queryByText(other)).toBeNull();
+  });
+
+  it("onValueChange 가 있으면 지난 단계가 type=button 버튼이고 이름에 완료가 들어가며 누르면 값 하나로 불린다", () => {
+    const onValueChange = vi.fn();
+    render(<Stepper label="단계" items={items} value="c" onValueChange={onValueChange} />);
+    const button = screen.getByRole("button", { name: "레지스터 초기화, 완료" });
+    expect(button).toHaveAttribute("type", "button");
+    expect(screen.getByRole("button", { name: /명령어 읽기/ })).toHaveAccessibleName(/완료/);
+    fireEvent.click(button);
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange.mock.calls[0]).toEqual(["a"]);
+  });
+
+  it("펼친 단계 · 남은 단계는 버튼이 아니다", () => {
+    render(<Stepper label="단계" items={items} value="b" onValueChange={() => {}} />);
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["레지스터 초기화, 완료"]);
+    for (const row of screen.getAllByRole("listitem").slice(1)) expect(row.querySelector("button")).toBeNull();
+  });
+
+  it("reached 뒤 지난 단계도 눌러 다시 열 수 있다", () => {
+    const onValueChange = vi.fn();
+    render(<Stepper label="단계" items={items} value="b" reached="d" onValueChange={onValueChange} />);
+    expect(screen.getAllByRole("button")).toHaveLength(3);
+    fireEvent.click(screen.getByRole("button", { name: /메모리 쓰기/ }));
+    expect(onValueChange.mock.calls).toEqual([["d"]]);
+  });
+
+  it("onValueChange 가 없으면 버튼이 하나도 없고 지난 단계는 숨긴 완료 글을 가진 글이다", () => {
+    render(<Stepper label="단계" items={items} value="c" />);
+    expect(screen.queryAllByRole("button")).toEqual([]);
+    const first = screen.getAllByRole("listitem")[0]!;
+    expect(first).toHaveTextContent("레지스터 초기화, 완료");
+    expect(first.querySelector(".sr-only")).toHaveTextContent(", 완료");
+  });
+
+  it("지난 단계는 체크 svg · muted 글, 펼친 단계는 brand 막대 · semibold 글, 남은 단계는 표시 없는 muted 글이다", () => {
+    render(<Stepper label="단계" items={items} value="b" onValueChange={() => {}} />);
+    const [done, current, upcoming] = screen.getAllByRole("listitem") as [HTMLElement, HTMLElement, HTMLElement];
+    const doneMarker = done.firstElementChild!;
+    const check = doneMarker.querySelector("svg")!;
+    expect(check).toHaveAttribute("aria-hidden", "true");
+    expect(check).toHaveClass("text-fg-muted");
+    expect(screen.getByRole("button")).toHaveClass("text-md", "text-fg-muted", "hover:text-fg", "text-start");
+    const bar = current.firstElementChild!.firstElementChild!;
+    expect(bar).toHaveClass("h-full", "border-l-2", "border-brand");
+    expect(current.querySelector("svg")).toBeNull();
+    expect(screen.getByText("명령어 읽기")).toHaveClass("text-md", "font-semibold", "text-fg");
+    expect(screen.getByText("명령어 읽기")).not.toHaveClass("text-fg-muted");
+    expect(upcoming.firstElementChild!.childElementCount).toBe(0);
+    expect(screen.getByText("레지스터 값 읽기")).toHaveClass("text-md", "text-fg-muted");
+  });
+
+  it("번호 글자를 그리지 않는다", () => {
+    const { container } = render(<Stepper label="단계" items={items} value="b" reached="c" onValueChange={() => {}} />);
+    expect(container.textContent).not.toMatch(/[0-9]/);
+  });
+
+  it("어긋난 입력에도 던지지 않는다 — 맞지 않는 value 는 전부 남은 단계, 빈 items 는 빈 목록", () => {
+    const { rerender } = render(<Stepper label="단계" items={items} value="z" reached="c" onValueChange={() => {}} />);
+    expect(screen.queryAllByRole("button")).toEqual([]);
+    expect(screen.getAllByRole("listitem").every((row) => !row.hasAttribute("aria-current"))).toBe(true);
+    expect(screen.queryByText(/내용/)).toBeNull();
+    rerender(<Stepper label="단계" items={[]} value="a" />);
+    expect(screen.getByRole("list", { name: "단계" })).toBeEmptyDOMElement();
+  });
+
+  it("content 가 없는 펼친 단계는 내용 자리를 그리지 않는다", () => {
+    const { container } = render(<Stepper label="단계" items={[{ value: "a", label: "하나" }]} value="a" />);
+    expect(container.querySelector(".mt-2")).toBeNull();
+  });
+
+  it("소비자 className 이 목록에 병합된다", () => {
+    render(<Stepper label="단계" items={items} value="a" className="mt-6" />);
+    expect(screen.getByRole("list")).toHaveClass("flex", "flex-col", "mt-6");
   });
 });

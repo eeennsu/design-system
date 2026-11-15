@@ -16,8 +16,8 @@ import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import type { StepItem, TabItem, TableColumn, TableRow } from "../src/index.js";
+import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Stepper, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -290,7 +290,39 @@ describe("R28 Callout 계약", () => {
   });
 });
 
+describe("R28 Stepper 계약", () => {
+  const items: StepItem<"web">[] = [{ value: "a", label: "하나", content: <p>내용</p> }, { value: "b", label: "둘" }];
+
+  it("진입점이 StepItem 을 타입 전용으로 다시 내보내고 제어 전용 value · onValueChange 만 있다", () => {
+    expectTypeOf<StepItem<"web">>().toEqualTypeOf<{ value: string; label: string; content?: ReactNode }>();
+    expectTypeOf<Contracts<"web">["Stepper"]["items"]>().toEqualTypeOf<StepItem<"web">[]>();
+    expectTypeOf<Contracts<"web">["Stepper"]["value"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Stepper"]["reached"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Contracts<"web">["Stepper"]["onValueChange"]>().toEqualTypeOf<((value: string) => void) | undefined>();
+    expectTypeOf<Contracts<"web">["Stepper"]>().not.toHaveProperty("defaultValue");
+  });
+
+  it("값은 문자열 필수이고 number · defaultValue · 번호 prop 은 받지 않는다", () => {
+    assertType(<Stepper label="단계" items={items} value="a" reached="b" onValueChange={(v: string) => void v} className="mt-4" />);
+    // @ts-expect-error value 필수 (제어 전용)
+    assertType(<Stepper label="단계" items={items} />);
+    // @ts-expect-error 값은 string 이다 (C-14)
+    assertType(<Stepper label="단계" items={items} value={1} />);
+    // @ts-expect-error 단계 번호 prop 은 없다 (C-14 · AC-15)
+    assertType(<Stepper label="단계" items={items} value="a" current={2} />);
+    // @ts-expect-error 제어 전용이라 defaultValue 가 없다
+    assertType(<Stepper label="단계" items={items} value="a" defaultValue="a" />);
+    // @ts-expect-error 콜백 인자는 string 이다
+    assertType(<Stepper label="단계" items={items} value="a" onValueChange={(v: number) => void v} />);
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
+  it("Stepper", () => {
+    // @ts-expect-error label 필수
+    assertType(<Stepper items={[]} value="a" />);
+  });
+
   it("Link", () => {
     // @ts-expect-error label 필수
     assertType(<Link href="/next" />);
