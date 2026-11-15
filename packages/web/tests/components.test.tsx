@@ -524,7 +524,14 @@ describe("R27 Table", () => {
     const { container } = render(<Table columns={columns} rows={rows} className="mt-6" />);
     const root = container.firstElementChild!;
     expect(root).toHaveAttribute("tabindex", "0");
-    expect(root).toHaveClass("overflow-x-auto", "mt-6");
+    expect(root).toHaveClass("overflow-auto", "mt-6");
+  });
+
+  it("루트는 가로 · 세로 모두 스크롤하고 소비자 max-h-96 이 루트에 병합된다 (R28)", () => {
+    const { container } = render(<Table columns={columns} rows={rows} className="max-h-96" />);
+    const root = container.firstElementChild!;
+    expect(root).toHaveClass("overflow-auto", "max-h-96");
+    expect(root).not.toHaveClass("overflow-x-auto");
   });
 });
 
@@ -591,6 +598,22 @@ describe("R27 Prose", () => {
       "[:where(&)>*+*]:mt-4",
       "[:where(&)_h2]:text-xl",
       "[:where(&)_:not(pre)>code]:font-mono",
+    );
+  });
+
+  it("한국어 줄바꿈 — 루트가 break-keep · wrap-break-word 다 (R28)", () => {
+    const { container } = render(<Prose>{"x"}</Prose>);
+    expect(container.firstElementChild).toHaveClass("break-keep", "wrap-break-word");
+  });
+
+  it("링크 — 기존 밑줄 · brand 색에 키보드 포커스 outline 이 더해진다 (R28)", () => {
+    const { container } = render(<Prose>{"x"}</Prose>);
+    expect(container.firstElementChild).toHaveClass(
+      "[:where(&)_a]:text-fg-brand",
+      "[:where(&)_a]:underline",
+      "[:where(&)_a:focus-visible]:outline-2",
+      "[:where(&)_a:focus-visible]:outline-offset-2",
+      "[:where(&)_a:focus-visible]:outline-border-focus",
     );
   });
 

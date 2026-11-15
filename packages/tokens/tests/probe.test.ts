@@ -115,6 +115,25 @@ describe("R27 Prose 임의 변형이 특이성 0 선택자를 낸다 (decisions-
   });
 });
 
+describe("R28 Prose 줄바꿈 · 링크 포커스 유틸리티가 tailwindcss 4.3.3 에서 생성된다", () => {
+  it("break-keep 은 word-break: keep-all, wrap-break-word 는 overflow-wrap: break-word 다", async () => {
+    const css = await build(["break-keep", "wrap-break-word"]);
+    expect(css).toMatch(/\.break-keep\s*\{\s*word-break: keep-all/);
+    expect(css).toMatch(/\.wrap-break-word\s*\{\s*overflow-wrap: break-word/);
+  });
+
+  it("[:where(&)_a:focus-visible]: 변형이 특이성 0 선택자로 outline 을 낸다 (색은 @theme inline 이라 :root 변수를 바로 쓴다)", async () => {
+    const css = await build([
+      "[:where(&)_a:focus-visible]:outline-2",
+      "[:where(&)_a:focus-visible]:outline-offset-2",
+      "[:where(&)_a:focus-visible]:outline-border-focus",
+    ]);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-width: 2px/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-offset: 2px/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-color: var\(--border-focus\)/m);
+  });
+});
+
 describe("R27 Tabs 겹침 유틸리티가 리셋과 무관하게 남는다 (decisions-r27 6)", () => {
   it("-mb-px 는 생성된다 (음수 px 는 정적 값)", async () => {
     const css = await build(["-mb-px"]);
