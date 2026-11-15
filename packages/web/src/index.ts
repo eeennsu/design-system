@@ -1,3 +1,4 @@
+import type { StepItem as PlatformStepItem } from "@eeennsu/tokens";
 import { Badge } from "./badge.js";
 import { Box } from "./box.js";
 import { Button } from "./button.js";
@@ -24,7 +25,9 @@ import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
 
 export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Stepper, Table, Tabs, Text, Textarea, Tooltip };
-export type { StepItem, TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
+export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
+/** Stepper 항목. 계약의 플랫폼 매개변수를 웹으로 고정해 `TabItem` 처럼 `StepItem[]` 로 쓴다. */
+export type StepItem = PlatformStepItem<"web">;
 export { cn } from "./cn.js";
 
 /**

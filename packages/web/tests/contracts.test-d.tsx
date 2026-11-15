@@ -17,6 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { StepItem, TabItem, TableColumn, TableRow } from "../src/index.js";
+import type { StepItem as PlatformStepItem } from "@eeennsu/tokens";
 import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Stepper, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
@@ -291,11 +292,12 @@ describe("R28 Callout 계약", () => {
 });
 
 describe("R28 Stepper 계약", () => {
-  const items: StepItem<"web">[] = [{ value: "a", label: "하나", content: <p>내용</p> }, { value: "b", label: "둘" }];
+  const items: StepItem[] = [{ value: "a", label: "하나", content: <p>내용</p> }, { value: "b", label: "둘" }];
 
   it("진입점이 StepItem 을 타입 전용으로 다시 내보내고 제어 전용 value · onValueChange 만 있다", () => {
-    expectTypeOf<StepItem<"web">>().toEqualTypeOf<{ value: string; label: string; content?: ReactNode }>();
-    expectTypeOf<Contracts<"web">["Stepper"]["items"]>().toEqualTypeOf<StepItem<"web">[]>();
+    expectTypeOf<StepItem>().toEqualTypeOf<{ value: string; label: string; content?: ReactNode }>();
+    expectTypeOf<StepItem>().toEqualTypeOf<PlatformStepItem<"web">>();
+    expectTypeOf<Contracts<"web">["Stepper"]["items"]>().toEqualTypeOf<StepItem[]>();
     expectTypeOf<Contracts<"web">["Stepper"]["value"]>().toEqualTypeOf<string>();
     expectTypeOf<Contracts<"web">["Stepper"]["reached"]>().toEqualTypeOf<string | undefined>();
     expectTypeOf<Contracts<"web">["Stepper"]["onValueChange"]>().toEqualTypeOf<((value: string) => void) | undefined>();
