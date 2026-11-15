@@ -2,6 +2,7 @@
 
 - 작성일: 2026-09-05
 - 개정 이력: **v2 (2026-09-05)** — [plan-verification.md](plan-verification.md) 검증 결과 반영. B 2건(F-2 tokens component export 누락, F-4 twMerge `override`), P 21건, N 13건. 사용자 결정 4건(F-1 children `string | string[]`, F-7 컨트롤 투명 테두리, F-9 Expo SDK 57 우선, F-18 ButtonGroup `size` 없음 유지). 각 변경 지점에 `(v2 F-n)` 표기
+- R28 추가(2026-11-15): §4.10 값 · 계약 · 클래스, §6 "R28" 절(`### Task 1` ~ `### Task 15`), §7 · §8 R28 행. 스펙 R28 개정 기준
 - 기준 문서: [design-system-spec.md](design-system-spec.md) R23 개정. 결정 근거는 [decisions-r21.md](decisions-r21.md) · [decisions-r22.md](decisions-r22.md) · [decisions-r23.md](decisions-r23.md)이며 이 계획은 닫힌 결정을 다시 열지 않는다
 - 이 문서의 지위: 스펙이 "계획 단계"로 넘긴 항목(토큰 인벤토리·값, 컴포넌트별 축 매트릭스, 오버레이 세부, Stack/Box enum, focus ring 토큰, `IconName` 소스, exports·peer·lockstep 버전, 테스트 러너, 검증 앱 위치, R23 토큰 인벤토리 요구 2건)을 결정하고, 구현 태스크와 AC 매핑을 고정한다. 스펙과 충돌하는 내용이 발견되면 스펙을 고치지 않고 [§9 스펙 수정 필요](#9-스펙-수정-필요)에 모은다
 - npm 스코프는 `@eeennsu`로 확정됐다(2026-09-05 사용자 결정, §8 D-21). 이 문서·코드·검증 앱은 전부 이 문자열을 그대로 쓴다. 자리표시자는 남아 있지 않다
@@ -535,6 +536,73 @@ export type TableRow = { cells: ReactNode[] };
 - 이 표기는 설치된 Tailwind 4.3.3에서 확인했다(2026-10-24, 독립 리뷰의 메모리 컴파일). `[:where(&)_h2]:text-xl` → `:where(.…) h2 {…}`, `[:where(&)>*+*]:mt-4` → `:where(.…) > * + *`, `_:not(pre)>code` · `_li+li` · `>*+h2`도 기대대로이고 Oxide 스캐너가 JS 문자열에서 후보를 뽑는다. peer 범위는 `tailwindcss >=4.1`이지만 확인한 것은 4.3.3뿐이라 T-W11의 probe를 회귀 가드로 둔다
 - 간격 키는 전부 열거 안이다(`1` · `4` · `6` · `8`). 색 · 글자는 DS 어휘뿐이다
 
+### 4.10 R28 토큰 · 컴포넌트 세부
+
+스펙 R28, 근거 [decisions-r28.md](decisions-r28.md). §3 · §4의 R28 전 표는 그대로 두고 추가분을 여기 모은다. 태스크는 §6 R28 절(Task 1 ~ 15).
+
+**토큰 추가분**
+
+| 종류 | 추가 | 값 |
+|---|---|---|
+| `--spacing-*` | `32` · `40` · `48` · `64` · `80` · `96` | `128px` · `160px` · `192px` · `256px` · `320px` · `384px` |
+| `--text-*` | `3xl` · `4xl` | 36 / 44 / 700 · 48 / 56 / 700. native 래퍼 배수 `44/36` · `56/48` |
+| `--font-weight-*` | `normal` · `semibold` · `bold` | 400 · 600 · 700(primitive `regular` · `semibold` · `bold`). `medium`은 내지 않는다 |
+| `--font-mono` | 덮어쓰기 | 웹 `"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`, RN `JetBrainsMono` |
+| primitive | `green` · `orange` · `sky` 11단, `transparent` | Tailwind 4.3.3 `theme.css` 복사, `oklch(0% 0 0 / 0)` |
+| `twMergeConfig` | spacing 16키 + `0`, text 7키, 굵기 3키, 색 9키 | Task 1 · 2 |
+
+**semantic 색 추가분(출발값)** — Task 2의 대비 테스트(decisions-r28 12)가 통과하도록 같은 램프 안에서 옮길 수 있다. 옮겼으면 이 표를 고친다.
+
+| 토큰 경로 | `:root` 변수 | `@theme inline` 키 → 클래스 | base light | base dark | bakery light | bakery dark |
+|---|---|---|---|---|---|---|
+| `bg.brand-subtle` | `--bg-brand-subtle` | `--color-brand-subtle` → `bg-brand-subtle` | blue-50 | blue-950 | amber-100 | amber-950 |
+| `bg.success-subtle` | `--bg-success-subtle` | `bg-success-subtle` | green-50 | green-950 | green-50 | green-950 |
+| `bg.warning-subtle` | `--bg-warning-subtle` | `bg-warning-subtle` | amber-50 | amber-950 | orange-50 | orange-950 |
+| `bg.info-subtle` | `--bg-info-subtle` | `bg-info-subtle` | sky-50 | sky-950 | sky-50 | sky-950 |
+| `bg.danger-subtle` | `--bg-danger-subtle` | `bg-danger-subtle` | red-50 | red-950 | red-50 | red-950 |
+| `fg.success` | `--fg-success` | `--color-fg-success` → `text-fg-success` | green-700 | green-400 | green-700 | green-400 |
+| `fg.warning` | `--fg-warning` | `text-fg-warning` | amber-800 | amber-400 | orange-800 | orange-400 |
+| `fg.info` | `--fg-info` | `text-fg-info` | sky-700 | sky-400 | sky-700 | sky-400 |
+| `border.surface` | `--border-surface` | `--color-border-surface` → `border-border-surface` | transparent | transparent | transparent | transparent |
+
+- bakery `border.surface`는 투명으로 시작한다. Task 11 화면에서 Card가 흐리면(알려진 동작 24) 값을 줄지 그때 정한다(decisions-r28 2)
+
+**계약 추가분(`contracts.ts`)**
+
+```ts
+export type Size = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+export type Tone = "default" | "muted" | "danger" | "brand" | "success" | "warning" | "info";
+export type StepItem<P extends Platform> = { value: string; label: string; content?: P extends "web" ? ReactNode : ElementChildren };
+// Contracts<P> 에 더한다
+Link: { label: string; tone?: Tone; size?: TypographyStep; className?: string } & (P extends "web" ? { href: string } : { onPress: () => void });
+Callout: { children: P extends "web" ? ReactNode : ElementChildren; tone?: Extract<Tone, "info" | "success" | "warning" | "danger" | "brand">; title?: string; icon?: IconName; className?: string };
+Stepper: { label: string; items: StepItem<P>[]; value: string; reached?: string; onValueChange?: (value: string) => void; className?: string };
+// Collapsible 에 더한다
+disabled?: boolean; variant?: Extract<Variant, "ghost" | "secondary">;
+```
+
+키 목록 끝에 `"Link"`, `"Callout"`, `"Stepper"`(web Task 7 · 8, native Task 9 · 10). 기본값: Link `tone="brand"` · `size="md"`, Callout `tone="info"`, Collapsible `variant="ghost"`.
+
+**클래스**
+
+| 컴포넌트 | 부분 | 클래스 |
+|---|---|---|
+| Link (웹) | `<a>` | `rounded-sm hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus` + `tones[tone]` + `steps[size]` |
+| Link (native) | Pressable / Text | `self-start active:opacity-80` / `font-sans` + `tones[tone]` + `steps[size]` |
+| Callout | 루트 | `flex gap-3 rounded-lg p-4 text-md text-fg break-keep wrap-break-word`(native는 `break-keep wrap-break-word` 제외) + 채움 `Record` `bg-<tone>-subtle` |
+| Callout | 제목 · 아이콘 | 제목 `font-semibold` + `text-fg-<tone>`, `Icon size="md" tone={tone}`(label 없음). 레이아웃은 아이콘 열 + 내용 열(제목 → `children`) |
+| Stepper | 목록 · 줄 | 웹 `<ol className="flex flex-col">`, 항목 `<li className="flex gap-3 py-2">` = 표시 열 `flex h-6 w-4 shrink-0 items-center justify-center` + 내용 열 `min-w-0 flex-1`(줄 글 → 펼친 단계면 `<div className="mt-2">{content}</div>`) |
+| Stepper | 상태 | 지난: 표시 `Glyph name="check" size="sm"`(muted) · 글 `text-md text-fg-muted`, 누를 수 있으면 글이 `<button type="button" className="text-start hover:text-fg rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus">`. 펼친: 표시 `<span className="h-full border-l-2 border-brand" />` · 글 `text-md font-semibold text-fg`. 남은: 표시 없음 · 글 `text-md text-fg-muted` |
+| Collapsible `ghost` | 트리거 / 패널 | `… border border-transparent py-2 text-md text-fg-muted hover:text-fg`(가로 여백 · 모서리 · hover 채움 없음) / `pt-2` |
+| Collapsible `secondary` | 트리거 / 패널 | `… border border-transparent rounded-md px-3 py-2 text-md text-fg bg-surface-muted hover:bg-surface-hover` / `px-3 pt-2`(채우지 않는다) |
+| Card · Input · Textarea · 고르지 않은 Chip | 테두리 | `border-transparent` → `border-border-surface`(Card는 `border border-border-surface` 추가) |
+| Badge · Chip | 모서리 | `rounded-full` → `rounded-xl`, recipe `radius` → `{primitive.radius.xl}` |
+| Prose | 루트 · `a` | `break-keep wrap-break-word`, `[:where(&)_a:focus-visible]:outline-2 [:where(&)_a:focus-visible]:outline-offset-2 [:where(&)_a:focus-visible]:outline-border-focus` |
+| Table | 루트 | `overflow-x-auto` → `overflow-auto` |
+
+- recipe 새 파일: `component/callout.json` `{ padding: 4, radius: lg, gap: 3, text: md }`, `component/stepper.json` `{ paddingY: 2, gap: 3, markerWidth: 4, text: md }`. 기존 `collapsible.json`의 `paddingX 3`은 `secondary`가 쓴다
+- Stepper 표시 막대는 `border-l-2`(2px)다. decisions-r28 17의 "폭 2~3px"를 간격 열거 밖 폭 클래스 없이 맞춘다
+
 ---
 
 ## 5. 패키지 구성
@@ -940,6 +1008,386 @@ design-system/
 - publish 뒤 에이전트가 구현 노트 진행 상태에 `0.5.0` publish 날짜를 적는다(0.4.1 때와 같은 docs 커밋)
 - 닫는 AC: AC-16 · 17 · 18의 "npm 설치" 의미(0.5.0)
 
+### R28 — C-5c · 표현 어휘 · Link · Callout · Stepper (`0.6.0`)
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** 앱마다 모서리 · 표면 관계를 바꿀 수 있게 하고(C-5c), 굵기 · 큰 제목 · 고정폭 글꼴 · 상태색 · 큰 크기 어휘와 웹 · native Link · Callout · Stepper를 더해 `0.6.0`으로 낸다.
+
+**Architecture:** 토큰 소스(DTCG)에 키를 더하면 빌드가 토큰 CSS · native 래퍼 · JS 객체 · `twMergeConfig`를 함께 낸다. 계약은 `packages/tokens/src/contracts.ts` 한 곳이고 web · native가 각자 구현해 맵 동등성 테스트(C-17)가 대칭을 본다. RN 착수 게이트(Task 3)는 토큰 태스크 뒤 · native 구현 앞이다.
+
+**Tech Stack:** pnpm 10.28.1 workspace, TypeScript, Tailwind 4.3.3, Base UI 1.8.0, lucide 1.41.0, tailwind-merge 3, NativeWind 5.0.0-preview.4 · react-native-css 3.0.7, Vitest, Playwright, jest-expo + RNTL 14.
+
+**Spec:** [design-system-spec.md](design-system-spec.md) R28(요약 · C-5c · C-6 · C-7a · C-7b · C-8 · C-12 · C-13 · C-17 · C-19 (R28) · AC · 알려진 동작 33~38). 근거와 값 판단은 [decisions-r28.md](decisions-r28.md). 값 표는 §4.10.
+
+#### Global Constraints
+
+- Node 22(`node -v`가 `v22.*`). Node 20이면 web 테스트가 jsdom 로딩에서 죽는다(구현 노트 N-18)
+- 워크트리 없이 `main`에서 제자리 진행한다. 같은 폴더에서 다른 세션이 돌 수 있으니 커밋 직전에 `git branch --show-current`가 `main`인지 본다. 태스크마다 커밋 하나, 제목은 50자 안쪽 명사형(`feat: …` · `docs: …`), 끝에 `Co-Authored-By` 줄
+- 닫힌 결정(R21~R27)과 R25 보류(데이터 값 `number` prop)를 열지 않는다. `tone` · 간격 열거 · `Size`에는 값을 더하기만 한다. `variant`는 4개 그대로다
+- 컴포넌트 클래스는 정적 문자열 리터럴이다(C-4 (2)). 맵은 `Record<…, string>` 객체로 둔다
+- 생성물(`packages/*/themes/*.css`, `packages/tokens/src/generated`, `src/brands`)과 `dist`는 추적하되 손으로 고치지 않는다 — `pnpm -r build`가 덮는다
+- 새 의존성을 추가하지 않는다(폰트 패키지도 DS가 의존하지 않는다 — 파일 미동봉, C-7b)
+- `pnpm -r test`나 `pnpm --filter verify-next test`를 돌렸으면 커밋 전에 `git checkout -- docs/assets`(F-25). 웹 Playwright는 태스크가 적은 spec 파일만 돌린다
+- `packages/native`의 `react` · `react-native` devDependency는 verify-expo와 정확히 같은 버전으로 둔다(N-11). 이 라운드에서 바꿀 일은 없다
+- 한 컴포넌트 = 계약 키 하나 · `FC<Props>` 하나, `ref` · `as` · `render` · `style` 없음(Link · Callout · Stepper 공통)
+- 외부 사실(라이선스 · 패키지 이름)은 출처 URL과 확인일을 달아 구현 노트에 적는다
+
+#### Review Focus
+
+- **`Tone` · `TypographyStep` 전수 맵**: 키가 늘면 DS 안의 `Record<Tone, …>`(web `text.tsx` · `icon.tsx`, native `text.tsx` · `icon.tsx`)와 `Record<TypographyStep, …>`(양쪽 `text.tsx`)가 전부 채워져야 한다. Task 1 · 2가 tsc로 잡고, Task 2는 새 `tone` 네 값의 렌더 클래스를 web · native 단위 테스트로 본다
+- **`invalid` · 포커스 테두리가 `border-border-surface`를 이긴다**: 쉬는 테두리 색이 투명 정적 색에서 semantic 키로 바뀌므로 `cn(base, "border-danger")` 병합이 그대로여야 한다. Task 4가 web · native Input의 `invalid` 클래스와 verify-expo `toHaveStyle`로 본다(F-28 재발 방지)
+- **Stepper의 어긋난 입력**: `value`가 어느 항목과도 맞지 않을 때, `reached`가 `value`보다 앞이거나 없는 항목일 때, `items`가 빈 배열일 때 던지지 않는다. Task 8 · 10의 `stepStates` 테스트가 본다
+- **소비자가 radius를 덮었을 때 계약 밖 모서리**: `--radius-md` · `--radius-xl`을 덮어도 `--radius-lg`(재선언 안 한 키)와 `rounded-full`은 그대로다. Task 11의 `/surface` 라우트가 `rounded-lg` 요소 16px과 `className="rounded-full"`을 준 Box의 `border-radius`(9999px 계열 값)를 본다
+- **긴 한국어 · 긴 식별자**: Prose · Callout의 `break-keep`이 어절 단위로 바꾸되 줄보다 긴 URL은 넘치지 않는다. Task 11이 393px 뷰포트에서 긴 URL 문단의 `scrollWidth <= clientWidth`를 본다
+
+#### 공통 — 고칠 파일과 확인 명령
+
+컴포넌트 태스크(5 ~ 10)는 R27 "모든 컴포넌트 태스크에 공통인 것"을 따른다 — 계약 항목 · 키 목록 · 구현 · export · `components` 맵 · 테스트를 한 태스크에 함께 넣는다. native 쪽 대응 파일은 `packages/native/src/<x>.tsx` · `packages/native/src/index.ts` · `packages/native/tests/contracts.test-d.tsx` · `packages/native/tests/dist.test.ts`이고, native 동작 테스트는 `apps/verify-expo/tests/ds.test.tsx`(jest)에 둔다.
+
+확인 명령(레포 루트): `pnpm -r build` → `pnpm --filter @eeennsu/tokens test` · `pnpm --filter @eeennsu/web test` · `pnpm --filter @eeennsu/native test` · `pnpm --filter verify-expo test`(태스크가 고친 패키지만).
+
+### Task 1: 고정폭 글꼴 확인과 어휘 토큰 — 굵기 · 간격 · 큰 제목 · `font-mono`
+
+**Files:**
+- Modify: `packages/tokens/src/tokens/primitive/typography.json`, `primitive/spacing.json`, `component/text.json`
+- Modify: `packages/tokens/scripts/build-outputs.ts`(`TEXT_STEPS`, `fontFamilyOf`, `tokenCss`, `nativeWrapperCss`, `valuesTs`)
+- Modify: `packages/tokens/src/contracts.ts`(`Size`), `packages/web/src/text.tsx`, `packages/native/src/text.tsx`
+- Test: `packages/tokens/tests/probe.test.ts`, `build-output.test.ts`, `token-source.test.ts`, `tw-merge.test.ts`, `packages/web/tests/contracts.test-d.tsx`
+- Modify: `docs/implementation-notes.md`(F-32 글꼴 확인)
+
+**Interfaces:**
+- Produces: `Size = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl"`; 클래스 `text-3xl` · `text-4xl` · `font-normal` · `font-semibold` · `font-bold` · `h-64` · `max-h-96` 등; `fontFamily` JS 객체 `{ sans: { web, native }, mono: { web, native } }`; `twMergeConfig.spacing` 16키 + `"0"`, `twMergeConfig.text` 7키, `twMergeConfig.fontWeight = ["normal","semibold","bold"]`(tailwind-merge v3 theme 키 이름 `font-weight`가 맞는지 Step 6에서 확인)
+
+- [ ] **Step 1: 글꼴 라이선스 · 배포처 확인(decisions-r28 8, 확인 필요 항목)**
+
+JetBrains Mono의 라이선스와 소비 앱이 쓸 배포처를 1차 출처에서 확인한다: 라이선스 파일(github.com/JetBrains/JetBrainsMono `OFL.txt` 또는 `LICENSE`), 웹 npm 패키지(`@fontsource/jetbrains-mono` · `@fontsource-variable/jetbrains-mono` 존재와 무게 400 · 600 · 700), Expo 패키지(`@expo-google-fonts/jetbrains-mono` 존재와 무게별 export 이름). 결과를 `docs/implementation-notes.md` §3에 **F-32**로 출처 URL · 확인일(실행한 날)과 함께 적는다. Expo 패키지의 등록 이름(`JetBrainsMono_400Regular` 같은 것)은 `useFonts({ JetBrainsMono: … })`의 키로 바꿔 등록해야 native 래퍼 이름 `JetBrainsMono`와 맞는다는 점도 적는다.
+**라이선스가 OFL 1.1이 아니거나 웹 · Expo 배포처 중 하나라도 없으면 여기서 멈추고** 대안(예: IBM Plex Mono, D2Coding)과 각자의 라이선스 · 배포처를 정리해 사용자에게 가져간다.
+
+- [ ] **Step 2: 실패하는 테스트 쓰기**
+
+`probe.test.ts`:
+- "AC-6b 열거 밖 어휘가 무효다"의 음성 목록을 `["mt-5", "mt-17", "w-28", "font-medium", "text-base"]`로 바꾼다(테스트 이름도)
+- 새 `it("R28 새 키가 생성된다")` — `["h-64", "max-h-96", "w-80", "p-32", "text-3xl", "text-4xl", "font-normal", "font-semibold", "font-bold"]` 전부 `hasRule === true`, 그리고 출력에 `font-weight: var(--font-weight-semibold)`가 있고 `--font-weight-semibold: 600`이 선언돼 있다
+- "font-mono · font-serif"를 둘로 나눈다 — `font-mono`는 `var(--font-mono)`이고 토큰 CSS에 `--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;`가 있다. `font-serif`는 여전히 생성된다(Tailwind 기본)
+- 웹 우선순위: `build(["text-lg", "font-bold"])` 출력에서 `.text-lg`의 font-weight가 `var(--tw-font-weight, var(--text-lg--font-weight))`이다(decisions-r28 7의 웹 근거)
+- "R23 요구 (a)"의 radius 재선언 테스트 이름에 "(C-5c 계약)"을 붙이고 `--radius-xl: 2px`도 함께 덮어 `rounded-xl`이 `var(--radius-xl)`인지 본다
+
+`build-output.test.ts`: native 래퍼(`packages/native/themes/base.css`)에 `--font-mono: JetBrainsMono;`와 `--text-3xl--line-height: ${44/36}` · `--text-4xl--line-height: ${56/48}`(값은 `String(44 / 36)` 그대로)이 있다. `token-source.test.ts`의 component text 인벤토리 키에 `3xl` · `4xl`. `tw-merge.test.ts`: `cn("font-normal", "font-bold") === "font-bold"`, `cn("h-64", "h-96") === "h-96"`, `cn("mt-4", "mt-5") === "mt-4 mt-5"`(그대로), `cn("text-md", "text-4xl") === "text-4xl"`.
+
+- [ ] **Step 3: 테스트가 실패하는지 확인**
+
+Run: `pnpm --filter @eeennsu/tokens test`
+Expected: FAIL — 새 키 미생성, `--font-mono` 없음, 래퍼에 줄 없음
+
+- [ ] **Step 4: 토큰 소스와 빌드 수정**
+
+- `spacing.json`: `32` 128px · `40` 160px · `48` 192px · `64` 256px · `80` 320px · `96` 384px
+- `typography.json`: `fontSize` `36` · `48`, `lineHeight` `44` · `56`, `fontFamily.mono` = `["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]` + `$extensions: { "ds.native": "JetBrainsMono" }`. `fontWeight`는 이미 `regular` · `medium` · `semibold` · `bold`가 있다 — 유틸리티 키는 `normal`(= regular 400) · `semibold`(600) · `bold`(700) 셋이고 `medium`은 내지 않는다
+- `component/text.json`: `3xl` = 36 / 44 / bold, `4xl` = 48 / 56 / bold
+- `build-outputs.ts`: `TEXT_STEPS`에 `"3xl"`, `"4xl"`. `fontFamilyOf`가 `sans` · `mono` 둘을 돌려준다. `tokenCss`의 `@theme`에서 `--font-weight-*: initial;` 뒤에 `--font-weight-normal: 400; --font-weight-semibold: 600; --font-weight-bold: 700;`, `--font-sans` 줄 뒤에 `--font-mono: <웹 스택>;`. `nativeWrapperCss`가 `--font-mono: <native 이름>;`을 `--font-sans` 줄 옆에 낸다(배수 line-height 루프는 `TEXT_STEPS`를 따라 자동). `valuesTs`의 `twMergeConfig`에 굵기 키
+- `contracts.ts`: `Size` 7단, JSDoc의 "5단"을 "7단(R28)"으로
+- web · native `text.tsx`의 `steps`에 `"3xl": "text-3xl"`, `"4xl": "text-4xl"`
+- web `contracts.test-d.tsx`: `<Text size="4xl">`가 컴파일되고 `@ts-expect-error <Text size="5xl">`
+
+- [ ] **Step 5: 빌드 후 통과 확인**
+
+Run: `pnpm -r build` → `pnpm --filter @eeennsu/tokens test` · `pnpm --filter @eeennsu/web test` · `pnpm --filter @eeennsu/native test`
+Expected: 전부 PASS. AC-6a 브랜드 diff 테스트도 통과(새 줄은 두 브랜드 공통)
+
+- [ ] **Step 6: twMerge 굵기 그룹 확인**
+
+`tw-merge.test.ts`의 `cn("font-normal", "font-bold")`가 통과하지 않으면 tailwind-merge 3의 theme 키 이름(`font-weight`)을 `node_modules/tailwind-merge/dist/types.d.ts`에서 찾아 `valuesTs`가 그 이름으로 내게 고친다.
+
+- [ ] **Step 7: 커밋**
+
+```bash
+git add packages/tokens packages/web/src/text.tsx packages/web/tests packages/native/src/text.tsx packages/web/dist packages/native/dist packages/native/themes packages/web/themes docs/implementation-notes.md
+git commit -m "feat: 굵기 · 간격 · 큰 제목 · font-mono 토큰"
+```
+
+### Task 2: 상태색 · `border.surface` 토큰과 `tone` 7개
+
+**Files:**
+- Modify: `packages/tokens/src/tokens/primitive/color.json`, `semantic/base.json`, `semantic/bakery.json`
+- Modify: `packages/tokens/src/contracts.ts`(`Tone`)
+- Modify: `packages/web/src/text.tsx` · `icon.tsx`, `packages/native/src/text.tsx` · `icon.tsx`(`tones` 맵)
+- Test: `packages/tokens/tests/contrast.test.ts`, `probe.test.ts`, `tw-merge.test.ts`, `packages/web/tests/components.test.tsx`, `apps/verify-expo/tests/ds.test.tsx`
+
+**Interfaces:**
+- Produces: `:root` 변수 `--bg-brand-subtle` · `--bg-success-subtle` · `--bg-warning-subtle` · `--bg-info-subtle` · `--bg-danger-subtle` · `--fg-success` · `--fg-warning` · `--fg-info` · `--border-surface`; 클래스 `bg-brand-subtle` · `bg-success-subtle` · `bg-warning-subtle` · `bg-info-subtle` · `bg-danger-subtle` · `text-fg-success` · `text-fg-warning` · `text-fg-info` · `border-border-surface`; `Tone = "default" | "muted" | "danger" | "brand" | "success" | "warning" | "info"`; JS `colors.<scheme>.bg["success-subtle"]` 등
+
+- [ ] **Step 1: 실패하는 테스트 쓰기**
+
+`contrast.test.ts`의 `textPairs`에 더한다(decisions-r28 12): `fg.success` · `fg.warning` · `fg.info` 각각 `bg.canvas` · `bg.surface` · 자기 `-subtle` 위, `fg.brand / bg.brand-subtle`, `fg.danger / bg.danger-subtle`, `fg.default` / 다섯 `-subtle` 위. `tw-merge.test.ts` 색 키 목록 기대값에 새 키 9개(semantic 순서대로 정적 색 3개 앞). `probe.test.ts` "semantic 색 클래스는 생성된다"에 `bg-info-subtle` · `text-fg-success` · `border-border-surface`. web `components.test.tsx`에 `describe("R28 tone")` — `<Text tone="success">`가 `text-fg-success`, `<Icon name="info" tone="brand">`가 `text-fg-brand` 클래스를 갖는다(네 값 전부 `it.each`). verify-expo `ds.test.tsx`에 `<Text tone="warning">`의 `color`가 `colors.light.fg.warning`의 jest 환산값이다(기존 tone 단언과 같은 방식).
+
+- [ ] **Step 2: 실패 확인**
+
+Run: `pnpm --filter @eeennsu/tokens test`
+Expected: FAIL — `s.fg.success` undefined 등
+
+- [ ] **Step 3: primitive · semantic 값 넣기**
+
+primitive에 Tailwind 4.3.3 `theme.css`의 `green` · `orange` · `sky` 11단을 복사하고(§3.2 방식), 투명 `transparent` = `oklch(0% 0 0 / 0)`을 더한다. semantic 값은 §4.10 표의 출발값이다. `probe.test.ts`의 primitive 개수 단언(62)을 새 개수로 고치고 주석을 갱신한다.
+
+- [ ] **Step 4: 대비가 통과할 때까지 값 조정**
+
+Run: `pnpm -r build` → `pnpm --filter @eeennsu/tokens test`
+Expected: PASS. 실패하는 쌍이 있으면 **기존 글자색(`fg.brand` · `fg.danger` · `fg.default`)은 그대로 두고** 새 값만 같은 램프 안에서 옮긴다 — 라이트는 채움을 한 단계 밝게 또는 새 글자를 한 단계 진하게, 다크는 반대. 바꾼 값은 §4.10 표에 반영한다
+
+- [ ] **Step 5: `Tone` 7개와 맵**
+
+`contracts.ts` `Tone`에 `brand` · `success` · `warning` · `info`(JSDoc에 "fg semantic 과 1:1, R28"). web · native `text.tsx` · `icon.tsx`의 `tones`에 `brand: "text-fg-brand"`, `success: "text-fg-success"`, `warning: "text-fg-warning"`, `info: "text-fg-info"`.
+
+- [ ] **Step 6: 통과 확인**
+
+Run: `pnpm -r build` → tokens · web · native 테스트 → `pnpm --filter verify-expo test`
+Expected: 전부 PASS
+
+- [ ] **Step 7: 커밋**
+
+```bash
+git commit -am "feat: 상태색 · border.surface 토큰과 tone 7개"
+```
+(생성물 · dist 새 파일이 있으면 `git add` 후)
+
+### Task 3: R28 RN 착수 게이트 4항목
+
+native 컴포넌트를 고치는 태스크(4 · 9 · 10 · 12)보다 먼저 끝낸다(스펙 C-19 (R28)). Task 1 · 2가 native `text.tsx` · `icon.tsx` 맵에 키를 더하는 것은 컴파일을 유지하려는 것이라 이 게이트의 대상이 아니다.
+
+**Files:**
+- Test: `apps/verify-expo/tests/gate.test.tsx`(새 `describe("R28 게이트 …")` 넷)
+- Modify: `docs/gate-c19.md`(끝에 `## R28 착수 게이트 (날짜)` 절)
+
+**Interfaces:**
+- Consumes: Task 1 · 2의 native 래퍼(`--font-mono: JetBrainsMono`, 배수 line-height, 굵기 키), `compileGlobalCss(extraCss)` · `registerCSS` · `react-native-css/components`의 `View` · `Text`(기존 게이트 헬퍼)
+
+- [ ] **Step 1: 게이트 테스트 넷 쓰기**
+
+기존 게이트 (6)처럼 `compileGlobalCss(extraCss)`로 컴파일해 `react-native-css/components`의 `View` · `Text`를 렌더하고 `toHaveStyle`로 단언한다:
+1. `extraCss = ":root { --radius-md: 2px; }"` → `<View className="rounded-md" />`의 `borderRadius`가 2. 대조군으로 재선언 없이 12
+2. `<Text className="text-lg font-normal">` → `fontWeight` `"400"`, `<Text className="font-normal text-lg">`도 `"400"`; `<Text className="text-md font-bold">`와 순서 바꾼 것 → `"700"`
+3. `<Text className="font-mono">` → `fontFamily` `"JetBrainsMono"`
+4. `<View className="h-64 max-h-96" />` → `height` 256 · `maxHeight` 384; `<Text className="text-4xl">` → `fontSize` 48 · `lineHeight` 56
+
+- [ ] **Step 2: 실행**
+
+Run: `pnpm -r build` → `pnpm --filter verify-expo test`
+Expected: 넷 통과가 목표다. 실패하면 **테스트를 고치지 말고** 측정값을 기록한다
+
+- [ ] **Step 3: 실패 처리(R24 방식)**
+
+- (2) · (3) · (4) 실패: native 래퍼가 낼 수 있는 우회 선언이 있으면(T-N0 · N-17 방식) `nativeWrapperCss`에 넣고 Step 2를 다시 돌린다. 없으면 그 항목을 RN 계약에서 빼고 스펙 알려진 동작에 추가할 문장을 `gate-c19.md`에 적고 멈춰서 보고한다
+- **(1) 실패: 멈추고 사용자에게 가져간다**(C-5c RN — 사용자 결정이 웹 · RN 둘 다였다). native 태스크를 시작하지 않는다
+
+- [ ] **Step 4: 기록**
+
+`docs/gate-c19.md` 끝에 R28 절: 항목별 통과/실패, 측정값, 우회 여부, 버전(nativewind 5.0.0-preview.4 · react-native-css 3.0.7 · Expo SDK 57). 기기 확인은 하지 않았다고 적는다.
+
+- [ ] **Step 5: 커밋**
+
+```bash
+git add apps/verify-expo/tests/gate.test.tsx docs/gate-c19.md
+git commit -m "feat: R28 RN 착수 게이트 4항목"
+```
+
+### Task 4: 표면 경계선과 Badge · Chip 모서리 (웹 · native)
+
+**Files:**
+- Modify: `packages/web/src/card.tsx` · `input.tsx`(textarea가 쓰는 `controlBase` 포함) · `chip.tsx` · `badge.tsx`; `packages/native/src/card.tsx` · `input.tsx` · `chip.tsx` · `badge.tsx`(Textarea가 `controlBase`를 공유하는지 확인하고 아니면 `textarea.tsx`도)
+- Modify: `packages/tokens/src/tokens/component/badge.json` · `chip.json`(`radius` → `{primitive.radius.xl}`)
+- Test: `packages/web/tests/components.test.tsx` · `recipe.test.tsx`, `apps/verify-expo/tests/ds.test.tsx`, `apps/verify-expo/tests/gate.test.tsx`(N-16 음성 대조에 `rounded-full`이 있으면 확인)
+
+**Interfaces:**
+- Consumes: 클래스 `border-border-surface`(Task 2), `rounded-xl`
+
+- [ ] **Step 1: 실패하는 테스트**
+
+web: Card 루트가 `border border-border-surface`를 갖는다; Input · Textarea가 `border-border-surface`이고 `border-transparent`가 없다; `invalid`면 `border-danger`이고 `border-border-surface`가 병합으로 빠진다; 고르지 않은 Chip이 `border-border-surface`, 고른 Chip은 `border-brand`; Badge · Chip이 `rounded-xl`. recipe 테스트: Badge · Chip 클래스의 radius가 `component.badge.radius` · `component.chip.radius`(= `xl`)와 일치. verify-expo: `<Card>`의 `borderWidth` 1과 `borderColor`가 투명(jest 환산값), `<Input invalid>`의 `borderColor`가 danger, `<Badge>`의 `borderRadius` 20.
+
+- [ ] **Step 2: 실패 확인** — Run: web · verify-expo 테스트. Expected: FAIL
+
+- [ ] **Step 3: 클래스 수정** — 위 파일에서 `border-transparent` → `border-border-surface`(Card는 `border border-border-surface` 추가), Badge · Chip `rounded-full` → `rounded-xl`. Button은 `border-transparent` 그대로
+
+- [ ] **Step 4: 통과 확인** — Run: `pnpm -r build` → tokens · web · native · verify-expo 테스트. Expected: PASS
+
+- [ ] **Step 5: 커밋** — `feat: 표면 경계선 · Badge Chip 모서리 xl`
+
+### Task 5: Collapsible `disabled` · `variant` (웹)
+
+**Files:**
+- Modify: `packages/tokens/src/contracts.ts`(`Collapsible`), `packages/web/src/collapsible.tsx`
+- Test: `packages/web/tests/components.test.tsx` · `recipe.test.tsx` · `contracts.test-d.tsx`
+
+**Interfaces:**
+- Produces: `Collapsible`에 `disabled?: boolean`, `variant?: Extract<Variant, "ghost" | "secondary">`(기본 `"ghost"`)
+
+- [ ] **Step 1: 실패하는 테스트**
+
+(1) 기본(`ghost`) 트리거에 `px-3` · `rounded-md` · `hover:bg-surface-hover`가 없고 `text-fg-muted hover:text-fg`가 있다, 패널에 `px-3`가 없다; (2) `variant="secondary"` 트리거가 `px-3 rounded-md bg-surface-muted text-fg hover:bg-surface-hover`, 패널이 `px-3`이고 패널에 `bg-` 클래스가 없다; (3) `disabled`면 클릭해도 `aria-expanded`가 바뀌지 않고 `onOpenChange`가 불리지 않는다; (4) `defaultOpen disabled`면 열린 채로 남는다; (5) recipe — `secondary` 트리거의 `px-3`이 `component.collapsible.paddingX`. 타입: `@ts-expect-error variant="primary"`.
+
+- [ ] **Step 2: 실패 확인** — Run: `pnpm --filter @eeennsu/web test`. Expected: FAIL
+
+- [ ] **Step 3: 구현** — `disabled`는 `BaseCollapsible.Root`의 `disabled`로 넘긴다. Base UI가 트리거에 다는 상태 표식(`disabled` 속성 또는 `data-disabled`)을 확인해 그 선택자로 `opacity-50 pointer-events-none`(Button 비활성과 같은 값). `variant`별 트리거 · 패널 클래스는 `Record<"ghost" | "secondary", { trigger: string; panel: string }>`
+
+- [ ] **Step 4: 통과 확인** — Run: `pnpm -r build` → `pnpm --filter @eeennsu/web test`. Expected: PASS
+
+- [ ] **Step 5: 커밋** — `feat: Collapsible disabled · variant`
+
+### Task 6: Prose 한국어 줄바꿈 · 링크 포커스와 Table 세로 스크롤 (웹)
+
+**Files:**
+- Modify: `packages/web/src/prose.tsx`, `packages/web/src/table.tsx`
+- Test: `packages/web/tests/components.test.tsx`, `packages/tokens/tests/probe.test.ts`
+
+- [ ] **Step 1: 실패하는 테스트** — Prose 루트에 `break-keep` · `wrap-break-word`; 클래스 문자열에 `[:where(&)_a:focus-visible]:outline-2` · `[:where(&)_a:focus-visible]:outline-offset-2` · `[:where(&)_a:focus-visible]:outline-border-focus`가 있고 기존 `a` 밑줄 클래스가 남아 있다. Table 루트가 `overflow-auto`(`overflow-x-auto` 대신)이고 `className="max-h-96"`이 루트에 병합된다. probe: `break-keep` · `wrap-break-word` · `[:where(&)_a:focus-visible]:outline-2`가 생성된다(Tailwind 4.3.3 이름 확인)
+- [ ] **Step 2: 실패 확인** — Run: web · tokens 테스트. Expected: FAIL
+- [ ] **Step 3: 구현** — 위 클래스. probe에서 `wrap-break-word`가 없으면 4.3.3의 `overflow-wrap: break-word` 유틸리티 이름을 찾아 쓴다
+- [ ] **Step 4: 통과 확인** — Expected: PASS
+- [ ] **Step 5: 커밋** — `feat: Prose 줄바꿈 · 링크 포커스, Table 세로 스크롤`
+
+### Task 7: 웹 Link · Callout
+
+**Files:**
+- Modify: `packages/tokens/src/contracts.ts`(`Link` · `Callout`, `webComponents` 끝에 `"Link"`, `"Callout"`)
+- Create: `packages/tokens/src/tokens/component/callout.json`, `packages/web/src/link.tsx`, `packages/web/src/callout.tsx`
+- Modify: `packages/web/src/text.tsx`(`tones` · `steps`를 export), `packages/web/src/index.ts`
+- Test: `packages/web/tests/components.test.tsx` · `recipe.test.tsx` · `contracts.test-d.tsx`; `packages/tokens/tests/build-output.test.ts` · `token-source.test.ts`(recipe 인벤토리)
+
+**Interfaces:**
+- Produces (contracts.ts, §4.10 그대로):
+  ```ts
+  Link: { label: string; tone?: Tone; size?: TypographyStep; className?: string } & (P extends "web" ? { href: string } : { onPress: () => void });
+  Callout: { children: P extends "web" ? ReactNode : ElementChildren; tone?: Extract<Tone, "info" | "success" | "warning" | "danger" | "brand">; title?: string; icon?: IconName; className?: string };
+  ```
+  `component.callout = { padding: 4, radius: "lg", gap: 3, text: "md" }`
+
+- [ ] **Step 1: 실패하는 테스트**
+
+Link: (1) `<a>`이고 `href`가 그대로, 이름이 `label`; (2) 기본 `text-fg-brand text-md`, `tone="muted" size="sm"`이면 `text-fg-muted text-sm`; (3) `hover:underline` · `focus-visible:underline` · `focus-visible:outline-2` · `focus-visible:outline-border-focus`가 있고 쉬는 `underline`이 없다; (4) 소비자 `className="text-fg"`가 `text-fg-brand`를 밀어낸다. 타입: `@ts-expect-error` `href` 누락(AC-14 describe에 label 누락도), `@ts-expect-error onClick`, `@ts-expect-error children`.
+Callout: (1) `role="note"`, 기본 `bg-info-subtle`; (2) `tone`별 채움 · 제목 색(`it.each` 다섯 — `bg-<t>-subtle` · `text-fg-<t>`); (3) `title`이 있으면 `font-semibold` 제목 글, 없으면 제목 요소가 없다; (4) `icon`이 없으면 svg가 없고, 있으면 `aria-hidden` svg가 제목 앞에 하나; (5) 루트에 `break-keep wrap-break-word`, 테두리 클래스(`border`)가 없다; (6) recipe — `p-4 rounded-lg gap-3`이 `component.callout`과 일치. 타입: `@ts-expect-error tone="muted"`, `@ts-expect-error tone="default"`.
+
+- [ ] **Step 2: 실패 확인** — Expected: FAIL
+
+- [ ] **Step 3: 구현** — 클래스는 §4.10 표. Link는 `"use client"` 없음(이벤트 prop 없음), Callout도 없음. 아이콘은 공개 `Icon`(`tone`이 Callout `tone`의 상위집합이라 그대로 넘긴다, `label` 없이)
+
+- [ ] **Step 4: 통과 확인** — Run: `pnpm -r build` → tokens · web 테스트. Expected: PASS(native 맵 테스트는 `nativeComponents`를 안 바꿔 그대로 통과)
+
+- [ ] **Step 5: 커밋** — `feat: 웹 Link · Callout`
+
+### Task 8: 웹 Stepper
+
+**Files:**
+- Modify: `packages/tokens/src/contracts.ts`(`StepItem`, `Stepper`, `webComponents` 끝에 `"Stepper"`)
+- Create: `packages/tokens/src/tokens/component/stepper.json`, `packages/web/src/stepper.tsx`
+- Modify: `packages/web/src/index.ts`(`export type { StepItem } from "@eeennsu/tokens"`)
+- Test: `packages/web/tests/components.test.tsx` · `recipe.test.tsx` · `contracts.test-d.tsx` · `dist.test.ts`(`interactive`에 `stepper.js`)
+
+**Interfaces:**
+- Produces:
+  ```ts
+  export type StepItem<P extends Platform> = { value: string; label: string; content?: P extends "web" ? ReactNode : ElementChildren };
+  Stepper: { label: string; items: StepItem<P>[]; value: string; reached?: string; onValueChange?: (value: string) => void; className?: string };
+  ```
+  `stepStates(items: readonly { value: string }[], value: string, reached?: string): ("done" | "current" | "upcoming")[]` — `stepper.tsx` 안의 export(native도 같은 이름으로 따로 둔다)
+  `component.stepper = { paddingY: 2, gap: 3, markerWidth: 4, text: "md" }`
+
+- [ ] **Step 1: 실패하는 테스트**
+
+`stepStates`: `items` a · b · c · d에서 `("b")` → `[done, current, upcoming, upcoming]`; `("b", "d")` → `[done, current, done, done]`; `("c", "a")` → `[done, done, current, upcoming]`(reached가 앞이면 value); `("z")` → 전부 upcoming; `("b", "z")` → `[done, current, upcoming, upcoming]`; 빈 배열 → `[]`.
+렌더: (1) `<ol>` 이름이 `label`; (2) 펼친 단계 `li`만 `aria-current="step"`이고 그 `content`만 DOM에 있다; (3) `onValueChange`가 있으면 지난 단계가 `type="button"` 버튼이고 이름에 "완료"가 들어가며 누르면 `onValueChange("a")`가 인자 하나로 불린다; (4) 남은 단계 · 펼친 단계에는 버튼이 없다; (5) `onValueChange`가 없으면 버튼이 하나도 없다; (6) 지난 단계에 체크 svg, 펼친 단계 표시가 `border-l-2 border-brand`, 펼친 단계 글이 `font-semibold text-fg`, 지난 · 남은 단계 글이 `text-fg-muted`; (7) 번호 글자(1, 2, 3)가 렌더되지 않는다. recipe: 줄 `py-2` · `gap-3`, 표시 자리 `w-4`. 타입: `@ts-expect-error` `value` 누락, `value={1}`, `current={2}`(없는 prop), `defaultValue`, label 누락(AC-14 describe); `import type { StepItem } from "../src/index.js"`.
+
+- [ ] **Step 2: 실패 확인** — Expected: FAIL
+
+- [ ] **Step 3: 구현** — `"use client"`. 구조와 클래스는 §4.10 Stepper. `stepStates` 규칙: `vi = indexOf(value)`; `vi < 0`이면 전부 upcoming; `last = max(vi, indexOf(reached))`; `i === vi` current, `i <= last` done, 나머지 upcoming. 지난 단계 버튼의 숨김 글은 `<span className="sr-only">, 완료</span>`
+
+- [ ] **Step 4: 통과 확인** — Expected: PASS
+
+- [ ] **Step 5: 커밋** — `feat: 웹 Stepper`
+
+### Task 9: native Link · Callout
+
+Task 3(게이트)이 끝난 뒤.
+
+**Files:**
+- Modify: `packages/tokens/src/contracts.ts`(`nativeComponents` 끝에 `"Link"`, `"Callout"`, JSDoc 갱신)
+- Create: `packages/native/src/link.tsx`, `packages/native/src/callout.tsx`
+- Modify: `packages/native/src/index.ts`
+- Test: `packages/native/tests/contracts.test-d.tsx` · `dist.test.ts`, `apps/verify-expo/tests/ds.test.tsx`
+
+**Interfaces:**
+- Consumes: Task 7 계약, native `tones` · `steps`(`packages/native/src/text.tsx` export), native `Icon`
+
+- [ ] **Step 1: 실패하는 테스트**(verify-expo jest) — Link: `getByRole("link", { name: label })`, 누르면 `onPress` 한 번, 글자 `color`가 `fg.brand`(라이트), `fontFamily` `Pretendard`. Callout: 채움 `backgroundColor`가 `bg.info-subtle`, `tone="danger"` 제목 글 `color`가 `fg.danger`, 제목 `fontWeight` `"600"`, `borderWidth`가 없다(0 또는 미설정). 타입(native contracts.test-d): `@ts-expect-error href`, `@ts-expect-error` `onPress` 누락, `@ts-expect-error` Callout 문자열 children
+- [ ] **Step 2: 실패 확인** — Run: `pnpm -r build` → `pnpm --filter verify-expo test`. Expected: FAIL
+- [ ] **Step 3: 구현** — Link: `react-native-css/components`의 `Pressable`(`accessibilityRole="link"`, `accessibilityLabel={label}`, `onPress`, `className={cn("self-start active:opacity-80", className)}`) 안에 `Text`(`font-sans` + tone + step). Callout: `View`(§4.10 Callout 클래스에서 `break-keep wrap-break-word` 제외) + 제목 `Text font-sans font-semibold` + `Icon`. 클래스가 표면(Pressable · View)에 붙고 글자 클래스는 안쪽 Text에 닿지 않는다(알려진 동작 22)는 것을 JSDoc에 한 줄
+- [ ] **Step 4: 통과 확인** — Run: native · verify-expo 테스트. Expected: PASS
+- [ ] **Step 5: 커밋** — `feat: native Link · Callout`
+
+### Task 10: native Stepper
+
+**Files:**
+- Modify: `packages/tokens/src/contracts.ts`(`nativeComponents` 끝에 `"Stepper"`)
+- Create: `packages/native/src/stepper.tsx`, `packages/native/src/step-states.ts`
+- Modify: `packages/native/src/index.ts`(`export type { StepItem }`)
+- Test: `packages/native/tests/step-states.test.ts`, `packages/native/tests/contracts.test-d.tsx`, `apps/verify-expo/tests/ds.test.tsx`
+
+**Interfaces:**
+- Consumes: Task 8 계약 · `stepStates` 규칙(같은 시그니처로 native 파일에 다시 둔다), native `Glyph`
+
+- [ ] **Step 1: 실패하는 테스트** — `stepStates` 여섯 사례(Task 8과 같은 기대값). `stepStates`는 react-native를 import하지 않는 `packages/native/src/step-states.ts`에 두고 native vitest `packages/native/tests/step-states.test.ts`가 그 파일을 직접 import한다(vitest는 react-native를 불러오지 못한다). jest: 펼친 단계만 `content` 렌더, 지난 단계 `getByRole("button", { name: /완료/ })` 누르면 `onValueChange` 값, 펼친 단계 줄의 `accessibilityState.selected === true`, 남은 단계는 버튼이 아니다, 펼친 단계 표시 `borderLeftWidth` 2 · `borderLeftColor` brand
+- [ ] **Step 2: 실패 확인** — Expected: FAIL
+- [ ] **Step 3: 구현** — 웹과 같은 구조를 `View` · `Pressable` · `Text`로. 지난 단계 Pressable `accessibilityRole="button"` · `accessibilityLabel={`${label}, 완료`}`, 펼친 단계 줄 `accessibilityState={{ selected: true }}`. 목록 `View`에 `accessibilityLabel={label}`
+- [ ] **Step 4: 통과 확인** — Expected: PASS
+- [ ] **Step 5: 커밋** — `feat: native Stepper`
+
+### Task 11: verify-next 화면 · 재선언 라우트 · Playwright
+
+**Files:**
+- Modify: `apps/verify-next/app/(app)/components/page.tsx`
+- Create: `apps/verify-next/app/surface/layout.tsx`, `apps/verify-next/app/surface/page.tsx`, `apps/verify-next/app/surface/surface.css`(기존 `app/partial/`과 같은 구성)
+- Create: `apps/verify-next/e2e/r28.spec.ts`
+
+**Interfaces:**
+- Consumes: Task 4 ~ 8의 웹 컴포넌트, `e2e/color.ts`(`backgroundRgba` · `toRgba` · `expectSameColor`), `@eeennsu/tokens/brands/base`의 `colors`
+
+- [ ] **Step 1: 화면 쓰기** — `/components`에 더한다: Link 셋(기본, `tone="muted"`, `size="lg"`), Callout 다섯 tone(`title` · `icon` 있는 것 하나, 없는 것 하나), Stepper(네 단계, `value="b"` · `reached="d"`, 클라이언트 상태를 쓰므로 작은 `"use client"` 래퍼 파일 `components/stepper-demo.tsx`), Collapsible `secondary` 하나 · `disabled` 하나, `className="max-h-96"` Table(39행), 긴 URL이 든 Prose 문단, `Text size="4xl"` · `Text className="font-semibold"` · `font-mono` 글. `/surface`는 `surface.css`에서 `@import "@eeennsu/web/themes/base.css";` 뒤에 `:root { --radius-md: 2px; --radius-xl: 4px; --bg-canvas: oklch(100% 0 0); --border-surface: oklch(87% 0 0); }`(다크 블록은 이 라우트가 라이트만 보므로 생략하고 주석으로 이유)를 두고 Card · Input · Badge · Chip · Button과 `rounded-lg` Box · `rounded-full` Box를 놓는다
+- [ ] **Step 2: Playwright 단언 쓰기** — `test.use({ viewport: { width: 393, height: 851 } })`. (1) Link `href` · 포커스 시 `outline-style: solid`, 쉬는 `text-decoration-line: none`, hover 시 `underline`; (2) Callout `role="note"` · 배경 = `colors.light.bg["info-subtle"]` · 제목 색 = `fg.info`; (3) Stepper `aria-current="step"` 하나, 지난 단계 버튼 클릭 시 펼친 단계가 바뀐다, 남은 단계에 버튼 없음; (4) Collapsible ghost 트리거 `padding-left: 0px`, disabled 트리거 클릭해도 `aria-expanded="false"`; (5) Prose `word-break: keep-all`, 긴 URL 문단 `scrollWidth <= clientWidth`; (6) `max-h-96` Table 영역 `scrollHeight > clientHeight` · `overflow-y: auto` · `tabindex="0"`; (7) `text-4xl` font-size 48px, `font-semibold` font-weight 600, `font-mono` font-family가 `"JetBrains Mono"`로 시작; (8) `/surface` — `rounded-md` 요소(Input) `border-radius: 2px`, Card · Badge · Chip `4px`, 재선언 안 한 `rounded-lg` Box는 16px, `rounded-full` Box는 재선언 전과 같은 값, Card · Input 테두리 색 = `oklch(87% 0 0)`의 sRGB, Card `border-top-width: 1px`
+- [ ] **Step 3: 실행** — Run: `pnpm -r build` → `pnpm --filter verify-next exec playwright test e2e/r28.spec.ts e2e/components.spec.ts e2e/verify.spec.ts`. Expected: PASS(기존 두 spec도). `docs/assets` 변경 없음
+- [ ] **Step 4: 사용자 확인(decisions-r28 17, 확인 필요 항목)** — `pnpm --filter verify-next dev`를 따로 띄우고(PID를 로그 옆 파일에 적는다) `/components`의 Stepper · Callout · Collapsible `secondary`를 라이트 · 다크로 사용자에게 보여 준다. Stepper 모양을 받아들이는지 묻고 답을 구현 노트에 적는다. 바꾸라고 하면 계약은 그대로 두고 내부 클래스만 고친다. 끝나면 띄운 PID만 끈다
+- [ ] **Step 5: 커밋** — `feat: verify-next R28 화면 · 재선언 라우트`
+
+### Task 12: verify-expo 화면 · jest
+
+**Files:**
+- Modify: `apps/verify-expo/App.tsx`, `apps/verify-expo/tests/ds.test.tsx`
+
+- [ ] **Step 1: 화면 · 테스트** — App.tsx에 Link · Callout(둘) · Stepper(`useState`) · `Text size="4xl"` · `Text className="font-semibold"` · `tone` 넷(`brand` · `success` · `warning` · `info`)을 더한다. jest(`describe("R28")`): 새 tone 네 개의 `color`, `text-4xl` `fontSize` 48, `font-semibold` `fontWeight` `"600"`, Badge · Chip `borderRadius` 20, smoke가 App을 렌더한다. 앞 태스크가 이미 단언한 것은 반복하지 않는다
+- [ ] **Step 2: 실행** — Run: `pnpm -r build` → `pnpm --filter verify-expo test`. Expected: PASS
+- [ ] **Step 3: 커밋** — `feat: verify-expo R28 화면`
+
+### Task 13: README 소비 규칙
+
+**Files:**
+- Modify: `packages/web/README.md`, `packages/native/README.md`(`### 앱이 바꿀 수 있는 것` · `### 바꾸지 않는 것` · `### 어휘 위치`, native는 `### RN 에서만 지켜야 하는 것`)
+
+- [ ] **Step 1: 다시 쓰기(decisions-r28 25 목록 전부)** — 앱마다 갈리는 축(색: 메인 색 · 표면 관계, 모서리, 간격 리듬, 화면 구조); 재선언 변수 세 묶음(메인 색 다섯 `--bg-brand` · `--bg-brand-hover` · `--fg-on-brand` · `--fg-brand` · `--bg-brand-subtle`, 표면 관계 여섯 `--bg-canvas` · `--bg-surface` · `--bg-surface-muted` · `--bg-surface-hover` · `--border-default` · `--border-surface`, 모서리 넷 `--radius-sm` · `--radius-md` · `--radius-lg` · `--radius-xl`)과 "나머지 semantic 색도 재선언 대상이다(C-5b)" 한 줄; 모서리는 `:root` 한 블록; 표면 짝 맞추기; 폰트 로딩 의무(Pretendard 400 · 600 · 700, `font-mono`를 쓰면 JetBrains Mono — 웹은 로딩 방법과 `document.fonts`로 확인하는 법, native는 등록 이름 `Pretendard` · `JetBrainsMono`와 Task 1 F-32의 Expo 키 바꾸기); 바꾸지 않는 것(컴포넌트 소스 · 치수 · 폰트 패밀리 · `--radius-full` · `@theme` 확장 · 스케일 밖 임의값); 0.6.0 안내(Collapsible `-mx-3` 보정 제거, Callout의 뜻은 글로, 웹 Link는 문서 이동이고 문단 속 링크는 Prose `a`, `Tone` · `TypographyStep` 전수 맵에 새 키, `font-medium` 없음)
+- [ ] **Step 2: 다듬기** — `korean-humanizer` 스킬로 두 README의 바뀐 절을 한 번 다듬는다(변수 이름 · 명령은 그대로)
+- [ ] **Step 3: 커밋** — `docs: README 소비 규칙 R28`
+
+### Task 14: 구현 기록 · `0.6.0` 준비
+
+**Files:**
+- Modify: `docs/implementation-notes.md`, `CLAUDE.md`, `docs/plan.md`(§4.10 값이 Task 2에서 바뀌었으면), 세 `package.json`(스크립트가 바꾼다)
+
+- [ ] **Step 1: 기록** — 구현 노트: 기준일 · 진행 줄에 R28, 완료 표에 한 줄, **N-20** 절(태스크별 요약, 게이트 결과, Stepper 확인 결과, 테스트 수), 구현 중 확인한 사실은 F-33부터, §4 "다음"에 design-flow 쪽 알림(시안 축 "brand 색 네 변수" → 다섯, my-agent-setup은 레포 밖이라 0.6.0 뒤 그 세션에 알린다 — decisions-r28 25). `CLAUDE.md`: 문서 목록에 decisions-r28, 현재 기준 문장(R28), "현재 코드 상태"의 컴포넌트 수(웹 24 · native 14)와 테스트 수, C-5c 열림. CLAUDE.md는 `writing-for-agents` 스킬을 읽고 고친다
+- [ ] **Step 2: 버전과 전체 확인** — Run: `pnpm version:set 0.6.0` → `pnpm -r build` → `pnpm -r test` → `git checkout -- docs/assets` → `pnpm verify:pack`. Expected: 전부 통과, 세 패키지 `0.6.0`. AC-23 스크린샷은 Card 테두리 1px로 달라질 수 있으나(decisions-r28 2) RN과 짝을 맞춰 다시 찍기 전까지 되돌린다(F-25 · 구현 노트 0.4.0 메모)
+- [ ] **Step 3: 커밋** — `chore: 0.6.0 준비 · R28 구현 기록`
+
+### Task 15: publish (사용자)
+
+에이전트는 하지 않는다. 사용자가 자기 터미널에서 `npm whoami` → 필요하면 `npm login` → `pnpm -r publish --access public`(패키지마다 브라우저 2FA, F-17 · F-29). publish 뒤 에이전트가 구현 노트에 `0.6.0` publish 날짜를 적는 docs 커밋을 하고, design-flow 쪽에 Task 14의 알림을 전한다.
+
 ### Phase 7 — publish
 
 **T-P1 publish 게이트**
@@ -995,6 +1443,13 @@ design-system/
 | AC-25 | 같은 `className`이 RN에서 같은 결과 | `toHaveStyle` 또는 스냅샷 + 수동 | T-R1 | **후** |
 | AC-26 웹 (a)(b)(c)(d) | 로컬 오버라이드 4조합 · 격리 · 설정 부재 · 회귀 가드 | Playwright | T-V1 | 전 |
 | AC-26 RN 절 | 같은 3블록이 RN에서 X/Y | 게이트 (6) + jest 2조합 | T-G2 → T-R1 | **후** |
+| AC-6a · 6b · 6c (R28) | 새 키 생성 · 음성 `w-28` `font-medium` · `fontFamily.mono` · 브랜드 diff | probe · build-output · 대비 | R28 Task 1 · 2 | — |
+| AC-7 (R28) | Link · Callout · Stepper, Collapsible · Prose · Table 수정 | 단위 + 맵 · 타입 + Playwright | R28 Task 5 ~ 8 → 11 | — |
+| AC-9 · AC-10 (R28) | `tone` 7개 · `Size` 7단 | 맵 동등성 + 타입 | R28 Task 1 · 2 | — |
+| AC-13 · AC-14 · AC-15 (R28) | Stepper 제어 전용 · Link `href`/`onPress` · label 필수 · number prop 없음 | `@ts-expect-error` + mapped type | R28 Task 7 ~ 10 | 웹 / native **R28 게이트 후** |
+| AC-20 (R28) | native 14개 | jest | R28 Task 9 · 10 · 12 | **R28 게이트 후** |
+| AC-26 (e) (R28) | radius · 표면 관계 재선언 | Playwright `/surface` + 게이트 (1) | R28 Task 11 · 3 | — |
+| C-19 (R28) | RN 착수 게이트 4항목 | jest `toHaveStyle` | R28 Task 3 | native 태스크 **앞** |
 
 - 게이트 후 항목: AC-3 RN절, AC-11 RN절, AC-13 RN절, AC-19 (c), AC-20, AC-21, AC-22, AC-23, AC-25, AC-26 RN절. 나머지는 전부 게이트 전에 닫힌다
 - AC-16 · 17 · 18 · 23은 "설치"의 의미를 세 단계로 닫는다 — `workspace:*`(개발) → 타르볼 `file:`(T-V3 · T-R1) → npm(T-P1)
@@ -1042,6 +1497,10 @@ design-system/
 | D-33 (R27) | 5종의 recipe 값 | §3.8 R27 행. 탭 버튼 · 트리거는 높이 42(D-6), Prose는 recipe 없음 | decisions-r27 20 | 하 |
 | D-34 (R27) | Prose 선택자 특이성 | `:where`로 요소 수준 이하. 표기는 4.3.3에서 확인(2026-10-24), T-W11 probe가 회귀 가드 | Prose 안 DS 컴포넌트 · 소비자 클래스가 이겨야 한다(decisions-r27 13 · 15) | 중 |
 | D-35 (R27) | 5종 검증 화면 | verify-next `(app)/components` 서버 컴포넌트 라우트, 웹 Chip · Icon 포함. `/`(AC-23 스크린샷)는 그대로 | decisions-r27 22, F-25 | 하 |
+| D-36 (R28) | 새 semantic 색 출발값 | §4.10 표(primitive `green` · `orange` · `sky` 추가). 대비 테스트가 최종 판정 | decisions-r28 "구현에 맡기는 것" | 하(값) |
+| D-37 (R28) | `border.surface` 투명 표현 | primitive `transparent` = `oklch(0% 0 0 / 0)` 참조 | 대비 테스트의 oklch 파서와 JS 객체 형태를 그대로 쓴다 | 하 |
+| D-38 (R28) | Link · Callout · Stepper 클래스와 recipe | §4.10 표 | decisions-r28 14 ~ 17 위임분 | 하(내부 모양) |
+| D-39 (R28) | `/surface` 재선언 라우트 | `app/surface/`(`partial`과 같은 별도 layout · CSS). `(app)` 라우트 무영향 | AC-26 (e), F-25 | 하 |
 
 ---
 
