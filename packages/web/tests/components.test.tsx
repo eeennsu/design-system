@@ -806,6 +806,74 @@ describe("R27 Collapsible", () => {
   });
 });
 
+describe("R28 Collapsible variant · disabled", () => {
+  it("기본(ghost) 트리거는 가로 여백 · 모서리 · hover 채움이 없고 muted 글자이며 패널에 가로 여백이 없다", () => {
+    render(
+      <Collapsible label="답 보기" defaultOpen>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    expect(trigger).toHaveClass("border", "border-transparent", "py-2", "text-md", "text-fg-muted", "hover:text-fg");
+    expect(trigger).not.toHaveClass("px-3", "rounded-md", "hover:bg-surface-hover", "bg-surface-muted");
+    const panel = screen.getByText("답 내용").parentElement;
+    expect(panel).toHaveClass("pt-2");
+    expect(panel).not.toHaveClass("px-3");
+  });
+
+  it("variant=secondary 트리거는 surface-muted 채움 줄이고 패널은 가로 여백만 있고 채우지 않는다", () => {
+    render(
+      <Collapsible label="답 보기" variant="secondary" defaultOpen>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    expect(trigger).toHaveClass("px-3", "rounded-md", "bg-surface-muted", "text-fg", "hover:bg-surface-hover");
+    expect(trigger).not.toHaveClass("text-fg-muted");
+    const panel = screen.getByText("답 내용").parentElement as HTMLElement;
+    expect(panel).toHaveClass("px-3", "pt-2");
+    expect(panel.className.split(/\s+/).filter((name) => name.startsWith("bg-"))).toEqual([]);
+  });
+
+  it("disabled 면 클릭해도 aria-expanded 가 바뀌지 않고 onOpenChange 가 불리지 않는다", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Collapsible label="답 보기" disabled onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByText("답 내용")).toBeNull();
+  });
+
+  it("disabled 트리거는 aria-disabled 와 data-disabled 를 갖고 그 선택자로 비활성 모양이 걸린다", () => {
+    render(<Collapsible label="답 보기" disabled>{null}</Collapsible>);
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    // Base UI 1.8.0 Collapsible.Trigger 는 focusableWhenDisabled 라 native disabled 속성 대신 aria-disabled 를 단다
+    expect(trigger).toHaveAttribute("aria-disabled", "true");
+    expect(trigger).toHaveAttribute("data-disabled");
+    expect(trigger).not.toHaveAttribute("disabled");
+    expect(trigger).toHaveClass("data-[disabled]:opacity-50", "data-[disabled]:pointer-events-none");
+  });
+
+  it("defaultOpen disabled 면 열린 채로 남는다", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Collapsible label="답 보기" defaultOpen disabled onOpenChange={onOpenChange}>
+        <p>답 내용</p>
+      </Collapsible>,
+    );
+    const trigger = screen.getByRole("button", { name: "답 보기" });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("답 내용")).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+});
+
 describe("R28 tone", () => {
   it.each(["brand", "success", "warning", "info"] as const)("tone=%s 가 Text · Icon 모두 같은 text-fg-* 클래스다", (tone) => {
     const { container } = render(

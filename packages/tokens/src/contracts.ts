@@ -270,7 +270,8 @@ export type Contracts<P extends Platform> = {
   /**
    * 접고 펴는 패널 하나(R27, 웹 전용). `label` 은 트리거의 보이는 글자이자 접근성 이름이다(C-13).
    * 개폐 3종은 오버레이와 같다(C-12) — `open` / `defaultOpen` / `onOpenChange`, 기본은 닫힘이고 닫힌 패널은 DOM 에 없다.
-   * 상자는 없다. 상자로 보이려면 Card 안에 둔다(알려진 동작 32).
+   * `variant` 는 `ghost`(기본, 상자 없음) · `secondary`(트리거 줄만 채움) 둘이다(R28, 알려진 동작 32).
+   * `disabled` 면 트리거가 개폐를 막고 지금 열림 상태 그대로 고정된다(R28).
    */
   Collapsible: {
     label: string;
@@ -278,6 +279,8 @@ export type Contracts<P extends Platform> = {
     open?: boolean;
     defaultOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
+    disabled?: boolean;
+    variant?: Extract<Variant, "ghost" | "secondary">;
     className?: string;
   };
 };

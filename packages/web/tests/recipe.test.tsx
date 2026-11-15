@@ -86,9 +86,17 @@ describe("Tabs", () => {
 });
 
 describe("Collapsible", () => {
-  it("트리거가 토큰 recipe 와 같다 (R27)", () => {
-    render(<Collapsible label="답 보기">{null}</Collapsible>);
+  it("secondary 트리거가 토큰 recipe 와 같다 (R27, R28 secondary)", () => {
+    render(<Collapsible label="답 보기" variant="secondary">{null}</Collapsible>);
     expect(screen.getByRole("button")).toHaveClass(...expected(component.collapsible));
+    expect(screen.getByRole("button")).toHaveClass(`px-${component.collapsible.paddingX}`);
+  });
+
+  it("ghost(기본) 트리거는 recipe 의 세로 여백 · 글자만 쓰고 가로 여백 · 모서리는 쓰지 않는다 (R28)", () => {
+    const { paddingY, text, paddingX, radius } = component.collapsible;
+    render(<Collapsible label="답 보기">{null}</Collapsible>);
+    expect(screen.getByRole("button")).toHaveClass(...expected({ paddingY, text }));
+    expect(screen.getByRole("button")).not.toHaveClass(`px-${paddingX}`, `rounded-${radius}`);
   });
 });
 

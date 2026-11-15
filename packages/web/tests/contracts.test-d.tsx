@@ -224,6 +224,30 @@ describe("R27 Collapsible 계약", () => {
   });
 });
 
+describe("R28 Collapsible disabled · variant 계약", () => {
+  it("disabled 는 boolean, variant 는 ghost · secondary 뿐이다", () => {
+    expectTypeOf<Contracts<"web">["Collapsible"]["disabled"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Collapsible"]["variant"]>().toEqualTypeOf<"ghost" | "secondary" | undefined>();
+    assertType(
+      <Collapsible label="답" variant="secondary" disabled>
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error variant 는 ghost · secondary 뿐이다
+      <Collapsible label="답" variant="primary">
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error variant 는 ghost · secondary 뿐이다
+      <Collapsible label="답" variant="danger">
+        {null}
+      </Collapsible>,
+    );
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
   it("Tabs", () => {
     // @ts-expect-error label 필수
