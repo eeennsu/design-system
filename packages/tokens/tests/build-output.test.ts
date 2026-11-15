@@ -104,7 +104,7 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
       const nativeDarkMedia = /^ {2}:root \{\n([\s\S]*?)^ {2}\}/m.exec(native)?.[1] ?? "";
 
       const fromClass = declarations(tokenDarkClass);
-      expect(Object.keys(fromClass)).toHaveLength(17);
+      expect(Object.keys(fromClass)).toHaveLength(26);
       expect(declarations(tokenDarkMedia)).toEqual(fromClass);
       expect(declarations(nativeDarkMedia)).toEqual(fromClass);
     });
@@ -203,10 +203,10 @@ describe("토큰 CSS 구조 (§3.11)", () => {
     expect(weights).toEqual(["--font-weight-normal: 400;", "--font-weight-semibold: 600;", "--font-weight-bold: 700;"]);
   });
 
-  it("inline 은 색 17개뿐이다 (§3.7, R26 fg-brand)", () => {
+  it("inline 은 색 26개뿐이다 (§3.7, R28 상태색 · border-surface)", () => {
     const inline = /@theme inline \{\n([\s\S]*?)^\}/m.exec(css)?.[1] ?? "";
     const lines = inline.trim().split("\n");
-    expect(lines).toHaveLength(17);
+    expect(lines).toHaveLength(26);
     for (const line of lines) expect(line.trim()).toMatch(/^--color-[a-z-]+: var\(--(bg|fg|border)-[a-z-]+\);$/);
   });
 
@@ -247,6 +247,14 @@ describe("AC-4 RN JS 객체", () => {
 
   it("bakery 는 brand 가 amber 다", () => {
     expect(output("tokens/src/brands/bakery.ts")).toContain('"brand": "oklch(66.6% 0.179 58.318)"');
+  });
+
+  it("border.surface 는 두 브랜드 · 두 스킴 모두 투명이다 (R28, plan D-37)", () => {
+    for (const brand of ["base", "bakery"] as const) {
+      const ts = output(`tokens/src/brands/${brand}.ts`);
+      // light · dark 두 번. primitive `transparent` 참조가 해석된 값이다
+      expect(ts.match(/"surface": "oklch\(0% 0 0 \/ 0\)"/g), brand).toHaveLength(2);
+    }
   });
 });
 

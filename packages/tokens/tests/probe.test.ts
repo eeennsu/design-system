@@ -36,11 +36,17 @@ describe("AC-6 primitive 클래스가 생성되지 않는다", () => {
     for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(false);
   });
 
-  it("semantic 색 클래스는 생성된다 (대조군)", async () => {
-    const css = await build(["bg-brand", "text-fg-muted", "border-border-focus"]);
-    expect(hasRule(css, "bg-brand")).toBe(true);
-    expect(hasRule(css, "text-fg-muted")).toBe(true);
-    expect(hasRule(css, "border-border-focus")).toBe(true);
+  it("semantic 색 클래스는 생성된다 (대조군, R28 상태색 · border.surface 포함)", async () => {
+    const candidates = [
+      "bg-brand",
+      "text-fg-muted",
+      "border-border-focus",
+      "bg-info-subtle",
+      "text-fg-success",
+      "border-border-surface",
+    ];
+    const css = await build(candidates);
+    for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(true);
   });
 });
 
@@ -145,7 +151,7 @@ describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {
         .split("\n")
         .filter((line) => line.trim().startsWith("--ds-"));
     expect(primitiveBlock("bakery")).toEqual(primitiveBlock("base"));
-    expect(primitiveBlock("base").length).toBe(62); // 5램프 x 11단 + 반 단계 3 + white + black + 검정 알파 2 (R26)
+    expect(primitiveBlock("base").length).toBe(98); // 8램프 x 11단 + 반 단계 5(R26 3 · R28 red 2) + white + black + 검정 알파 2 + transparent (R28)
   });
 });
 

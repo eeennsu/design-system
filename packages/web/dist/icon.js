@@ -54,6 +54,10 @@ const tones = {
     default: "text-fg",
     muted: "text-fg-muted",
     danger: "text-fg-danger",
+    brand: "text-fg-brand",
+    success: "text-fg-success",
+    warning: "text-fg-warning",
+    info: "text-fg-info",
 };
 /**
  * 단독 아이콘(구현 노트 N-17). 색을 상속하지 않고 `tone` 으로 정한다 — RN 에는 글자색 상속이

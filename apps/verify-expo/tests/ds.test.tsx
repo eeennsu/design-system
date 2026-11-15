@@ -31,6 +31,8 @@ const DS_ON_BRAND = "#fff";
 const DS_ON_BRAND_DARK = "#fff";
 const DS_FG_MUTED_LIGHT = "#5a6374"; // gray-550 (R26)
 const DS_FG_MUTED_DARK = "#9f9fa9"; // zinc-400 (R26)
+/** base 라이트 fg.warning — amber-800 의 jest 환산값(F-15). R28 상태색 */
+const DS_FG_WARNING_LIGHT = "#973c00";
 
 async function mount(ui: ReactElement, scheme: "light" | "dark" = "light"): Promise<void> {
   await cleanup();
@@ -383,5 +385,12 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
 
     await mount(<Button label="삭제" variant="danger" />, "dark");
     expect(screen.getByText("삭제").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
+  });
+});
+
+describe("R28 tone", () => {
+  test("Text tone=warning 이 fg.warning 색이다", async () => {
+    await mount(<Text tone="warning">주의</Text>);
+    expect(rootStyle()).toMatchObject({ color: DS_FG_WARNING_LIGHT });
   });
 });

@@ -21,8 +21,11 @@ export type ControlSize = Extract<Size, "sm" | "md" | "lg">;
 /** Badge 가 쓰는 `Size` 부분집합. lg 이상은 Badge 용도 밖(plan D-15). */
 export type BadgeSize = Extract<Size, "sm" | "md">;
 
-/** 전역 축 3 — 글자색 의도(C-8). danger 는 variant 의 danger 와 같은 semantic 색이다. */
-export type Tone = "default" | "muted" | "danger";
+/**
+ * 전역 축 3 — 글자색 의도(C-8). fg semantic 과 1:1, R28(brand · success · warning · info 추가).
+ * danger 는 variant 의 danger 와 같은 semantic 색이다.
+ */
+export type Tone = "default" | "muted" | "danger" | "brand" | "success" | "warning" | "info";
 
 /** Input 의 입력 종류. type · inputMode · autoComplete 매핑의 단일 입력이다(C-11). */
 export type InputKind = "text" | "password" | "email" | "number";

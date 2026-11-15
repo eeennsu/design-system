@@ -14,7 +14,7 @@ const cn = extendTailwindMerge({ override: { theme: twMergeConfig } });
 const cnExtend = extendTailwindMerge({ extend: { theme: twMergeConfig } });
 
 describe("설정이 빌드 산출물에서 나온다", () => {
-  it("색 키가 semantic 17개 + Tailwind 정적 색 3개다 (R26)", () => {
+  it("색 키가 semantic 26개 + Tailwind 정적 색 3개다 (R28 상태색 · border.surface)", () => {
     expect(twMergeConfig.color).toEqual([
       "canvas",
       "surface",
@@ -25,14 +25,23 @@ describe("설정이 빌드 산출물에서 나온다", () => {
       "danger",
       "danger-hover",
       "overlay",
+      "brand-subtle",
+      "success-subtle",
+      "warning-subtle",
+      "info-subtle",
+      "danger-subtle",
       "fg",
       "fg-muted",
       "fg-brand",
       "fg-danger",
       "fg-on-brand",
       "fg-on-danger",
+      "fg-success",
+      "fg-warning",
+      "fg-info",
       "border",
       "border-focus",
+      "border-surface",
       "inherit",
       "current",
       "transparent",

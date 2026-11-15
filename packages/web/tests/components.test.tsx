@@ -769,3 +769,16 @@ describe("R27 Collapsible", () => {
     expect(container.firstElementChild).toHaveClass("mt-6");
   });
 });
+
+describe("R28 tone", () => {
+  it.each(["brand", "success", "warning", "info"] as const)("tone=%s 가 Text · Icon 모두 같은 text-fg-* 클래스다", (tone) => {
+    const { container } = render(
+      <Stack>
+        <Text tone={tone}>상태</Text>
+        <Icon name="info" tone={tone} />
+      </Stack>,
+    );
+    expect(screen.getByText("상태")).toHaveClass(`text-fg-${tone}`);
+    expect(container.querySelector("svg")).toHaveClass(`text-fg-${tone}`);
+  });
+});

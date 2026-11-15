@@ -548,7 +548,7 @@ export type TableRow = { cells: ReactNode[] };
 | `--text-*` | `3xl` · `4xl` | 36 / 44 / 700 · 48 / 56 / 700. native 래퍼 배수 `44/36` · `56/48` |
 | `--font-weight-*` | `normal` · `semibold` · `bold` | 400 · 600 · 700(primitive `regular` · `semibold` · `bold`). `medium`은 내지 않는다 |
 | `--font-mono` | 덮어쓰기 | 웹 `"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`, RN `JetBrainsMono` |
-| primitive | `green` · `orange` · `sky` 11단, `transparent` | Tailwind 4.3.3 `theme.css` 복사, `oklch(0% 0 0 / 0)` |
+| primitive | `green` · `orange` · `sky` 11단, `transparent`, 반 단계 `red-25` · `red-975`(Task 2 대비) | Tailwind 4.3.3 `theme.css` 복사, `oklch(0% 0 0 / 0)`, `oklch(98.6% 0.007 17.38)` · `oklch(12.9% 0.046 26.042)`(red-50 · white, red-950 · black 의 중간값 — R26 반 단계와 같은 방식) |
 | `twMergeConfig` | spacing 16키 + `0`, text 7키, 굵기 3키, 색 9키 | Task 1 · 2 |
 
 **semantic 색 추가분(출발값)** — Task 2의 대비 테스트(decisions-r28 12)가 통과하도록 같은 램프 안에서 옮길 수 있다. 옮겼으면 이 표를 고친다.
@@ -559,12 +559,13 @@ export type TableRow = { cells: ReactNode[] };
 | `bg.success-subtle` | `--bg-success-subtle` | `bg-success-subtle` | green-50 | green-950 | green-50 | green-950 |
 | `bg.warning-subtle` | `--bg-warning-subtle` | `bg-warning-subtle` | amber-50 | amber-950 | orange-50 | orange-950 |
 | `bg.info-subtle` | `--bg-info-subtle` | `bg-info-subtle` | sky-50 | sky-950 | sky-50 | sky-950 |
-| `bg.danger-subtle` | `--bg-danger-subtle` | `bg-danger-subtle` | red-50 | red-950 | red-50 | red-950 |
-| `fg.success` | `--fg-success` | `--color-fg-success` → `text-fg-success` | green-700 | green-400 | green-700 | green-400 |
+| `bg.danger-subtle` | `--bg-danger-subtle` | `bg-danger-subtle` | red-50 | red-950 | **red-25** | **red-975** |
+| `fg.success` | `--fg-success` | `--color-fg-success` → `text-fg-success` | **green-800** | green-400 | green-700 | green-400 |
 | `fg.warning` | `--fg-warning` | `text-fg-warning` | amber-800 | amber-400 | orange-800 | orange-400 |
 | `fg.info` | `--fg-info` | `text-fg-info` | sky-700 | sky-400 | sky-700 | sky-400 |
 | `border.surface` | `--border-surface` | `--color-border-surface` → `border-border-surface` | transparent | transparent | transparent | transparent |
 
+- **Task 2에서 옮긴 값(굵게)** — 출발값의 대비 테스트 실패 3쌍. base 라이트 `fg.success / bg.canvas` green-700 4.49 → green-800 6.45(새 글자를 한 단계 진하게). bakery `fg.danger / bg.danger-subtle` 라이트 red-600 / red-50 4.36, 다크 red-500 / red-950 4.23 — `fg.danger`는 기존 값이라 그대로 두고, red-50 · red-950이 램프 끝이라 반 단계 `red-25`(4.57) · `red-975`(5.30)를 더해 채움만 옮겼다. `red-25`는 white와 1.04:1, bakery canvas(amber-50)와 1.01:1이라 bakery 라이트 danger 채움은 거의 보이지 않는다 — Task 11 화면에서 보고, 채움이 필요하면 bakery `fg.danger`를 red-700으로 바꾸는 것(red-50 위 5.88)이 대안이다(기존 글자색 변경이라 사용자 판단)
 - bakery `border.surface`는 투명으로 시작한다. Task 11 화면에서 Card가 흐리면(알려진 동작 24) 값을 줄지 그때 정한다(decisions-r28 2)
 
 **계약 추가분(`contracts.ts`)**
