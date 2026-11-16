@@ -1,18 +1,20 @@
 const preset = require("jest-expo/jest-preset");
 
 /**
- * jest-expo 의 허용 목록에 두 이름을 더한다.
+ * jest-expo 의 허용 목록에 세 이름을 더한다.
  *
  * - `lucide-react-native` — ESM 만 배포한다. 목록에 없으면 `export {` 에서 파싱이 깨진다
  * - `@eeennsu` — DS 패키지도 ESM 단일 출력이다(plan D-22). `workspace:*` 심링크로 쓸 때는
  *   경로가 `node_modules` 밖이라 안 걸리지만, **타르볼로 설치하면 걸린다**(T-R1 verify:pack).
  *   RN 소비자가 jest 를 쓴다면 같은 한 줄이 필요하다
+ * - `magic-string` — `@tailwindcss/node` 가 쓰는 ESM 전용 패키지다. lockfile 없이 설치하는 verify:pack 에서
+ *   1.4.5 가 들어와 게이트 CSS 헬퍼(tests/gate-css.ts)에서 파싱이 깨졌다(2026-11-16)
  *
  * 목록을 통째로 새로 쓰면 `@react-native/jest-preset` 자체가 변환 대상에서 빠지므로
  * 프리셋 문자열을 읽어 이름만 끼워 넣는다. Metro 는 자체 변환이라 영향이 없다.
  */
 const transformIgnorePatterns = preset.transformIgnorePatterns.map((pattern) =>
-  pattern.replace("native-base", "native-base|lucide-react-native|@eeennsu"),
+  pattern.replace("native-base", "native-base|lucide-react-native|@eeennsu|magic-string"),
 );
 
 /**
