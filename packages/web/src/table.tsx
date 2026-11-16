@@ -21,7 +21,7 @@ export const Table: FC<TableProps> = ({ label, columns, rows, className }) => (
     role={label ? "region" : undefined}
     aria-label={label || undefined}
     className={cn(
-      "overflow-x-auto",
+      "overflow-auto",
       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus",
       className,
     )}

@@ -13,13 +13,13 @@ type ProseProps = Contracts<"web">["Prose"];
 export const Prose: FC<ProseProps> = ({ children, className }) => (
   <div
     className={cn(
-      "text-md text-fg",
+      "text-md text-fg break-keep wrap-break-word",
       "[:where(&)>*+*]:mt-4",
       "[:where(&)_h1]:text-2xl [:where(&)_h2]:text-xl [:where(&)_h3]:text-lg",
       "[:where(&)>*+h1]:mt-8 [:where(&)>*+h2]:mt-8 [:where(&)>*+h3]:mt-6",
       "[:where(&)_ul]:list-disc [:where(&)_ol]:list-decimal [:where(&)_ul]:ps-6 [:where(&)_ol]:ps-6",
       "[:where(&)_li+li]:mt-1",
-      "[:where(&)_a]:text-fg-brand [:where(&)_a]:underline",
+      "[:where(&)_a]:text-fg-brand [:where(&)_a]:underline [:where(&)_a:focus-visible]:outline-2 [:where(&)_a:focus-visible]:outline-offset-2 [:where(&)_a:focus-visible]:outline-border-focus",
       "[:where(&)_:not(pre)>code]:font-mono [:where(&)_:not(pre)>code]:text-sm [:where(&)_:not(pre)>code]:bg-surface-muted [:where(&)_:not(pre)>code]:rounded-sm [:where(&)_:not(pre)>code]:px-1",
       "[:where(&)_pre]:p-4 [:where(&)_pre]:overflow-x-auto [:where(&)_pre]:text-sm [:where(&)_pre]:font-mono [:where(&)_pre]:text-fg [:where(&)_pre]:bg-surface-muted [:where(&)_pre]:rounded-lg",
       "[:where(&)_blockquote]:border-s-4 [:where(&)_blockquote]:border-border [:where(&)_blockquote]:ps-4 [:where(&)_blockquote]:text-fg-muted",

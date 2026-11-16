@@ -532,7 +532,15 @@ describe("R27 Table", () => {
     const { container } = render(<Table columns={columns} rows={rows} className="mt-6" />);
     const root = container.firstElementChild!;
     expect(root).toHaveAttribute("tabindex", "0");
-    expect(root).toHaveClass("overflow-x-auto", "mt-6");
+    expect(root).toHaveClass("overflow-auto", "mt-6");
+    expect(root).not.toHaveClass("overflow-x-auto");
+  });
+
+  it("className max-h-96 이 루트에 병합되고 th · td 는 whitespace-nowrap 을 유지한다", () => {
+    const { container } = render(<Table columns={columns} rows={rows} className="max-h-96" />);
+    expect(container.firstElementChild).toHaveClass("overflow-auto", "max-h-96");
+    expect(container.querySelector("th")).toHaveClass("whitespace-nowrap");
+    expect(container.querySelector("td")).toHaveClass("whitespace-nowrap");
   });
 });
 
@@ -599,6 +607,18 @@ describe("R27 Prose", () => {
       "[:where(&)>*+*]:mt-4",
       "[:where(&)_h2]:text-xl",
       "[:where(&)_:not(pre)>code]:font-mono",
+    );
+  });
+
+  it("루트에 한국어 줄바꿈이 붙고 링크는 밑줄과 포커스 링을 갖는다", () => {
+    const { container } = render(<Prose>{"x"}</Prose>);
+    expect(container.firstElementChild).toHaveClass(
+      "break-keep",
+      "wrap-break-word",
+      "[:where(&)_a]:underline",
+      "[:where(&)_a:focus-visible]:outline-2",
+      "[:where(&)_a:focus-visible]:outline-offset-2",
+      "[:where(&)_a:focus-visible]:outline-border-focus",
     );
   });
 

@@ -112,6 +112,19 @@ describe("R27 Prose 임의 변형이 특이성 0 선택자를 낸다 (decisions-
   });
 });
 
+describe("R28 Prose 한국어 줄바꿈 · 링크 포커스 (tailwindcss 4.3.3)", () => {
+  it("break-keep · wrap-break-word 가 생성된다", async () => {
+    const css = await build(["break-keep", "wrap-break-word"]);
+    expect(css).toMatch(/\.break-keep\s*\{\s*word-break: keep-all/);
+    expect(css).toMatch(/\.wrap-break-word\s*\{\s*overflow-wrap: break-word/);
+  });
+
+  it("[:where(&)_a:focus-visible]:outline-2 가 특이성 0 선택자로 생성된다", async () => {
+    const css = await build(["[:where(&)_a:focus-visible]:outline-2"]);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-width: 2px/m);
+  });
+});
+
 describe("R27 Tabs 겹침 유틸리티가 리셋과 무관하게 남는다 (decisions-r27 6)", () => {
   it("-mb-px 는 생성된다 (음수 px 는 정적 값)", async () => {
     const css = await build(["-mb-px"]);
