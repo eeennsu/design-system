@@ -19,13 +19,13 @@ export declare const colors: {
             readonly "success-subtle": "oklch(98.2% 0.018 155.826)";
             readonly "warning-subtle": "oklch(98% 0.016 73.684)";
             readonly "info-subtle": "oklch(97.7% 0.013 236.62)";
-            readonly "danger-subtle": "oklch(100% 0 0)";
+            readonly "danger-subtle": "oklch(97.1% 0.013 17.38)";
         };
         readonly fg: {
             readonly default: "oklch(21% 0.034 264.665)";
             readonly muted: "oklch(44.6% 0.03 256.802)";
             readonly brand: "oklch(55.5% 0.163 48.998)";
-            readonly danger: "oklch(57.7% 0.245 27.325)";
+            readonly danger: "oklch(50.5% 0.213 27.518)";
             readonly success: "oklch(52.7% 0.154 150.069)";
             readonly warning: "oklch(47% 0.157 37.304)";
             readonly info: "oklch(50% 0.134 242.749)";
@@ -53,13 +53,13 @@ export declare const colors: {
             readonly "success-subtle": "oklch(26.6% 0.065 152.934)";
             readonly "warning-subtle": "oklch(26.6% 0.079 36.259)";
             readonly "info-subtle": "oklch(29.3% 0.066 243.157)";
-            readonly "danger-subtle": "oklch(0% 0 0)";
+            readonly "danger-subtle": "oklch(25.8% 0.092 26.042)";
         };
         readonly fg: {
             readonly default: "oklch(98.5% 0.002 247.839)";
             readonly muted: "oklch(70.7% 0.022 261.325)";
             readonly brand: "oklch(82.8% 0.189 84.429)";
-            readonly danger: "oklch(63.7% 0.237 25.331)";
+            readonly danger: "oklch(70.4% 0.191 22.216)";
             readonly success: "oklch(79.2% 0.209 151.711)";
             readonly warning: "oklch(75% 0.183 55.934)";
             readonly info: "oklch(74.6% 0.16 232.661)";

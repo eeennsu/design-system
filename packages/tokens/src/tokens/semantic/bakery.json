@@ -57,7 +57,7 @@
         },
         "danger-subtle": {
           "$type": "color",
-          "$value": "{primitive.color.white}"
+          "$value": "{primitive.color.red.50}"
         }
       },
       "fg": {
@@ -75,7 +75,7 @@
         },
         "danger": {
           "$type": "color",
-          "$value": "{primitive.color.red.600}"
+          "$value": "{primitive.color.red.700}"
         },
         "success": {
           "$type": "color",
@@ -169,7 +169,7 @@
         },
         "danger-subtle": {
           "$type": "color",
-          "$value": "{primitive.color.black}"
+          "$value": "{primitive.color.red.950}"
         }
       },
       "fg": {
@@ -187,7 +187,7 @@
         },
         "danger": {
           "$type": "color",
-          "$value": "{primitive.color.red.500}"
+          "$value": "{primitive.color.red.400}"
         },
         "success": {
           "$type": "color",

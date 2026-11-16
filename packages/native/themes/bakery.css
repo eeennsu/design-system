@@ -21,11 +21,11 @@
     --bg-success-subtle: oklch(26.6% 0.065 152.934);
     --bg-warning-subtle: oklch(26.6% 0.079 36.259);
     --bg-info-subtle: oklch(29.3% 0.066 243.157);
-    --bg-danger-subtle: oklch(0% 0 0);
+    --bg-danger-subtle: oklch(25.8% 0.092 26.042);
     --fg-default: oklch(98.5% 0.002 247.839);
     --fg-muted: oklch(70.7% 0.022 261.325);
     --fg-brand: oklch(82.8% 0.189 84.429);
-    --fg-danger: oklch(63.7% 0.237 25.331);
+    --fg-danger: oklch(70.4% 0.191 22.216);
     --fg-success: oklch(79.2% 0.209 151.711);
     --fg-warning: oklch(75% 0.183 55.934);
     --fg-info: oklch(74.6% 0.16 232.661);

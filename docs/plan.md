@@ -559,13 +559,13 @@ export type TableRow = { cells: ReactNode[] };
 | `bg.success-subtle` | `--bg-success-subtle` | `bg-success-subtle` | green-50 | green-950 | green-50 | green-950 |
 | `bg.warning-subtle` | `--bg-warning-subtle` | `bg-warning-subtle` | amber-50 | amber-950 | orange-50 | orange-950 |
 | `bg.info-subtle` | `--bg-info-subtle` | `bg-info-subtle` | sky-50 | sky-950 | sky-50 | sky-950 |
-| `bg.danger-subtle` | `--bg-danger-subtle` | `bg-danger-subtle` | red-50 | red-950 | white | black |
+| `bg.danger-subtle` | `--bg-danger-subtle` | `bg-danger-subtle` | red-50 | red-950 | red-50 | red-950 |
 | `fg.success` | `--fg-success` | `--color-fg-success` → `text-fg-success` | green-800 | green-400 | green-700 | green-400 |
 | `fg.warning` | `--fg-warning` | `text-fg-warning` | amber-800 | amber-400 | orange-800 | orange-400 |
 | `fg.info` | `--fg-info` | `text-fg-info` | sky-700 | sky-400 | sky-700 | sky-400 |
 | `border.surface` | `--border-surface` | `--color-border-surface` → `border-border-surface` | transparent | transparent | transparent | transparent |
 
-- Task 2 대비 실측으로 옮긴 값 둘. base 라이트 `fg.success` green-700 → green-800(canvas 위 4.49 → 6.45). bakery `bg.danger-subtle`은 기존 `fg.danger`(라이트 red-600 · 다크 red-500)를 못 바꾸는데 red-50 위 4.36 · red-950 위 4.23이라 같은 램프 안에서 풀 수 없어 라이트 white(4.76) · 다크 black(5.50)으로 옮겼다. 틴트가 없어 Task 11 화면에서 보고 다시 정한다.
+- Task 2 대비 실측으로 옮긴 값 둘. base 라이트 `fg.success` green-700 → green-800(canvas 위 4.49 → 6.45). bakery `bg.danger-subtle`은 red-50 · red-950, bakery `fg.danger`는 red-700 · red-400이다(사용자 결정 2026-11-16, decisions-r26 5 재개. red-700/red-50 5.88 · red-400/red-950 5.58).
 - bakery `border.surface`는 투명으로 시작한다. Task 11 화면에서 Card가 흐리면(알려진 동작 24) 값을 줄지 그때 정한다(decisions-r28 2)
 
 **계약 추가분(`contracts.ts`)**
