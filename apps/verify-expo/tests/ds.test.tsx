@@ -20,6 +20,7 @@ import {
   Label,
   Link,
   Stack,
+  Stepper,
   Text,
   Textarea,
 } from "@eeennsu/native";
@@ -463,5 +464,71 @@ describe("R28 native Link · Callout", () => {
       fontSize,
       lineHeight,
     });
+  });
+});
+
+describe("R28 native Stepper", () => {
+  const items = [
+    { value: "a", label: "계정", content: <Text>계정 내용</Text> },
+    { value: "b", label: "프로필", content: <Text>프로필 내용</Text> },
+    { value: "c", label: "확인", content: <Text>확인 내용</Text> },
+  ];
+
+  type Json = { props?: Record<string, any>; children?: (Json | string)[] | null };
+  /** 렌더 트리에서 조건에 맞는 첫 노드. */
+  function findNode(node: Json | string | null | undefined, test: (n: Json) => boolean): Json | undefined {
+    if (!node || typeof node === "string") return undefined;
+    if (test(node)) return node;
+    for (const child of node.children ?? []) {
+      const found = findNode(child, test);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  test("펼친 단계만 content 가 렌더된다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="b" />);
+    expect(screen.getByText("프로필 내용")).toBeTruthy();
+    expect(screen.queryByText("계정 내용")).toBeNull();
+    expect(screen.queryByText("확인 내용")).toBeNull();
+  });
+
+  test("onValueChange 가 있으면 지난 단계만 완료 버튼이고 누르면 값 하나로 불린다", async () => {
+    const onValueChange = jest.fn();
+    await mount(<Stepper label="단계" items={items} value="b" onValueChange={onValueChange} />);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    await fireEvent.press(screen.getByRole("button", { name: /완료/ }));
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith("a");
+  });
+
+  test("onValueChange 가 없으면 버튼이 없지만 지난 단계는 완료로 읽힌다", async () => {
+    await mount(<Stepper label="단계" items={items} value="c" />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByLabelText("계정, 완료")).toBeTruthy();
+    expect(screen.getByLabelText("프로필, 완료")).toBeTruthy();
+    expect(screen.queryByLabelText("확인, 완료")).toBeNull();
+  });
+
+  test("목록 이름이 label 이고 펼친 단계 줄만 selected 다", async () => {
+    await mount(<Stepper label="가입 단계" items={items} value="b" />);
+    expect(screen.getByLabelText("가입 단계")).toBeTruthy();
+    const tree = screen.toJSON() as Json;
+    const selected = findNode(tree, (n) => n.props?.accessibilityState?.selected === true);
+    expect(selected).toBeTruthy();
+    expect(JSON.stringify(selected)).toContain("프로필");
+    expect(JSON.stringify(selected)).not.toContain("계정");
+    expect(JSON.stringify(selected)).not.toContain("확인");
+  });
+
+  test("펼친 단계 표시는 borderLeftWidth 2 · brand 색이고 남은 단계는 버튼이 아니다", async () => {
+    await mount(<Box className="border-l-2 border-brand">{null}</Box>);
+    const brandBorder = rootStyle().borderColor; // RN 은 border-brand 를 borderColor 로 푼다
+    expect(brandBorder).toBeTruthy();
+    await mount(<Stepper label="단계" items={items} value="b" onValueChange={() => {}} />);
+    const mark = findNode(screen.toJSON() as Json, (n) => n.props?.style?.borderLeftWidth === 2);
+    expect(mark?.props?.style).toMatchObject({ borderLeftWidth: 2, borderColor: brandBorder });
+    expect(screen.queryByRole("button", { name: /확인/ })).toBeNull();
+    expect(screen.getByText("프로필").props.style).toMatchObject({ fontWeight: 600 });
   });
 });

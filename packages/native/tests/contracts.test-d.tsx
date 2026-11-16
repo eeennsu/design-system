@@ -28,6 +28,7 @@ import {
   Label,
   Link,
   Stack,
+  Stepper,
   Text,
   Textarea,
   components,
@@ -64,6 +65,7 @@ describe("C-17 맵 동등성", () => {
       | "Box"
       | "Link"
       | "Callout"
+      | "Stepper"
     >();
   });
 
@@ -220,6 +222,14 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
     assertType(<Callout>문자열</Callout>);
     assertType(<Link label="a" onPress={() => {}} />);
     assertType(<Callout tone="danger" title="t" icon="info">{<Text>x</Text>}</Callout>);
+  });
+
+  it("Stepper 는 제어 전용이고 content 는 엘리먼트뿐이다(R28)", () => {
+    // @ts-expect-error value 필수
+    assertType(<Stepper label="단계" items={[]} />);
+    // @ts-expect-error content 문자열은 안 된다
+    assertType(<Stepper label="단계" value="a" items={[{ value: "a", label: "A", content: "문자열" }]} />);
+    assertType(<Stepper label="단계" value="a" onValueChange={(v: string) => void v} items={[{ value: "a", label: "A", content: <Text>x</Text> }]} />);
   });
 
   it("텍스트 컴포넌트 children 은 문자열뿐이다(C-17)", () => {

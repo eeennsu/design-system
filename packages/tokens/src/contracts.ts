@@ -337,8 +337,8 @@ export const webComponents = [
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**
- * RN 구현 13개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
- * Chip · Icon(N-17), Link · Callout(R28)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.
+ * RN 구현 14개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
+ * Chip · Icon(N-17), Link · Callout · Stepper(R28)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.
  */
 export const nativeComponents = [
   "Button",
@@ -354,6 +354,7 @@ export const nativeComponents = [
   "Box",
   "Link",
   "Callout",
+  "Stepper",
 ] as const satisfies readonly (keyof Contracts<"native">)[];
 
 export type WebKey = (typeof webComponents)[number];

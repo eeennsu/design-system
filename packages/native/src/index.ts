@@ -9,10 +9,12 @@ import { Input } from "./input.js";
 import { Label } from "./label.js";
 import { Link } from "./link.js";
 import { Stack } from "./stack.js";
+import { Stepper } from "./stepper.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 
-export { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Text, Textarea };
+export { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Stepper, Text, Textarea };
+export type { StepItem } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 
 /**
@@ -33,4 +35,5 @@ export const components = {
   Box,
   Link,
   Callout,
+  Stepper,
 };

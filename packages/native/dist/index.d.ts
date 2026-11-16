@@ -9,9 +9,11 @@ import { Input } from "./input.js";
 import { Label } from "./label.js";
 import { Link } from "./link.js";
 import { Stack } from "./stack.js";
+import { Stepper } from "./stepper.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
-export { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Text, Textarea };
+export { Badge, Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Stepper, Text, Textarea };
+export type { StepItem } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `nativeComponents` 와 같고
@@ -120,6 +122,14 @@ export declare const components: {
         tone?: Extract<import("@eeennsu/tokens").Tone, "info" | "success" | "warning" | "danger" | "brand">;
         title?: string;
         icon?: import("@eeennsu/tokens").IconName;
+        className?: string;
+    }>;
+    Stepper: import("react").FC<{
+        label: string;
+        items: import("@eeennsu/tokens").StepItem<"native">[];
+        value: string;
+        reached?: string;
+        onValueChange?: (value: string) => void;
         className?: string;
     }>;
 };
