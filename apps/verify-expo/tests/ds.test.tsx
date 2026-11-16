@@ -439,6 +439,10 @@ describe("R28 native Link · Callout", () => {
     expect(infoFill).toBeTruthy();
     await mount(<Text tone="danger">기준</Text>);
     const dangerFg = rootStyle().color;
+    await mount(<Text size="md">기준</Text>);
+    const { fontSize, lineHeight } = rootStyle();
+    expect(fontSize).toBeTruthy();
+    expect(lineHeight).toBeTruthy();
 
     await mount(
       <Callout title="알림">
@@ -453,6 +457,11 @@ describe("R28 native Link · Callout", () => {
         <Text>내용</Text>
       </Callout>,
     );
-    expect(screen.getByText("오류").props.style).toMatchObject({ color: dangerFg, fontWeight: 600 });
+    expect(screen.getByText("오류").props.style).toMatchObject({
+      color: dangerFg,
+      fontWeight: 600,
+      fontSize,
+      lineHeight,
+    });
   });
 });

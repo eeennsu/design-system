@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { Text as RNText, View } from "react-native-css/components";
 import { cn } from "./cn.js";
 import { Icon } from "./icon.js";
+import { steps } from "./text.js";
 
 type CalloutTone = NonNullable<Contracts<"native">["Callout"]["tone"]>;
 
@@ -23,7 +24,7 @@ const titles: Record<CalloutTone, string> = {
 };
 
 /**
- * 안내 상자(R28). 테두리 없이 tone 채움만 쓴다. 아이콘은 꾸밈이라 이름이 없다.
+ * 안내 상자(R28). 테두리 없이 tone 채움만 쓴다. 제목은 웹처럼 md 스텝이다(RN Text 는 View 에서 글자 크기를 상속하지 않는다). 아이콘은 꾸밈이라 이름이 없다.
  * `className` 은 표면(View)에만 붙고 글자 클래스는 안쪽 Text 에 닿지 않는다(알려진 동작 22) —
  * 본문 글은 `children` 이 직접 정한다.
  */
@@ -31,7 +32,7 @@ export const Callout: FC<Contracts<"native">["Callout"]> = ({ children, tone = "
   <View className={cn("flex-row gap-3 rounded-lg p-4", fills[tone], className)}>
     {icon === undefined ? null : <Icon name={icon} tone={tone} />}
     <View className="min-w-0 flex-1">
-      {title === undefined ? null : <RNText className={cn("font-sans font-semibold", titles[tone])}>{title}</RNText>}
+      {title === undefined ? null : <RNText className={cn("font-sans font-semibold", steps.md, titles[tone])}>{title}</RNText>}
       {children}
     </View>
   </View>
