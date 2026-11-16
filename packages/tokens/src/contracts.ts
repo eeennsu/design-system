@@ -282,6 +282,18 @@ export type Contracts<P extends Platform> = {
     variant?: Extract<Variant, "ghost" | "secondary">;
     className?: string;
   };
+  /** 글 속 링크(R28). 웹은 `<a href>`, RN 은 `onPress` 다. 이름은 `label` 이다(C-13). */
+  Link: { label: string; tone?: Tone; size?: TypographyStep; className?: string } & (P extends "web"
+    ? { href: string }
+    : { onPress: () => void });
+  /** 안내 상자(R28). 테두리 없이 `bg-<tone>-subtle` 로 채운다. 아이콘은 꾸밈이다. */
+  Callout: {
+    children: P extends "web" ? ReactNode : ElementChildren;
+    tone?: Extract<Tone, "info" | "success" | "warning" | "danger" | "brand">;
+    title?: string;
+    icon?: IconName;
+    className?: string;
+  };
 };
 
 /** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27. */
@@ -307,6 +319,8 @@ export const webComponents = [
   "Prose",
   "Tabs",
   "Collapsible",
+  "Link",
+  "Callout",
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**

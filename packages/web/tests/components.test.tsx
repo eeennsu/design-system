@@ -9,6 +9,7 @@ import type { FocusHandle } from "@eeennsu/tokens";
 import { describe, expect, it, vi } from "vitest";
 import {
   Badge,
+  Callout,
   Box,
   Button,
   ButtonGroup,
@@ -22,6 +23,7 @@ import {
   Icon,
   Input,
   Label,
+  Link,
   Prose,
   Stack,
   Table,
@@ -891,5 +893,96 @@ describe("R27 Collapsible", () => {
       </Collapsible>,
     );
     expect(container.firstElementChild).toHaveClass("mt-6");
+  });
+});
+
+describe("R28 Link", () => {
+  it("a 이고 href 가 그대로이며 이름이 label 이다", () => {
+    render(<Link label="문서" href="/docs" />);
+    const link = screen.getByRole("link", { name: "문서" });
+    expect(link.tagName).toBe("A");
+    expect(link).toHaveAttribute("href", "/docs");
+  });
+
+  it("기본은 brand md 이고 tone · size 가 바뀐다", () => {
+    render(
+      <>
+        <Link label="기본" href="/a" />
+        <Link label="작게" href="/b" tone="muted" size="sm" />
+      </>,
+    );
+    expect(screen.getByRole("link", { name: "기본" })).toHaveClass("text-fg-brand", "text-md");
+    expect(screen.getByRole("link", { name: "작게" })).toHaveClass("text-fg-muted", "text-sm");
+  });
+
+  it("밑줄은 hover · focus 에서만 나오고 포커스 링이 있다", () => {
+    render(<Link label="문서" href="/docs" />);
+    const link = screen.getByRole("link");
+    expect(link).toHaveClass(
+      "hover:underline",
+      "focus-visible:underline",
+      "focus-visible:outline-2",
+      "focus-visible:outline-border-focus",
+    );
+    expect(link).not.toHaveClass("underline");
+  });
+
+  it("소비자 className 이 tone 색을 밀어낸다", () => {
+    render(<Link label="문서" href="/docs" className="text-fg" />);
+    const link = screen.getByRole("link");
+    expect(link).toHaveClass("text-fg");
+    expect(link).not.toHaveClass("text-fg-brand");
+  });
+});
+
+describe("R28 Callout", () => {
+  it("role=note 이고 기본 채움은 info 다", () => {
+    render(<Callout>내용</Callout>);
+    expect(screen.getByRole("note")).toHaveClass("bg-info-subtle");
+  });
+
+  it.each(["info", "success", "warning", "danger", "brand"] as const)("tone=%s 가 채움 · 제목 색을 정한다", (tone) => {
+    render(
+      <Callout tone={tone} title="제목">
+        내용
+      </Callout>,
+    );
+    expect(screen.getByRole("note")).toHaveClass(`bg-${tone}-subtle`);
+    expect(screen.getByText("제목")).toHaveClass(`text-fg-${tone}`);
+  });
+
+  it("title 이 있으면 font-semibold 제목이고 없으면 제목 요소가 없다", () => {
+    const { container, rerender } = render(<Callout title="제목">내용</Callout>);
+    expect(screen.getByText("제목")).toHaveClass("font-semibold");
+    rerender(<Callout>내용</Callout>);
+    expect(screen.queryByText("제목")).toBeNull();
+    expect(container.querySelectorAll(".font-semibold")).toHaveLength(0);
+  });
+
+  it("icon 이 없으면 svg 가 없고 있으면 aria-hidden svg 가 제목 앞에 하나다", () => {
+    const { container, rerender } = render(<Callout title="제목">내용</Callout>);
+    expect(container.querySelector("svg")).toBeNull();
+    rerender(
+      <Callout title="제목" icon="info">
+        내용
+      </Callout>,
+    );
+    const svgs = container.querySelectorAll("svg");
+    expect(svgs).toHaveLength(1);
+    expect(svgs[0]).toHaveAttribute("aria-hidden", "true");
+    const title = screen.getByText("제목");
+    expect(svgs[0]!.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("루트에 줄바꿈 클래스가 있고 테두리가 없다", () => {
+    render(<Callout>내용</Callout>);
+    const root = screen.getByRole("note");
+    expect(root).toHaveClass("break-keep", "wrap-break-word");
+    expect(root).not.toHaveClass("border");
+  });
+
+  it("소비자 className 이 병합된다", () => {
+    render(<Callout className="mt-6">내용</Callout>);
+    expect(screen.getByRole("note")).toHaveClass("mt-6");
   });
 });

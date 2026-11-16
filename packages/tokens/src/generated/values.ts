@@ -244,6 +244,12 @@ export const component = {
       "gap": "2"
     }
   },
+  "callout": {
+    "padding": "4",
+    "radius": "lg",
+    "gap": "3",
+    "text": "md"
+  },
   "card": {
     "padding": "6",
     "radius": "xl"

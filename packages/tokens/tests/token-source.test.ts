@@ -180,6 +180,7 @@ describe("component 계층 인벤토리", () => {
     expect(Object.keys(root as Json).sort()).toEqual([
       "badge",
       "button",
+      "callout",
       "card",
       "chip",
       "codeBlock",

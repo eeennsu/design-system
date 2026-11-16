@@ -17,7 +17,7 @@ import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
 import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -293,5 +293,33 @@ describe("AC-15 · AC-15a 값 형태", () => {
     assertType(<Badge>{"3개"}</Badge>);
     // @ts-expect-error 엘리먼트 children 은 계약이 아니다
     assertType(<Badge>{<span>3</span>}</Badge>);
+  });
+});
+
+describe("R28 Link · Callout 계약", () => {
+  it("Link 는 href 를 필수로 받고 onPress 는 없다", () => {
+    expectTypeOf<Contracts<"web">["Link"]["href"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Link"]["tone"]>().toEqualTypeOf<Tone | undefined>();
+    // @ts-expect-error href 필수
+    assertType(<Link label="문서" />);
+    // @ts-expect-error onClick 은 계약에 없다
+    assertType(<Link label="문서" href="/a" onClick={() => undefined} />);
+    // @ts-expect-error children 은 계약에 없다
+    assertType(<Link label="문서" href="/a">x</Link>);
+  });
+
+  it("Callout tone 은 다섯 개만 받는다", () => {
+    expectTypeOf<Contracts<"web">["Callout"]["tone"]>().toEqualTypeOf<
+      "info" | "success" | "warning" | "danger" | "brand" | undefined
+    >();
+    // @ts-expect-error muted 는 Callout tone 이 아니다
+    assertType(<Callout tone="muted">x</Callout>);
+    // @ts-expect-error default 는 Callout tone 이 아니다
+    assertType(<Callout tone="default">x</Callout>);
+  });
+
+  it("Link label 누락은 에러다", () => {
+    // @ts-expect-error label 필수
+    assertType(<Link href="/a" />);
   });
 });

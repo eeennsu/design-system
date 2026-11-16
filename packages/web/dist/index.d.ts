@@ -1,6 +1,7 @@
 import { Badge } from "./badge.js";
 import { Box } from "./box.js";
 import { Button } from "./button.js";
+import { Callout } from "./callout.js";
 import { ButtonGroup } from "./button-group.js";
 import { Card } from "./card.js";
 import { Chip } from "./chip.js";
@@ -12,6 +13,7 @@ import { Form } from "./form.js";
 import { Icon } from "./icon.js";
 import { Input } from "./input.js";
 import { Label } from "./label.js";
+import { Link } from "./link.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
 import { Table } from "./table.js";
@@ -19,7 +21,7 @@ import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
+export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
 export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
@@ -182,6 +184,21 @@ export declare const components: {
         onOpenChange?: (open: boolean) => void;
         disabled?: boolean;
         variant?: Extract<import("@eeennsu/tokens").Variant, "ghost" | "secondary">;
+        className?: string;
+    }>;
+    Link: import("react").FC<{
+        label: string;
+        tone?: import("@eeennsu/tokens").Tone;
+        size?: import("@eeennsu/tokens").TypographyStep;
+        className?: string;
+    } & {
+        href: string;
+    }>;
+    Callout: import("react").FC<{
+        children: import("react").ReactNode;
+        tone?: Extract<import("@eeennsu/tokens").Tone, "info" | "success" | "warning" | "danger" | "brand">;
+        title?: string;
+        icon?: import("@eeennsu/tokens").IconName;
         className?: string;
     }>;
 };

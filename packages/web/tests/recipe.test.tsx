@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -168,5 +168,12 @@ describe("Icon", () => {
     const svg = screen.getByRole("button").querySelector("svg")!;
     expect(svg.getAttribute("width")).toBe(String(component.icon.size.lg));
     expect(svg.getAttribute("height")).toBe(String(component.icon.size.lg));
+  });
+});
+
+describe("Callout", () => {
+  it("루트가 토큰 recipe 와 같다 (R28)", () => {
+    render(<Callout>내용</Callout>);
+    expect(screen.getByRole("note")).toHaveClass(`p-${component.callout.padding}`, ...expected(component.callout));
   });
 });

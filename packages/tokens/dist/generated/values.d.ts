@@ -165,6 +165,12 @@ export declare const component: {
             readonly gap: "2";
         };
     };
+    readonly callout: {
+        readonly padding: "4";
+        readonly radius: "lg";
+        readonly gap: "3";
+        readonly text: "md";
+    };
     readonly card: {
         readonly padding: "6";
         readonly radius: "xl";
