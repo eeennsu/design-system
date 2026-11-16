@@ -169,6 +169,11 @@ export const twMergeConfig = {
     "normal",
     "semibold",
     "bold"
+  ],
+  "font": [
+    "sans",
+    "mono",
+    "serif"
   ]
 };
 

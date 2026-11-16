@@ -523,6 +523,9 @@ describe("R28 native Stepper", () => {
     expect(JSON.stringify(selected)).toContain("프로필");
     expect(JSON.stringify(selected)).not.toContain("계정");
     expect(JSON.stringify(selected)).not.toContain("확인");
+    // 상태는 줄 View 가 아니라 라벨 Text 에 있어야 스크린 리더에 닿는다
+    expect(screen.getByText("프로필").props.accessibilityState).toMatchObject({ selected: true });
+    expect(screen.getByText("계정").props.accessibilityState?.selected).toBeUndefined();
   });
 
   test("펼친 단계 표시는 borderLeftWidth 2 · brand 색이고 남은 단계는 버튼이 아니다", async () => {

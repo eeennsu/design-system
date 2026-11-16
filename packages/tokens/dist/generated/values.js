@@ -163,6 +163,11 @@ export const twMergeConfig = {
         "normal",
         "semibold",
         "bold"
+    ],
+    "font": [
+        "sans",
+        "mono",
+        "serif"
     ]
 };
 /** @theme inline 색 키 → :root 변수 이름. C-5b 공개 계약의 실체다. */

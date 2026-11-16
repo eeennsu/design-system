@@ -575,6 +575,9 @@ function valuesTs(source: TokenSource): string {
     text: [...TEXT_STEPS],
     // tailwind-merge v3 의 theme 키 이름은 `font-weight` 다(types.d.ts DefaultThemeGroupIds).
     "font-weight": ["normal", "semibold", "bold"],
+    // `font` 테마 키의 기본 검증자는 isAnyNonArbitrary 라 font-weight 를 좁히면 미등록 font-medium 등이
+    // font-family 그룹으로 떨어져 font-sans · font-mono 를 지운다. 패밀리 키를 따로 등록해 막는다.
+    font: ["sans", "mono", "serif"],
   };
 
   const semanticVariables: Record<string, string> = {};

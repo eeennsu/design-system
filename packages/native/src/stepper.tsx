@@ -19,14 +19,17 @@ export const Stepper: FC<Contracts<"native">["Stepper"]> = ({ label, items, valu
         // 템플릿 리터럴 대신 이어 붙인다 — dist 검사가 템플릿 리터럴을 막는다.
         const done = item.label + ", 완료";
         return (
-          <View key={item.value} accessibilityState={state === "current" ? { selected: true } : undefined} className="flex-row gap-3 py-2">
+          <View key={item.value} className="flex-row gap-3 py-2">
             <View className="h-6 w-4 shrink-0 items-center justify-center">
               {state === "done" ? <Glyph name="check" size="sm" className="text-fg-muted" /> : null}
               {state === "current" ? <View className="h-full border-l-2 border-brand" /> : null}
             </View>
             <View className="min-w-0 flex-1">
               {state === "current" ? (
-                <RNText className={cn("font-sans font-semibold text-fg", steps.md)}>{item.label}</RNText>
+                // accessible 이 아닌 View 의 state 는 스크린 리더에 닿지 않아 글자에 단다.
+                <RNText accessibilityState={{ selected: true }} className={cn("font-sans font-semibold text-fg", steps.md)}>
+                  {item.label}
+                </RNText>
               ) : state === "done" && onValueChange ? (
                 <Pressable
                   accessibilityRole="button"

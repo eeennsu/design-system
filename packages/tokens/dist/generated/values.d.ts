@@ -93,6 +93,7 @@ export declare const twMergeConfig: {
     shadow: string[];
     text: string[];
     "font-weight": string[];
+    font: string[];
 };
 /** @theme inline 색 키 → :root 변수 이름. C-5b 공개 계약의 실체다. */
 export declare const semanticVariables: {

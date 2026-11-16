@@ -76,6 +76,13 @@ describe("병합 규칙", () => {
     expect(cn("font-medium", "font-bold")).toBe("font-medium font-bold");
   });
 
+  it("font-family 와 굵기는 다른 그룹이다 — 미등록 font-* 가 font-sans · font-mono 를 지우지 않는다 (R28 최종 리뷰)", () => {
+    expect(twMergeConfig.font).toEqual(["sans", "mono", "serif"]);
+    expect(cn("font-sans", "font-medium")).toBe("font-sans font-medium");
+    expect(cn("font-sans", "font-light")).toBe("font-sans font-light");
+    expect(cn("font-sans", "font-mono")).toBe("font-mono");
+  });
+
   it("같은 그룹의 등록된 색은 뒤가 이긴다 (소비자 className 승리)", () => {
     expect(cn("bg-brand", "bg-danger")).toBe("bg-danger");
   });
