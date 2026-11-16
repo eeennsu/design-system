@@ -54,6 +54,12 @@ export type TabItem = {
     label: string;
     content: ReactNode;
 };
+/** Stepper 단계(R28). 지난 · 남은 단계는 `label` 만, 펼친 단계는 `content` 도 보인다. */
+export type StepItem<P extends Platform> = {
+    value: string;
+    label: string;
+    content?: P extends "web" ? ReactNode : ElementChildren;
+};
 /** Table 열. `end` 는 숫자 열이다 — 머리글과 셀이 `text-end tabular-nums`(decisions-r27 8). */
 export type TableColumn = {
     label: string;
@@ -273,9 +279,18 @@ export type Contracts<P extends Platform> = {
         icon?: IconName;
         className?: string;
     };
+    /** 단계 표시(R28). 제어 전용이다. `value` 가 펼친 단계, `reached` 가 가장 멀리 간 단계다. */
+    Stepper: {
+        label: string;
+        items: StepItem<P>[];
+        value: string;
+        reached?: string;
+        onValueChange?: (value: string) => void;
+        className?: string;
+    };
 };
 /** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27. */
-export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs", "Collapsible", "Link", "Callout"];
+export declare const webComponents: readonly ["Button", "ButtonGroup", "Input", "Textarea", "Label", "Card", "Badge", "Chip", "Icon", "Text", "Stack", "Box", "Tooltip", "Dialog", "Drawer", "Form", "Table", "CodeBlock", "Prose", "Tabs", "Collapsible", "Link", "Callout", "Stepper"];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
  * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.

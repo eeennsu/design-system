@@ -23,6 +23,7 @@ export const webComponents = [
     "Collapsible",
     "Link",
     "Callout",
+    "Stepper",
 ];
 /**
  * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와

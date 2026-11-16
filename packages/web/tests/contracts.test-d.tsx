@@ -16,8 +16,8 @@ import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import type { StepItem, TabItem, TableColumn, TableRow } from "../src/index.js";
+import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Stepper, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -321,5 +321,32 @@ describe("R28 Link · Callout 계약", () => {
   it("Link label 누락은 에러다", () => {
     // @ts-expect-error label 필수
     assertType(<Link href="/a" />);
+  });
+});
+
+describe("R28 Stepper 계약", () => {
+  const items: StepItem<"web">[] = [{ value: "a", label: "A", content: "내용" }];
+
+  it("StepItem 을 타입 전용으로 내보내고 값은 string 이다", () => {
+    expectTypeOf<StepItem<"web">>().toEqualTypeOf<{ value: string; label: string; content?: ReactNode }>();
+    expectTypeOf<Contracts<"web">["Stepper"]["value"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Stepper"]["reached"]>().toEqualTypeOf<string | undefined>();
+  });
+
+  it("value 필수, 값은 string, 없는 prop 은 에러다", () => {
+    assertType(<Stepper label="단계" items={items} value="a" reached="a" onValueChange={(v: string) => void v} />);
+    // @ts-expect-error value 필수 (제어 전용)
+    assertType(<Stepper label="단계" items={items} />);
+    // @ts-expect-error 값은 string 이다
+    assertType(<Stepper label="단계" items={items} value={1} />);
+    // @ts-expect-error current 는 계약에 없다
+    assertType(<Stepper label="단계" items={items} value="a" current={2} />);
+    // @ts-expect-error defaultValue 는 계약에 없다
+    assertType(<Stepper label="단계" items={items} value="a" defaultValue="a" />);
+  });
+
+  it("label 누락은 에러다", () => {
+    // @ts-expect-error label 필수
+    assertType(<Stepper items={items} value="a" />);
   });
 });

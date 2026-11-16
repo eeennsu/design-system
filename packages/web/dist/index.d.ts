@@ -16,13 +16,14 @@ import { Label } from "./label.js";
 import { Link } from "./link.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
+import { Stepper } from "./stepper.js";
 import { Table } from "./table.js";
 import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
-export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
-export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
+export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Stepper, Table, Tabs, Text, Textarea, Tooltip };
+export type { StepItem, TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 /**
  * 계약 맵 테스트(C-17)가 보는 객체. 키 집합이 `webComponents` 와 같고
@@ -199,6 +200,14 @@ export declare const components: {
         tone?: Extract<import("@eeennsu/tokens").Tone, "info" | "success" | "warning" | "danger" | "brand">;
         title?: string;
         icon?: import("@eeennsu/tokens").IconName;
+        className?: string;
+    }>;
+    Stepper: import("react").FC<{
+        label: string;
+        items: import("@eeennsu/tokens").StepItem<"web">[];
+        value: string;
+        reached?: string;
+        onValueChange?: (value: string) => void;
         className?: string;
     }>;
 };

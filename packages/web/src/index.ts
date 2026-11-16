@@ -16,14 +16,15 @@ import { Label } from "./label.js";
 import { Link } from "./link.js";
 import { Prose } from "./prose.js";
 import { Stack } from "./stack.js";
+import { Stepper } from "./stepper.js";
 import { Table } from "./table.js";
 import { Tabs } from "./tabs.js";
 import { Text } from "./text.js";
 import { Textarea } from "./textarea.js";
 import { Tooltip } from "./tooltip.js";
 
-export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Table, Tabs, Text, Textarea, Tooltip };
-export type { TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
+export { Badge, Box, Button, ButtonGroup, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Form, Icon, Input, Label, Link, Prose, Stack, Stepper, Table, Tabs, Text, Textarea, Tooltip };
+export type { StepItem, TabItem, TableColumn, TableRow } from "@eeennsu/tokens";
 export { cn } from "./cn.js";
 
 /**
@@ -54,4 +55,5 @@ export const components = {
   Collapsible,
   Link,
   Callout,
+  Stepper,
 };

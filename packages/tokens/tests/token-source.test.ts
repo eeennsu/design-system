@@ -189,6 +189,7 @@ describe("component 계층 인벤토리", () => {
       "drawer",
       "icon",
       "input",
+      "stepper",
       "table",
       "tabs",
       "text",

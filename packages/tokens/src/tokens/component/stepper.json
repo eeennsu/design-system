@@ -1,0 +1,23 @@
+{
+  "$description": "Stepper recipe(R28). 줄의 위아래 여백 · 표시 열과 내용 열 사이 간격 · 표시 열 폭 · 글자다. 표시 막대 두께는 border-l-2 로 recipe 밖이다.",
+  "component": {
+    "stepper": {
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.2}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.3}"
+      },
+      "markerWidth": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.4}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.md}"
+      }
+    }
+  }
+}

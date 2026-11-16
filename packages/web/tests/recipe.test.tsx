@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Stepper, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -175,5 +175,14 @@ describe("Callout", () => {
   it("루트가 토큰 recipe 와 같다 (R28)", () => {
     render(<Callout>내용</Callout>);
     expect(screen.getByRole("note")).toHaveClass(`p-${component.callout.padding}`, ...expected(component.callout));
+  });
+});
+
+describe("Stepper", () => {
+  it("줄 · 표시 자리가 토큰 recipe 와 같다 (R28)", () => {
+    render(<Stepper label="단계" items={[{ value: "a", label: "하나" }]} value="a" />);
+    const li = screen.getByRole("listitem");
+    expect(li).toHaveClass(`py-${component.stepper.paddingY}`, `gap-${component.stepper.gap}`);
+    expect(li.firstElementChild).toHaveClass(`w-${component.stepper.markerWidth}`);
   });
 });

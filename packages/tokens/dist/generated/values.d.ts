@@ -229,6 +229,12 @@ export declare const component: {
             readonly radius: "md";
         };
     };
+    readonly stepper: {
+        readonly paddingY: "2";
+        readonly gap: "3";
+        readonly markerWidth: "4";
+        readonly text: "md";
+    };
     readonly table: {
         readonly paddingX: "3";
         readonly paddingY: "2";
