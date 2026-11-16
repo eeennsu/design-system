@@ -333,11 +333,11 @@ Task 1 ~ 14 는 `main` 위에서 제자리로 진행했고 태스크마다 리�
 - **Collapsible · Prose · Table(Task 5 · 6)**: Collapsible 에 `disabled` 와 `variant`(`ghost` 기본, `secondary`)를 더했다. **disabled 스타일은 `data-disabled` 선택자가 아니라 prop 으로 준다**(Button 과 같은 방식).
   Base UI 는 disabled 트리거에 네이티브 `disabled` 를 쓰지 않고 `aria-disabled="true"` · `data-disabled` 만 둔다 — tabindex 가 0 이라 **포커스가 간다.** Button 의 네이티브 `disabled` 와 다르다.
   Prose 루트에 `break-keep wrap-break-word`(한국어는 어절 단위로, 줄보다 긴 URL 은 단어 안에서 꺾는다)를 더했고 `a` 에 포커스 윤곽을 줬다. Table 루트가 `overflow-x-auto` 에서 `overflow-auto` 가 돼 `className="max-h-96"` 이면 세로로도 스크롤한다
-- **웹 Link · Callout · Stepper(Task 7 · 8)**: Link 는 `href` 가 필수인 `<a>`(쉬는 때 밑줄 없음, hover 때 밑줄). Callout 은 `role="note"` 에 tone 다섯과 `title` · `icon`. Stepper 는 `items` 데이터 방식이고 값 3종(`value` · `reached` · `onValueChange`)이다.
+- **웹 Link · Callout · Stepper(Task 7 · 8)**: Link 는 `href` 가 필수인 `<a>`(쉬는 때 밑줄 없음, hover 때 밑줄). Callout 은 `role="note"` 에 tone 다섯과 `title` · `icon`. Stepper 는 `items` 데이터 방식이다. 제어하는 값은 `value` · `onValueChange` 이고 `reached` 는 표시 상태(C-12)다.
   **지난 단계는 `onValueChange` 가 없어도 항상 "완료"를 알린다** — 숨김 글 `, 완료`(sr-only)다. 스펙 321 · decisions-r28 279 가 버튼 여부와 무관하게 말하는데 브리프에 빠졌던 것을 리뷰가 잡았다
 - **native Link · Callout · Stepper(Task 9 · 10)**: Link 는 `href` 대신 `onPress` 를 받는다(`role="link"`). 계획과 갈린 곳이 둘이다 — (1) Callout **제목에 글자 스텝(`steps.md`)을 줬다.**
   계획은 루트에 `text-md` 를 뒀는데 RN Text 는 부모 글자 크기를 상속하지 않아 제목이 RN 기본 크기가 되고 배수 line-height 도 빠진다(게이트 (5) 결함 재발 위험, F-9). 루트에서는 `text-md text-fg` 를 빼고 `flex` 대신 `flex-row` 를 쓴다.
-  (2) Stepper 는 웹과 같은 완료 알림 규칙을 따른다 — 지난 단계 + `onValueChange` 면 `Pressable`(이름 "라벨, 완료"), 핸들러가 없으면 Text 에 같은 `accessibilityLabel`. 펼친 단계 줄이 `accessibilityState={{ selected: true }}` 다.
+  (2) Stepper 는 웹과 같은 완료 알림 규칙을 따른다 — 지난 단계 + `onValueChange` 면 `Pressable`(이름 "라벨, 완료"), 핸들러가 없으면 Text 에 같은 `accessibilityLabel`. 펼친 단계 라벨 Text 가 `accessibilityState={{ selected: true }}` 다(줄 View 는 `accessible` 이 아니라 스크린 리더에 닿지 않아 최종 리뷰에서 옮겼다).
   표시 막대는 `borderLeftWidth` 만 쓴다(F-36). 단계 상태 규칙은 `step-states.ts`(react-native import 없음)로 떼어 vitest 로 본다
 - **검증 화면(Task 11)**: verify-next `/components` 에 R28 영역 일곱 개를 더하고 `/surface`(소비자 재선언 라우트: `--radius-md: 2px` · `--radius-xl: 4px` · canvas 흰색 · `--border-surface`)를 새로 뒀다. Playwright `r28.spec.ts` 10개다.
   **Stepper 데모는 5단계다** — 계획은 4단계에 `value="b"` · `reached="d"` 였는데, 그러면 d 가 마지막이라 "남은 단계에는 버튼이 없다"를 볼 단계가 없다. 데모 한 줄을 늘렸다.
@@ -351,8 +351,8 @@ Task 1 ~ 14 는 `main` 위에서 제자리로 진행했고 태스크마다 리�
 - 리뷰에서 미룬 것(막지 않는 지적): `gate.test.tsx` 의 R28 게이트가 `toMatchObject`(기존은 `toEqual`)이고 `text-4xl` fontWeight 를 단언하지 않는 것, 웹 테스트 제목 "Card 와 Badge 가 표면 경계선…" 이 Badge 와 맞지 않는 것, Link 누락 타입 테스트가 AC-14 describe 밖이고 `className` 테스트가 `text-md` 생존을 안 보는 것,
   Callout `Icon` 에 `size="md"` 를 명시하지 않은 것, Prose 링크 포커스 특이성(0,1,1)이 주석과 어긋나는 것과 `table.tsx` 의 "가로 스크롤" 주석, Stepper 중복 `value` 의 key 경고, 표시 막대 24px, native Link 에 `hitSlop` 이 없는 것,
   native Callout 의 `children` 글자색을 정하지 않는 것(소비자가 `Text` 를 쓴다), Stepper native 막대 색 · done/upcoming muted 단언이 자기 비교인 것, verify-expo tone hex 리터럴을 `DS_*` 상수로 바꾸는 것, verify-next 의 `rounded-full` 9999px 리터럴 · 구조 의존 선택자 · Callout 긴 URL 단언 없음,
-  `cn("font-sans", "font-medium")` 이 font-sans 를 지우는 것(F-34), 굵기 값이 build-outputs 에 리터럴인 것, `cssFontStack` 오류 라벨이 sans 고정인 것, tokens 대비 테스트의 `Scheme` 리터럴 타입 tsc 오류(R28 이전부터), bakery `brand-subtle` == `surface-muted`
-- **기기 확인은 하지 않았다.** jest 가 스타일 값과 접근성 속성을 본다. native Stepper 의 `accessible` 없는 View 에 단 `accessibilityLabel` · `selected` 가 iOS VoiceOver 에 읽히는지는 기기에서 봐야 한다(§4)
+  굵기 값이 build-outputs 에 리터럴인 것, `cssFontStack` 오류 라벨이 sans 고정인 것, tokens 대비 테스트의 `Scheme` 리터럴 타입 tsc 오류(R28 이전부터), bakery `brand-subtle` == `surface-muted`
+- **기기 확인은 하지 않았다.** jest 가 스타일 값과 접근성 속성을 본다. native Stepper 의 `accessible` 없는 루트 View 에 단 `accessibilityLabel` 이 iOS VoiceOver 에 읽히는지는 기기에서 봐야 한다(§4)
 
 ## 3. 구현 중 확인한 사실
 
@@ -635,11 +635,14 @@ DS 는 글꼴 파일을 동봉하지 않는다(C-7b, AC-6c). 버전은 확인일
 
 앞으로 `verify:pack` 이 레포 테스트가 통과하는데 혼자 실패하면 먼저 lockfile 없는 해석 차이를 의심한다. 첫 오류 줄이 브라우저 실행 파일이면 위 첫째, 파싱 오류면 위 둘째다.
 
-### F-34. tailwind-merge v3 의 굵기 theme 키는 `font-weight` 이고, DS 어휘 밖 `font-sans` 는 `font-medium` 과 겹친다
+### F-34. tailwind-merge v3 의 굵기 theme 키는 `font-weight` 이고, 굵기만 좁히면 미등록 `font-*` 가 `font-sans` 를 지운다
 
 `twMergeConfig` 에 굵기 열거를 줄 때 키는 `fontWeight` 가 아니라 kebab `font-weight` 다. `fontWeight` 로 두면 `cn("font-normal", "font-bold")` 같은 기본 케이스는 tailwind-merge 기본값이 이미 덮어 통과해 틀린 키가 드러나지 않는다.
-`cn("font-medium", "font-bold")` 가 둘 다 남는 것을 보는 테스트로 키를 확인했다. 또 `cn("font-sans", "font-medium")` 은 `font-sans` 를 지운다 — `font-medium` 이 DS 어휘 밖(`medium` 은 내지 않는다)이다. 왜 `font-sans` 가 빠지는지는 따로 파지 않았다.
-native Text 는 `font-sans` 를 직접 두므로 소비자가 어휘 밖 굵기를 주면 글꼴이 빠진다. 계약 밖 입력이라 지금은 막지 않는다.
+`cn("font-medium", "font-bold")` 가 둘 다 남는 것을 보는 테스트로 키를 확인했다.
+
+**원인과 수정.** tailwind-merge 3.6.0 은 `font-family` 그룹의 값을 `theme.font`(검증자 `isAnyNonArbitrary`)에서 읽는다. `font-weight` 키를 DS 3종으로 덮으면 `font-medium` · `font-light` · `font-extrabold` 가 굵기가 아니라 이 `font` 그룹으로 떨어져
+`cn("font-sans", "font-medium")` 이 `font-sans` 를 지웠다(0.5.0 은 굵기가 기본 열거라 없던 회귀다). `twMergeConfig` 에 `font: ["sans", "mono", "serif"]` 를 더해 막았다.
+`tokens/tests/tw-merge.test.ts` 가 `cn("font-sans", "font-medium")` · `("font-sans", "font-light")` 이 둘 다 남고 `("font-sans", "font-mono")` 는 뒤가 이기는 것을 본다.
 
 ### F-35. react-native-css 는 `fontWeight` 를 숫자로 낸다
 
@@ -653,7 +656,7 @@ native Stepper 의 현재 단계 막대는 웹의 `border-l-2 border-brand` 에 
 ### F-37. `document.fonts.check` 는 없는 글꼴에도 `true` 를 돌려준다 (MDN, 2026-11-16 확인)
 
 web README 의 폰트 로딩 설명을 처음에는 `document.fonts.check('1em Pretendard')` 로 썼다. MDN 은 맞는 글꼴 면이 없는 패밀리에도 `true` 를 준다고 설명한다. 로딩 확인에 쓸 수 없다.
-`document.fonts.ready` 를 기다린 뒤 `FontFace` 의 `status` 를 보는 방식으로 고쳤다(Task 13 리뷰).
+`document.fonts.ready` 를 기다린 뒤 `FontFace` 의 `status` 를 보는 방식으로 고쳤다(Task 13 리뷰). 출처 https://developer.mozilla.org/en-US/docs/Web/API/FontFaceSet/check , 확인일 2026-11-16.
 
 ### F-38. Git Bash heredoc 은 테스트 정규식의 백슬래시를 접는다
 
@@ -695,8 +698,9 @@ web README 의 폰트 로딩 설명을 처음에는 `document.fonts.check('1em P
   0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
 - `0.6.0`(N-20, R28)은 2026-11-16 준비를 마쳤다(버전 올림 · build · test · `verify:pack` 통과, F-33). **publish 는 사용자 몫이다**(F-17 · F-29). 남은 것:
   - **design-flow 알림**: my-agent-setup 의 design-flow 시안 축이 "brand 색 네 변수"로 적혀 있다 → 다섯으로(decisions-r28 25). my-agent-setup 은 이 레포 밖이라 `0.6.0` publish 뒤 그 세션에 알린다
-  - **native Stepper iOS 확인**: `accessible` 없는 View 에 단 `accessibilityLabel` · `accessibilityState` 가 iOS VoiceOver 에 읽히는지 기기에서 본다(Android 도 TalkBack 으로 한 번). jest 는 속성만 본다
+  - **native Stepper iOS 확인**: 목록 루트 View 의 `accessibilityLabel` 이 `accessible` 이 아니라 VoiceOver 에 읽히는지 기기에서 본다(Android 도 TalkBack 으로 한 번). 펼친 단계의 `selected` 는 최종 리뷰에서 라벨 Text 로 옮겼다. jest 는 속성만 본다
+  - **기기 확인 필요**: 목록 `accessibilityLabel`(루트 View)은 그대로 뒀다. 읽히지 않으면 루트를 `accessible` 로 바꾸지 말고(자식 버튼이 묻힌다) 라벨을 다른 곳으로 옮긴다
   - **AC-23 스크린샷 네 장은 옛 모양이다** — Card 테두리 1px(decisions-r28 2)와 R26 이후 모양이 반영되지 않았다. RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다(F-25)
-  - RN 소비 앱은 `0.6.0` 으로 올릴 때 `JetBrainsMono` 글꼴을 등록한다(F-32). 새 `Tone` · `TypographyStep` 으로 전수 맵을 가진 소비자 코드는 컴파일 에러가 난다(알려진 동작 34)
+  - RN 소비 앱은 `0.6.0` 으로 올린 뒤 `font-mono` 를 쓰면 `JetBrainsMono` 글꼴을 등록한다(F-32). 새 `Tone` · `TypographyStep` 으로 전수 맵을 가진 소비자 코드는 컴파일 에러가 난다(알려진 동작 34)
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)

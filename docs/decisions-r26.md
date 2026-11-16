@@ -89,6 +89,7 @@ spendback(`../spendback`)을 에뮬레이터로 본 사용자가 "디자인이 �
 - 클래스는 `text-fg-brand`(`@theme inline` `--color-fg-brand`)다. `text-brand`는 채움 색이라 글자로 쓰면 다크에서 기준에 못 미친다(알려진 동작 27). `tone`에 `brand`를 넣지 않는다 — C-8의 판단(추가는 추가적, 지금은 이유가 없다) 그대로이고 `text-fg-brand` 클래스로 충분하다
 - **C-8 문구가 바뀐다.** "`variant`와 `tone`의 `danger`는 같은 semantic 색"은 같은 **개념**으로 읽고, 값은 채움(`bg.danger`)과 글자(`fg.danger`) 둘을 갖는다. plan D-3의 별칭은 `border.focus` 하나로 줄어든다
 - C-5b 계약 표면이 하나 늘어난다(`--fg-brand`). 추가는 추가적이다. `fg.danger`가 별칭이 아니게 되면서 소비자가 `--bg-danger`만 덮으면 글자 빨강은 따라가지 않는다 — 짝 대비 규칙(C-5b R25)에 `fg.brand` · `fg.danger`를 더한다
+- 2026-11-16 사용자 결정으로 bakery `fg.danger` 를 red-700 · red-400 으로, `bg.danger-subtle` 을 red-50 · red-950 으로 바꿨다(R28, 구현 노트 N-20). 위 "bakery 는 0.3.0 해석값 그대로" 는 이 날짜 전까지의 기록이다
 - `@theme inline` 색이 16개에서 17개가 된다
 
 ## 6. 보조 글자

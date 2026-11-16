@@ -89,12 +89,12 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 ### 바꾸지 않는 것
 
-- **컴포넌트 소스와 내부 형태.** 소비 프로젝트는 컴포넌트 소스를 고치지 않는다(C-2). Button 높이·패딩, Card radius, Input 테두리를 앱 단위로 바꾸는 통로는 없다. 앱 전체를 바꾸려면 호출 지점마다 `className` 임의값을 반복해야 하고 빠뜨린 곳을 잡는 테스트도 없다(알려진 동작 14).
+- **컴포넌트 소스와 내부 형태.** 소비 프로젝트는 컴포넌트 소스를 고치지 않는다(C-2). Button 높이·패딩 같은 컴포넌트 내부 형태를 앱 단위로 바꾸는 통로는 없다. 바꿀 수 있는 것은 위 "표면 관계"와 "모서리"의 변수뿐이다. 앱 전체를 바꾸려면 호출 지점마다 `className` 임의값을 반복해야 하고 빠뜨린 곳을 잡는 테스트도 없다(알려진 동작 14).
 - **컴포넌트 치수.** Button 높이·패딩 같은 치수도 앱 단위로 바꾸지 않는다.
 - **폰트 패밀리.** 앱 단위로 바꾸지 않는다. 패밀리 이름과 크기·줄 높이·무게 스케일은 DS 가 갖는다. 폰트 파일은 동봉하지 않으므로 로딩은 소비 프로젝트가 한다(C-7b, 아래 "폰트 로딩").
 - **`--radius-full`.** 원(스피너, 아이콘 바탕)의 기하라서 덮으면 원이 네모가 된다. 덮으면 동작하지만 계약 밖이다.
 - **`@theme` 확장과 새 토큰.** `@theme { --color-accent: … }` 로 새 클래스를 만들지 않는다. 지원하지 않으며, 그 클래스는 DS 어휘가 아니라 병합 키 목록에도 없다(Non-Goals). 간격·타이포·shadow 변수는 재선언 대상이 아니다. primitive 변수(`--ds-*`)는 덮으면 동작하지만 계약 밖이라 이름 안정성이 없다(알려진 동작 13).
-- **스케일 밖 임의값.** `bg-[#333]`, `mt-[13px]` 은 타입도 구조도 막지 못하는 **의도된 탈출구**일 뿐 기본 수단이 아니다(C-14 · C-15, 알려진 동작 3). 96px 를 넘는 고정 폭·높이 유틸리티(`w-64` 등)는 없으므로 `w-full`, `max-w-*`, 임의값을 쓴다(알려진 동작 2).
+- **스케일 밖 임의값.** `bg-[#333]`, `mt-[13px]` 은 타입도 구조도 막지 못하는 **의도된 탈출구**일 뿐 기본 수단이 아니다(C-14 · C-15, 알려진 동작 3). 간격 키는 `96`(384px)이 상한이라 그보다 큰 고정 폭·높이(`w-100` 등)는 없으므로 `w-full`, `max-w-*`, 임의값을 쓴다(알려진 동작 2).
 
 컴포넌트 하나만 다르게 하려면 `className` 을 쓴다. `className` 이 유일한 커스텀 채널이고 `style` 은 열려 있지 않다. DS 기본 스타일과 병합되며 충돌하면 앱이 이긴다. 단 같은 유틸리티 그룹, 같은 변형만 덮는다. `hover:bg-*` 는 `bg-danger` 로 덮이지 않는다(C-15, 알려진 동작 4). 색 의도를 받는 prop(`variant` · `tone`)은 열거값만 받는다(C-14).
 
@@ -110,7 +110,9 @@ DS 는 패밀리 이름만 갖고 파일을 싣지 않는다. 소비 앱이 글�
 ### 0.6.0 에서 달라진 것
 
 - tone 이 일곱이 됐다: brand · success · warning · info 가 늘었다. 글자 스텝에 `3xl` · `4xl`, 간격 키에 32 · 40 · 48 · 64 · 80 · 96 이 늘었다. `Record<Tone, …>` 나 `Record<TypographyStep, …>` 처럼 전수 맵을 가진 앱은 새 키를 더해야 타입이 맞는다.
-- Collapsible 의 기본이 `variant="ghost"` 이고 가로 패딩이 없다. 이전 기본에 맞추려고 `-mx-3` 을 붙였다면 지운다.
+- Collapsible 의 기본이 `variant="ghost"` 이고 가로 패딩이 없다. 이전 기본에 맞추려고 `-mx-3` 을 붙였다면 지운다. 기본 트리거 글자색이 `text-fg` 에서 `text-fg-muted` 로 바뀌었고 hover 채움과 모서리가 없어졌다(hover 때 `text-fg`).
+- Card 에 1px 테두리(`border-surface`)가 생겼다. 안쪽 폭이 2px 줄어든다.
+- 0.5.0 에서는 없는 클래스라 조용히 무효였던 `font-bold` · `w-64` · `text-3xl` 같은 것이 이제 적용된다. 그 클래스를 이미 붙여 둔 곳은 화면이 바뀐다.
 - Callout 의 뜻은 글로 전한다. 색만으로 구분하지 않는다.
 - Link 는 문서 이동(`href`)이다. 문단 속 링크는 Prose 의 `a` 다.
 
@@ -123,7 +125,7 @@ DS 는 패밀리 이름만 갖고 파일을 싣지 않는다. 소비 앱이 글�
 어휘 목록은 이 문서에 옮겨 적지 않는다. 옮겨 적은 목록은 버전이 오르면 어긋나므로 설치된 버전의 파일이 기준이다.
 
 - 색·간격·글자 스텝·radius·shadow: `themes/<brand>.css` 가 import 하는 `@eeennsu/tokens/themes/<brand>.css`. `@theme` 블록이 스케일을, `@theme inline` 블록이 semantic 색 매핑을 갖고, `:root` 에 semantic 변수가 있다. 이 패키지의 `themes/<brand>.css` 는 Tailwind·토큰 import, 다크 variant, `@source` 선언뿐이다.
-- 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다. `TabItem` · `TableColumn` · `TableRow` 는 `@eeennsu/web` 에서 import 한다.
+- 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다. `StepItem` · `TabItem` · `TableColumn` · `TableRow` 는 `@eeennsu/web` 에서 import 한다.
 - 글꼴: DS 가 내는 패밀리 변수는 `--font-sans` 와 `--font-mono` 다. 글꼴 파일은 싣지 않는다(위 "폰트 로딩"). CodeBlock · Prose 의 코드가 `font-mono` 를 쓴다.
 
 `@eeennsu/tokens` 는 이 패키지의 `dependencies` 라서 앱의 직접 의존성이 아니다. `node-linker=hoisted` 설치에서는 최상위 `node_modules/@eeennsu/tokens/` 에 있다. pnpm 격리 레이아웃(기본값)에서는 최상위 `node_modules/@eeennsu/` 에 `web` 만 보이고, `tokens` 는 이 패키지 실경로(`node_modules/.pnpm/@eeennsu+web@…/node_modules/@eeennsu/web`) 옆의 `../tokens` 에 있다. pnpm 의 기본 hoist 설정이면 `node_modules/.pnpm/node_modules/@eeennsu/tokens/` 에도 있다.

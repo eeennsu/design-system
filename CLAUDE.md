@@ -38,9 +38,9 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 
 ## 현재 코드 상태
 
-- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 82(브랜드 × 스킴 글자 대비 포함)
+- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 83(브랜드 × 스킴 글자 대비 포함)
 - `packages/web` — 컴포넌트 24개(Chip · Icon 은 R25 · `0.3.0`, Tabs · Table · CodeBlock · Prose · Collapsible 은 R27 · `0.5.0`, 웹 전용, Link · Callout · Stepper 는 R28 · `0.6.0`), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 181(타입 테스트 포함)
-- `packages/native` — 컴포넌트 14개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box · Link · Callout · Stepper. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` publish, Link · Callout · Stepper 는 N-20 · `0.6.0` 준비), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 34(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
+- `packages/native` — 컴포넌트 14개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box · Link · Callout · Stepper. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` publish, Link · Callout · Stepper 는 N-20 · `0.6.0` 준비), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 34(타입·dist·`step-states` 단위). 게이트 스텁은 실제 dist 로 대체됐다
 - `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 47 + 5(verify-next 는 구분선 스크린샷 2개를 더 건너뛴다 — `R27_DIVIDERS=1` 일 때만 돈다. `/components` 화면이 R27 · R28, `/surface` 가 C-5c 재선언 라우트)
 - `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 75(게이트 · DS · smoke)
 - 검증 화면 스크린샷은 `docs/assets/` 에 있다 — 게이트 (7) 기기 확인 2장, AC-23 웹·RN 비교 4장, T-P1 npm 설치 확인 2장
@@ -48,6 +48,6 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 - 명령: `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack`(타르볼 설치 재검증) · `pnpm version:set <v>`. Node 22 에서 돌린다 — Node 20 이면 web 테스트가 jsdom 로딩에서 죽는다(구현 노트 N-18)
 - 배포: npm `@eeennsu/{tokens,web,native}` 를 lockstep 으로 함께 낸다. publish 직전에 `npm login`, `pnpm -r publish --access public` 은 패키지마다 브라우저 2FA 인증을 요구한다(구현 노트 F-17)
 - 토큰 산출물(`packages/*/themes/*.css`, `packages/tokens/src/generated`, `src/brands`)과 `dist`는 **추적한다**. 손으로 고치지 않는다 — 빌드가 덮고 테스트가 잡는다
-- native 래퍼만 다크 블록(`@media … { :root }`), **배수** line-height(T-N0), `.tabular-nums` 의 RN 선언(N-17), `--font-sans: Pretendard`(R26), `--font-mono: JetBrainsMono`(R28)를 추가로 낸다. RN 소비 앱은 `Pretendard` · `JetBrainsMono` 글꼴을 등록해야 한다(구현 노트 N-18 · F-32). 웹 산출물과 토큰 CSS 는 무변경이다
+- native 래퍼만 다크 블록(`@media … { :root }`), **배수** line-height(T-N0), `.tabular-nums` 의 RN 선언(N-17), `--font-sans: Pretendard`(R26), `--font-mono: JetBrainsMono`(R28)를 추가로 낸다. RN 소비 앱은 `Pretendard` 글꼴을 등록해야 하고, `font-mono` 를 쓰면 `JetBrainsMono` 도 등록한다(구현 노트 N-18 · F-32). 웹 산출물과 토큰 CSS 는 무변경이다
 - `verify-next` 의 스크린샷 테스트는 실행할 때마다 `docs/assets/ac23-web-*.png` 를 덮어쓴다(구현 노트 F-25). 다른 기기에서 돌렸으면 커밋 전에 되돌린다
 - `packages/native` 의 `react` · `react-native` devDependency 는 검증 앱과 **정확히 같은 버전**이어야 한다. 어긋나면 pnpm 격리 레이아웃에서 React 가 두 벌이 되어 검증 앱이 "Invalid hook call" 로 죽는다(구현 노트 N-11)
