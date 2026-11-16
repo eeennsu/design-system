@@ -24,13 +24,22 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 ### 앱이 바꿀 수 있는 것
 
-앱마다 갈리는 축은 색, 간격 리듬, 화면 구조 셋이다.
+앱마다 갈리는 축은 색(메인 색과 표면 관계), 모서리, 간격 리듬, 화면 구조 넷이다.
 
-**메인 색.** 전역 CSS 에서 DS import **다음 줄**, `@layer` **밖**에 semantic 변수를 재선언한다(C-5b). 앱이 지정하는 것은 메인 색 네 개이고, 넷을 짝으로 덮는다.
+전역 CSS 에서 DS import **다음 줄**, `@layer` **밖**에 변수를 재선언한다(C-5b · C-5c). 재선언할 수 있는 변수는 세 묶음이다. 이 목록은 계약이고 design-flow 가 읽는 자리라 어휘 목록을 옮겨 적지 않는다는 원칙의 예외로 적는다.
+
+- 메인 색 다섯: `--bg-brand` · `--bg-brand-hover` · `--fg-on-brand` · `--fg-brand` · `--bg-brand-subtle`
+- 표면 관계 여섯: `--bg-canvas` · `--bg-surface` · `--bg-surface-muted` · `--bg-surface-hover` · `--border-default` · `--border-surface`
+- 모서리 넷: `--radius-sm` · `--radius-md` · `--radius-lg` · `--radius-xl`
+
+나머지 semantic 색도 재선언 대상이다(C-5b).
+
+**메인 색.** 다섯을 짝으로 덮는다.
 
 - `--bg-brand`, `--bg-brand-hover`: 채움 색
 - `--fg-on-brand`: 채움 위 글자
 - `--fg-brand`: 표면 위에 쓰는 브랜드 색 글자
+- `--bg-brand-subtle`: 옅은 브랜드 바탕
 
 웹은 **3블록(라이트 `:root`, 다크 둘)을 모두** 재선언한다. 하나라도 빠지면 OS 라이트·다크와 루트 클래스 유무로 나뉘는 4조합 중 일부만 바뀐다(알려진 동작 12).
 
@@ -42,15 +51,16 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
   --bg-brand-hover: oklch(…);
   --fg-on-brand: oklch(…);
   --fg-brand: oklch(…);
+  --bg-brand-subtle: oklch(…);
 }
 
 .dark {
-  /* 같은 네 변수, 다크 값 */
+  /* 같은 다섯 변수, 다크 값 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    /* 같은 네 변수, 같은 다크 값 */
+    /* 같은 다섯 변수, 같은 다크 값 */
   }
 }
 ```
@@ -59,7 +69,19 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 - 짝 대비: `--bg-brand` 를 덮으면 그 위 글자 `--fg-on-brand` 도 함께 본다(`--bg-danger` 와 `--fg-on-danger` 도 같다). DS 는 자기 브랜드의 짝만 4.5:1 을 보장하므로, 앱 색의 짝 대비는 앱이 맞춘다. base 의 on-brand 는 라이트·다크 모두 흰색이다. 채움을 밝게 바꿔 흰 글자가 4.5:1 에 못 미치면 on-brand 를 어두운 값으로 다시 정한다(C-5b R26).
 - 채움과 글자 색은 별개 값이다. `--bg-danger` 만 덮으면 글자 빨강(`tone="danger"`)은 따라가지 않는다(`--fg-danger`, C-5b R26).
 - 브랜드 색 **글자**에는 `text-fg-brand` 를 쓴다. `text-brand` 는 채움 색이라 다크 surface 위에서 대비가 모자란다(알려진 동작 27).
-- 메인 색 밖의 `--bg-canvas` · `--bg-surface-muted` 는 건드리지 않는 것이 기본이다. canvas 를 surface 와 같은 값으로 덮으면 Card 경계가 사라지고(그때는 `className="border border-border"`), `--bg-surface-muted` 를 canvas 나 surface 와 같게 덮으면 입력 칸 채움이 보이지 않는다(알려진 동작 24 · 25).
+
+**표면 관계.** 여섯 변수는 색이라 메인 색과 같은 3블록 규칙을 따른다. 바꿀 때는 짝을 맞춘다.
+
+- `--bg-canvas` 와 `--bg-surface` 를 같은 값으로 두면 Card 경계가 사라지므로 `--border-surface` 에 값을 준다(`className="border border-border"` 로도 막을 수 있다).
+- `--bg-surface-muted` 는 canvas · surface 와 구분되게 둔다. 같게 두면 입력 칸 채움과 CodeBlock 바탕이 보이지 않는다(알려진 동작 24 · 25).
+
+**모서리.** `--radius-sm` · `md` · `lg` · `xl` 네 개를 `:root` 한 블록에 쓴다. 스킴과 무관하므로 다크 블록에는 쓰지 않는다. Badge · Chip 은 `rounded-xl` 이라 `--radius-xl` 을 줄이면 Card 와 함께 각이 진다. `--radius-full` 은 계약 밖이다.
+
+```css
+:root {
+  --radius-md: 2px;
+}
+```
 
 **간격 리듬.** 간격·글자 스케일은 전 앱이 공유한다. 앱이 정하는 것은 그 열거 안에서 어떤 단계를 쓰는가다(C-7a, 알려진 동작 14). 간격은 `className`(`p-4`, `gap-6`, `mt-2` 등)으로만 주고, `padding={16}` 같은 prop 은 없다(C-14). 허용 키는 설치된 토큰 CSS 의 `--spacing-*` 가 정한다. 그 밖의 키(`mt-5`, `mt-17`)는 에러가 아니라 클래스가 생성되지 않는 무효다(알려진 동작 1).
 
@@ -68,11 +90,29 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 ### 바꾸지 않는 것
 
 - **컴포넌트 소스와 내부 형태.** 소비 프로젝트는 컴포넌트 소스를 고치지 않는다(C-2). Button 높이·패딩, Card radius, Input 테두리를 앱 단위로 바꾸는 통로는 없다. 앱 전체를 바꾸려면 호출 지점마다 `className` 임의값을 반복해야 하고 빠뜨린 곳을 잡는 테스트도 없다(알려진 동작 14).
-- **폰트 패밀리.** 앱 단위로 바꾸지 않는다. 패밀리 이름과 크기·줄 높이·무게 스케일은 DS 가 갖는다. 폰트 파일은 동봉하지 않으므로 로딩(`next/font` 등)은 소비 프로젝트가 한다(C-7b).
-- **`@theme` 확장과 새 토큰.** `@theme { --color-accent: … }` 로 새 클래스를 만들지 않는다. 지원하지 않으며, 그 클래스는 DS 어휘가 아니라 병합 키 목록에도 없다(Non-Goals). 간격·타이포·radius·shadow 변수는 재선언 대상이 아니다. primitive 변수(`--ds-*`)는 덮으면 동작하지만 계약 밖이라 이름 안정성이 없다(알려진 동작 13).
+- **컴포넌트 치수.** Button 높이·패딩 같은 치수도 앱 단위로 바꾸지 않는다.
+- **폰트 패밀리.** 앱 단위로 바꾸지 않는다. 패밀리 이름과 크기·줄 높이·무게 스케일은 DS 가 갖는다. 폰트 파일은 동봉하지 않으므로 로딩은 소비 프로젝트가 한다(C-7b, 아래 "폰트 로딩").
+- **`--radius-full`.** 원(스피너, 아이콘 바탕)의 기하라서 덮으면 원이 네모가 된다. 덮으면 동작하지만 계약 밖이다.
+- **`@theme` 확장과 새 토큰.** `@theme { --color-accent: … }` 로 새 클래스를 만들지 않는다. 지원하지 않으며, 그 클래스는 DS 어휘가 아니라 병합 키 목록에도 없다(Non-Goals). 간격·타이포·shadow 변수는 재선언 대상이 아니다. primitive 변수(`--ds-*`)는 덮으면 동작하지만 계약 밖이라 이름 안정성이 없다(알려진 동작 13).
 - **스케일 밖 임의값.** `bg-[#333]`, `mt-[13px]` 은 타입도 구조도 막지 못하는 **의도된 탈출구**일 뿐 기본 수단이 아니다(C-14 · C-15, 알려진 동작 3). 96px 를 넘는 고정 폭·높이 유틸리티(`w-64` 등)는 없으므로 `w-full`, `max-w-*`, 임의값을 쓴다(알려진 동작 2).
 
 컴포넌트 하나만 다르게 하려면 `className` 을 쓴다. `className` 이 유일한 커스텀 채널이고 `style` 은 열려 있지 않다. DS 기본 스타일과 병합되며 충돌하면 앱이 이긴다. 단 같은 유틸리티 그룹, 같은 변형만 덮는다. `hover:bg-*` 는 `bg-danger` 로 덮이지 않는다(C-15, 알려진 동작 4). 색 의도를 받는 prop(`variant` · `tone`)은 열거값만 받는다(C-14).
+
+### 폰트 로딩
+
+DS 는 패밀리 이름만 갖고 파일을 싣지 않는다. 소비 앱이 글꼴을 로딩한다.
+
+- Pretendard 400 · 600 · 700. `--font-sans` 가 이 패밀리를 요청한다.
+- `font-mono` 를 쓰면(CodeBlock · Prose 의 코드 등) JetBrains Mono. 라이선스는 SIL OFL 1.1 이고 npm 의 `@fontsource/jetbrains-mono`(400 · 600 · 700 css 를 import)나 가변 글꼴 `@fontsource-variable/jetbrains-mono` 로 받는다(구현 노트 F-32). 패밀리 이름은 `JetBrains Mono` 다.
+- 로딩됐는지는 `document.fonts.check('16px "JetBrains Mono"')` 가 `true` 인지, 또는 `await document.fonts.ready` 뒤 `document.fonts` 에 그 패밀리가 `loaded` 로 있는지로 확인한다. 로딩하지 않으면 조용히 기본 글꼴로 떨어진다.
+- 무게 유틸리티는 `font-normal` 400 · `font-semibold` 600 · `font-bold` 700 이다. `font-medium` 은 없다.
+
+### 0.6.0 에서 달라진 것
+
+- tone 이 일곱이 됐다: brand · success · warning · info 가 늘었다. 글자 스텝에 `3xl` · `4xl`, 간격 키에 32 · 40 · 48 · 64 · 80 · 96 이 늘었다. `Record<Tone, …>` 나 `Record<TypographyStep, …>` 처럼 전수 맵을 가진 앱은 새 키를 더해야 타입이 맞는다.
+- Collapsible 의 기본이 `variant="ghost"` 이고 가로 패딩이 없다. 이전 기본에 맞추려고 `-mx-3` 을 붙였다면 지운다.
+- Callout 의 뜻은 글로 전한다. 색만으로 구분하지 않는다.
+- Link 는 문서 이동(`href`)이다. 문단 속 링크는 Prose 의 `a` 다.
 
 ### 다크 방식
 
@@ -84,6 +124,6 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 - 색·간격·글자 스텝·radius·shadow: `themes/<brand>.css` 가 import 하는 `@eeennsu/tokens/themes/<brand>.css`. `@theme` 블록이 스케일을, `@theme inline` 블록이 semantic 색 매핑을 갖고, `:root` 에 semantic 변수가 있다. 이 패키지의 `themes/<brand>.css` 는 Tailwind·토큰 import, 다크 variant, `@source` 선언뿐이다.
 - 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다. `TabItem` · `TableColumn` · `TableRow` 는 `@eeennsu/web` 에서 import 한다.
-- 글꼴: DS 가 덮어쓰는 것은 `--font-sans` 하나다. `font-mono` · `font-serif` 는 DS 토큰이 아니라 Tailwind 기본값이고, DS 는 고정폭 글꼴을 소유하거나 로딩하지 않는다(CodeBlock · Prose 의 코드가 `font-mono` 를 쓴다).
+- 글꼴: DS 가 내는 패밀리 변수는 `--font-sans` 와 `--font-mono` 다. 글꼴 파일은 싣지 않는다(위 "폰트 로딩"). CodeBlock · Prose 의 코드가 `font-mono` 를 쓴다.
 
 `@eeennsu/tokens` 는 이 패키지의 `dependencies` 라서 앱의 직접 의존성이 아니다. `node-linker=hoisted` 설치에서는 최상위 `node_modules/@eeennsu/tokens/` 에 있다. pnpm 격리 레이아웃(기본값)에서는 최상위 `node_modules/@eeennsu/` 에 `web` 만 보이고, `tokens` 는 이 패키지 실경로(`node_modules/.pnpm/@eeennsu+web@…/node_modules/@eeennsu/web`) 옆의 `../tokens` 에 있다. pnpm 의 기본 hoist 설정이면 `node_modules/.pnpm/node_modules/@eeennsu/tokens/` 에도 있다.
