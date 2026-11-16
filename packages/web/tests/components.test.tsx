@@ -812,7 +812,9 @@ describe("R27 Collapsible", () => {
     );
     const trigger = screen.getByRole("button", { name: "답 보기" });
     expect(trigger).toHaveClass("text-fg-muted", "hover:text-fg");
-    expect(trigger).not.toHaveClass("px-3", "rounded-md", "hover:bg-surface-hover");
+    expect(trigger).not.toHaveClass("px-3");
+    expect(trigger).not.toHaveClass("rounded-md");
+    expect(trigger).not.toHaveClass("hover:bg-surface-hover");
     expect(screen.getByText("답 내용").parentElement).not.toHaveClass("px-3");
   });
 
@@ -831,7 +833,7 @@ describe("R27 Collapsible", () => {
     );
     const panel = screen.getByText("답 내용").parentElement!;
     expect(panel).toHaveClass("px-3");
-    expect(panel.className).not.toMatch(/(^|s)bg-/);
+    expect(panel.className).not.toMatch(/(^|\s)bg-/);
   });
 
   it("disabled 면 클릭해도 열리지 않고 onOpenChange 가 불리지 않는다", () => {
