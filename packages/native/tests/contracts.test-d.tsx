@@ -20,11 +20,13 @@ import {
   Badge,
   Box,
   Button,
+  Callout,
   Card,
   Chip,
   Icon,
   Input,
   Label,
+  Link,
   Stack,
   Text,
   Textarea,
@@ -60,6 +62,8 @@ describe("C-17 맵 동등성", () => {
       | "Text"
       | "Stack"
       | "Box"
+      | "Link"
+      | "Callout"
     >();
   });
 
@@ -205,6 +209,17 @@ describe("AC-14 · AC-15a 잘못된 사용은 타입 에러다", () => {
     assertType(<Stack>문자열</Stack>);
     // @ts-expect-error Box 도 컨테이너다
     assertType(<Box>문자열</Box>);
+  });
+
+  it("Link 는 onPress 갈래다 · Callout children 은 엘리먼트뿐이다(R28)", () => {
+    // @ts-expect-error href 는 웹 갈래다
+    assertType(<Link label="a" href="/x" />);
+    // @ts-expect-error onPress 필수
+    assertType(<Link label="a" />);
+    // @ts-expect-error Callout children 은 문자열을 제외한다
+    assertType(<Callout>문자열</Callout>);
+    assertType(<Link label="a" onPress={() => {}} />);
+    assertType(<Callout tone="danger" title="t" icon="info">{<Text>x</Text>}</Callout>);
   });
 
   it("텍스트 컴포넌트 children 은 문자열뿐이다(C-17)", () => {

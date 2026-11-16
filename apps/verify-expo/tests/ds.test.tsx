@@ -8,7 +8,21 @@
  * DS 컴포넌트에는 `testID` prop 이 없다(AC-11a: 스프레드 없음). 그래서 조회는
  * 접근성 이름·텍스트·렌더 트리로 한다 — 소비자가 실제로 쓸 수 있는 것과 같은 경로다.
  */
-import { Badge, Box, Button, Card, Chip, Icon, Input, Label, Stack, Text, Textarea } from "@eeennsu/native";
+import {
+  Badge,
+  Box,
+  Button,
+  Callout,
+  Card,
+  Chip,
+  Icon,
+  Input,
+  Label,
+  Link,
+  Stack,
+  Text,
+  Textarea,
+} from "@eeennsu/native";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
@@ -400,5 +414,45 @@ describe("N-17 Chip · Icon · 눌림 · 누름 영역 · 포커스 · 고정폭
 
     await mount(<Button label="삭제" variant="danger" />, "dark");
     expect(screen.getByText("삭제").props.style).toMatchObject({ color: DS_ON_BRAND_DARK });
+  });
+});
+
+describe("R28 native Link · Callout", () => {
+  test("Link 는 link 역할이고 누르면 onPress 가 한 번 불린다", async () => {
+    const onPress = jest.fn();
+    await mount(<Link label="더 보기" onPress={onPress} />);
+    await fireEvent.press(screen.getByRole("link", { name: "더 보기" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  test("Link 글자는 fg.brand · Pretendard 다", async () => {
+    await mount(<Text tone="brand">기준</Text>);
+    const brandColor = rootStyle().color;
+    expect(brandColor).toBeTruthy();
+    await mount(<Link label="더 보기" onPress={() => {}} />);
+    expect(screen.getByText("더 보기").props.style).toMatchObject({ color: brandColor, fontFamily: "Pretendard" });
+  });
+
+  test("Callout 은 tone 채움 · 테두리 없음 · 제목 색과 굵기", async () => {
+    await mount(<Box className="bg-info-subtle">{null}</Box>);
+    const infoFill = rootStyle().backgroundColor;
+    expect(infoFill).toBeTruthy();
+    await mount(<Text tone="danger">기준</Text>);
+    const dangerFg = rootStyle().color;
+
+    await mount(
+      <Callout title="알림">
+        <Text>내용</Text>
+      </Callout>,
+    );
+    expect(rootStyle()).toMatchObject({ backgroundColor: infoFill });
+    expect(rootStyle().borderWidth ?? 0).toBe(0);
+
+    await mount(
+      <Callout tone="danger" title="오류">
+        <Text>내용</Text>
+      </Callout>,
+    );
+    expect(screen.getByText("오류").props.style).toMatchObject({ color: dangerFg, fontWeight: 600 });
   });
 });
