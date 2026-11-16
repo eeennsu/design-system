@@ -1,10 +1,12 @@
 import type { TableColumn, TableRow } from "@eeennsu/web";
-import { Card, Chip, CodeBlock, Collapsible, Icon, Prose, Stack, Table, Tabs, Text } from "@eeennsu/web";
+import { Callout, Card, Chip, CodeBlock, Collapsible, Icon, Link, Prose, Stack, Table, Tabs, Text } from "@eeennsu/web";
+import { StepperDemo } from "./stepper-demo";
 
 /**
  * R27 T-V4 — 새 다섯 컴포넌트와 Chip · Icon 의 서버 렌더 확인용 화면(C-4).
  * 서버 컴포넌트다: Tabs · Collapsible · Chip 이 `"use client"` 를 스스로 지니므로 여기에는 지시문이 없다.
  * Table · Tabs 하나는 canvas 위에 바로 놓아 구분선(`border.default`)을 눈으로 확인할 수 있게 했다.
+ * R28 의 Link · Callout · Stepper 와 보강분도 여기 둔다. Stepper 만 상태가 필요해 `stepper-demo.tsx` 래퍼를 쓴다.
  */
 const columns: TableColumn[] = [
   { label: "항목" },
@@ -21,6 +23,16 @@ const rows: TableRow[] = [
   { cells: ["교통", "58,000", "61,500", "47,300", "52,100", "49,800", "268,700"] },
   { cells: ["구독", "42,900", "42,900", "42,900", "42,900", "42,900", "214,500"] },
 ];
+
+/** R28 — `max-h-96` 표가 세로로도 스크롤하는지 보려는 39행. */
+const longRows: TableRow[] = Array.from({ length: 39 }, (_, index) => ({
+  cells: [`${index + 1}번`, "10,000", "20,000", "30,000", "40,000", "50,000", "150,000"],
+}));
+
+const longUrl = "https://example.com/very/long/path/that/never/breaks/without/overflow-wrap/0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz";
+
+/** keep-all 이면 띄어쓰기 없는 한국어 덩어리는 어절 하나라 줄을 바꿀 자리가 없다. */
+const longKorean = "띄어쓰기없이아주길게이어붙인한국어문장이라서한어절이화면폭보다길어지는경우를일부러만든다";
 
 export default function ComponentsPage() {
   return (
@@ -125,6 +137,62 @@ export default function ComponentsPage() {
           <Icon name="settings" label="설정" />
           <Icon name="check" />
           <Icon name="info" tone="muted" label="안내" />
+        </Stack>
+      </section>
+
+      {/* R28 — Link · Callout · Stepper 와 R27 컴포넌트 보강분 */}
+      <section aria-label="링크 영역">
+        <Stack className="gap-2">
+          <Link href="#links" label="기본 링크" />
+          <Link href="#links" label="흐린 링크" tone="muted" />
+          <Link href="#links" label="큰 링크" size="lg" />
+        </Stack>
+      </section>
+
+      <section aria-label="안내 상자 영역">
+        <Stack className="gap-3">
+          <Callout tone="info" title="안내 제목" icon="info">
+            제목과 아이콘이 있는 안내 상자다.
+          </Callout>
+          <Callout tone="success">제목 없는 성공 안내다.</Callout>
+          <Callout tone="warning">경고 안내다.</Callout>
+          <Callout tone="danger">위험 안내다.</Callout>
+          <Callout tone="brand">브랜드 안내다.</Callout>
+        </Stack>
+      </section>
+
+      <section aria-label="단계 영역">
+        <StepperDemo />
+      </section>
+
+      <section aria-label="접기 변형 영역">
+        <Stack className="gap-3">
+          <Collapsible label="채운 접기" variant="secondary">
+            <Text>채운 접기 내용이다</Text>
+          </Collapsible>
+          <Collapsible label="막힌 접기" disabled>
+            <Text>막힌 접기 내용이다</Text>
+          </Collapsible>
+        </Stack>
+      </section>
+
+      <section aria-label="긴 표 영역">
+        <Table label="긴 지출" columns={columns} rows={longRows} className="max-h-96" />
+      </section>
+
+      <section aria-label="긴 글 Prose 영역">
+        <Prose>
+          <p>
+            {longKorean} 주소는 <a href={longUrl}>{longUrl}</a> 이다.
+          </p>
+        </Prose>
+      </section>
+
+      <section aria-label="글자 영역">
+        <Stack className="gap-2">
+          <Text size="4xl">아주 큰 글</Text>
+          <Text className="font-semibold">굵은 글</Text>
+          <Text className="font-mono">const mono = true;</Text>
         </Stack>
       </section>
     </Stack>

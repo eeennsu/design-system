@@ -140,7 +140,8 @@ test.describe("CodeBlock", () => {
 
   test("pre 는 monospace · 가로 스크롤 · Tab 정지점이고 figure 가 surface-muted 다", async ({ page }) => {
     const pre = page.getByRole("region", { name: "긴 한 줄" });
-    expect(await pre.evaluate((element) => getComputedStyle(element).fontFamily)).toMatch(/^ui-monospace/);
+    // R28 부터 DS 가 --font-mono 를 소유한다(decisions-r28 8).
+    expect(await pre.evaluate((element) => getComputedStyle(element).fontFamily)).toMatch(/^"JetBrains Mono", ui-monospace/);
     expect(await pre.evaluate((element) => getComputedStyle(element).overflowX)).toBe("auto");
     await expect(pre).toHaveAttribute("tabindex", "0");
 

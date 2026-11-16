@@ -1,0 +1,13 @@
+@import "@eeennsu/web/themes/base.css";
+
+/*
+ * R28 — 소비자가 모서리 · canvas · 테두리 semantic 변수를 재선언하는 경로. 재선언한 키만 바뀌고
+ * 나머지(`--radius-lg` · `--radius-full`)는 그대로인지 본다.
+ * 다크 블록(`.dark` · `@media`)은 생략했다 — 이 라우트는 라이트만 확인한다. 실제 앱은 C-5b 대로 3블록을 쓴다.
+ */
+:root {
+  --radius-md: 2px;
+  --radius-xl: 4px;
+  --bg-canvas: oklch(100% 0 0);
+  --border-surface: oklch(87% 0 0);
+}
