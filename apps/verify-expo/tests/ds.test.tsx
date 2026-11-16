@@ -28,8 +28,12 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react-nativ
 import type { ReactElement } from "react";
 import { registerCSS } from "react-native-css/jest";
 
+import App from "../App";
 import { setColorScheme } from "./color-scheme";
 import { compileAppCss } from "./gate-css";
+
+// App 이 import 하는 global.css 는 Metro 용이다. jest 는 compileAppCss 로 따로 등록한다.
+jest.mock("../global.css", () => ({}));
 
 /** 앱 `global.css` 가 재선언한 값. `apps/verify-next` 와 같은 초록이다(C-5b). */
 const APP_BRAND_LIGHT = "#11a22f";
@@ -530,5 +534,30 @@ describe("R28 native Stepper", () => {
     expect(mark?.props?.style).toMatchObject({ borderLeftWidth: 2, borderColor: brandBorder });
     expect(screen.queryByRole("button", { name: /확인/ })).toBeNull();
     expect(screen.getByText("프로필").props.style).toMatchObject({ fontWeight: 600 });
+  });
+});
+
+describe("R28 Text tone · 스텝 · 화면", () => {
+  test.each([
+    ["brand", "#1b64da"],
+    ["success", "#016630"],
+    ["info", "#0069a8"],
+  ] as const)("Text tone=%s 색", async (tone, color) => {
+    await mount(<Text tone={tone}>글</Text>);
+    expect(rootStyle()).toMatchObject({ color });
+  });
+  test("size 4xl 과 font-semibold", async () => {
+    await mount(<Text size="4xl">큰 글자</Text>);
+    expect(rootStyle()).toMatchObject({ fontSize: 48 });
+    await mount(<Text className="font-semibold">굵게</Text>);
+    expect(rootStyle()).toMatchObject({ fontWeight: 600 });
+  });
+  test("App 이 새 조각과 함께 렌더된다", async () => {
+    await mount(<App />);
+    expect(screen.getByRole("link", { name: "더 보기" })).toBeTruthy();
+    expect(screen.getByText("알림")).toBeTruthy();
+    expect(screen.getByText("프로필 내용")).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: /완료/ }));
+    expect(screen.getByText("계정 내용")).toBeTruthy();
   });
 });

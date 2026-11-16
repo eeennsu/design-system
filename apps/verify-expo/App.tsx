@@ -1,4 +1,17 @@
-import { Box, Button, Card, Chip, Icon, Input, Label, Stack, Text } from "@eeennsu/native";
+import {
+  Box,
+  Button,
+  Callout,
+  Card,
+  Chip,
+  Icon,
+  Input,
+  Label,
+  Link,
+  Stack,
+  Stepper,
+  Text,
+} from "@eeennsu/native";
 import { useUnstableNativeVariable } from "nativewind";
 import { useState } from "react";
 import { Appearance, Pressable, Text as RNText, ScrollView } from "react-native";
@@ -28,6 +41,7 @@ function Probe({ name }: { name: string }) {
  */
 export default function App() {
   const [category, setCategory] = useState("식비");
+  const [step, setStep] = useState("b");
 
   return (
     <ScrollView className="bg-canvas" contentContainerClassName="p-4 pt-24">
@@ -78,6 +92,33 @@ export default function App() {
             <Text size="sm" tone="muted" className="tabular-nums">
               1,234,567원
             </Text>
+          </Stack>
+
+          {/* R28: Link · Callout · Stepper · Text 스텝 · tone. */}
+          <Link label="더 보기" onPress={() => {}} />
+          <Callout title="알림">
+            <Text>변경 사항이 저장됐다</Text>
+          </Callout>
+          <Callout tone="danger" title="오류">
+            <Text>다시 시도해 달라</Text>
+          </Callout>
+          <Stepper
+            label="가입 단계"
+            value={step}
+            onValueChange={setStep}
+            items={[
+              { value: "a", label: "계정", content: <Text>계정 내용</Text> },
+              { value: "b", label: "프로필", content: <Text>프로필 내용</Text> },
+              { value: "c", label: "확인", content: <Text>확인 내용</Text> },
+            ]}
+          />
+          <Text size="4xl">48</Text>
+          <Text className="font-semibold">굵은 글자</Text>
+          <Stack direction="row" wrap className="gap-3">
+            <Text tone="brand">brand</Text>
+            <Text tone="success">success</Text>
+            <Text tone="warning">warning</Text>
+            <Text tone="info">info</Text>
           </Stack>
 
           {/* AC-26: 재선언한 변수는 따라가고, 재선언하지 않은 변수는 그대로여야 한다. */}
