@@ -20,7 +20,7 @@
 | 5 | 큰 제목 값 | `3xl` 36/44/700, `4xl` 48/56/700 | 설계자 판단 | 하(값) |
 | 6 | 96px 넘는 크기 | 간격 열거에 `32,40,48,64,80,96`(128 · 160 · 192 · 256 · 320 · 384px) 추가 | 설계자 판단(판단 항목) | 상(키는 계약) |
 | 7 | 굵기 | 유틸리티 `font-normal`(400) · `font-semibold`(600) · `font-bold`(700). prop은 없다 | 설계자 판단 | 중 |
-| 8 | 고정폭 글꼴 | DS가 `--font-mono`를 소유한다. 패밀리는 JetBrains Mono, RN 이름 `JetBrainsMono`. 파일은 동봉하지 않는다 | 소유는 사용자, 글꼴 선택은 설계자 판단 **(확인 필요)** | 중(패밀리 변경은 소비 앱 로딩 코드를 바꾼다) |
+| 8 | 고정폭 글꼴 | DS가 `--font-mono`를 소유한다. 패밀리는 JetBrains Mono, RN 이름 `JetBrainsMono`. 파일은 동봉하지 않는다 | 소유는 사용자, 글꼴 선택은 설계자 판단 · 2026-11-15 라이선스 · 배포처 확인(구현 노트 F-32) | 중(패밀리 변경은 소비 앱 로딩 코드를 바꾼다) |
 | 9 | 상태색 토큰 | 연한 채움 5개(`bg.brand-subtle` · `success-subtle` · `warning-subtle` · `info-subtle` · `danger-subtle`)와 글자 3개(`fg.success` · `fg.warning` · `fg.info`) | 사용자(연한 채움 + 글자), 목록은 설계자 판단 | 중 |
 | 10 | 진한 상태 채움 | 만들지 않는다. `variant` 4개 고정을 넓히지 않는다 | 사용자 | 하(추가는 추가적) |
 | 11 | `tone` | `brand` · `success` · `warning` · `info`를 더해 7개. fg semantic과 1:1 유지 | 설계자 판단 | 상 |
@@ -29,7 +29,7 @@
 | 14 | Link | 웹 `href` 필수 `<a>`, native `onPress` 필수. `label` 문자열, `tone`(기본 `brand`), `size` | 설계자 판단 | 중 |
 | 15 | Callout | `tone`(`info` 기본 · `success` · `warning` · `danger` · `brand`), `title?`, `icon?`, `children`. 연한 채움 상자, 테두리 없음 | 설계자 판단 | 중 |
 | 16 | Stepper 구조 | 세로 단계 목록. `items: StepItem[]`(`{ value; label; content? }`) + `value`(펼친 단계) + `reached?`(가장 멀리 간 단계) + `onValueChange?` + `label`(접근성 이름). number prop 없음 | 세로 목록은 사용자, API는 설계자 판단 | 중 |
-| 17 | Stepper 모양 | 단계마다 한 줄. 지난 단계는 체크 아이콘, 지금 단계는 굵은 글과 그 아래 내용. 번호 원과 연결선을 그리지 않는다 | 설계자 판단 **(확인 필요)** | 하(내부 모양) |
+| 17 | Stepper 모양 | 단계마다 한 줄. 지난 단계는 체크 아이콘, 지금 단계는 굵은 글과 그 아래 내용. 번호 원과 연결선을 그리지 않는다 | 설계자 판단 · 2026-11-16 사용자가 화면을 보고 받아들임 | 하(내부 모양) |
 | 18 | Collapsible `disabled` | 기능 불리언 추가 | ds-feedback 2 | 하 |
 | 19 | Collapsible 들여쓰기 · 모양 | `variant`(`ghost` 기본 · `secondary`). `ghost`는 가로 여백 0이라 주변 문단과 왼쪽이 맞는다. `secondary`는 트리거 줄이 채움 상자 | ds-feedback 3 · 8, 설계자 판단 | 중(0.5.0 소비자의 `-mx-3` 보정이 어긋난다) |
 | 20 | Button 상태 글 통로 | 만들지 않는다. 그 요구가 나온 자리(지난 단계 버튼)를 Stepper가 가져간다 | 설계자 판단 | 하(추가는 추가적) |
@@ -152,6 +152,8 @@ A를 골랐다.
 - native에는 코드 컴포넌트가 없지만 어휘를 공유하므로 `font-mono` 클래스는 native에서도 같은 이름을 가리킨다. 쓰지 않는 앱은 등록하지 않아도 된다
 
 **글꼴 선택은 설계자 판단이고 확인이 필요하다.** JetBrains Mono를 고른 이유는 코드 글자 구분(0 · O, 1 · l)이 뚜렷하고 가변 글꼴과 무게별 파일이 모두 배포된다는 것이다. 라이선스(OFL)와 배포처(웹 패키지, Expo용 패키지)는 **미확인**이며 계획의 첫 토큰 태스크에서 출처와 확인일을 달아 확인한다. 확인에서 걸리면 그 태스크에서 대안을 사용자에게 가져온다.
+
+글꼴 확인(2026-11-15): JetBrains Mono는 SIL OFL 1.1이고, 웹은 `@fontsource/jetbrains-mono` · `@fontsource-variable/jetbrains-mono`(400 · 600 · 700), Expo는 `@expo-google-fonts/jetbrains-mono`가 있다. 출처와 Expo 등록 키 바꾸기는 구현 노트 F-32다. 대안으로 넘어가지 않았다.
 
 ## 9. 상태색 토큰
 
@@ -288,7 +290,7 @@ Stepper: {
 | 파트 조합(`Stepper.Step`) | 한 컴포넌트 = 계약 키 하나(decisions-r27 1) |
 | `content` 없이 줄만 그린다 | 펼친 단계의 내용을 목록 안 그 줄 아래에 둘 수 없어 앱이 목록을 다시 직접 그린다 |
 
-## 17. Stepper 모양 (확인 필요)
+## 17. Stepper 모양
 
 amulator가 직접 그린 것은 번호 원이었고, 사용자가 2026-11-15에 꼽은 AI 티 목록에 "원 안 숫자, pill 배지"가 있다. 그 모양을 DS에 옮기지 않는다.
 
@@ -309,6 +311,8 @@ amulator가 직접 그린 것은 번호 원이었고, 사용자가 2026-11-15에
 - component recipe(`stepper`): 줄 높이 · 표시 자리 폭 · 줄 간격 · 글자 스텝
 
 모양은 내부 구현이라 계약을 바꾸지 않고 고칠 수 있다. **사용자가 구현 화면을 보고 확인한다.**
+
+Stepper 모양 확인(2026-11-16): verify-next `/components`의 라이트 · 다크 스크린샷(393px)을 보이고 지금 모양을 받아들일지 물었고, 사용자가 그대로 받아들였다. 지난 단계와 남은 단계 글이 같은 `fg.muted`라 체크 표시로만 구분되는 것도 함께 보였다. 표시 막대는 `border-l-2`(2px)로 펼친 단계 제목 줄 높이만 덮는다(구현 노트 N-20).
 
 | 대안 | 탈락 이유 |
 |---|---|

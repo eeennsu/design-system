@@ -728,7 +728,7 @@ Prose `a` 의 `[:where(&)_a:focus-visible]:outline-border-focus` 는 `outline-co
   0.6.0 은 Card 에 1px 테두리를 더하고(base 는 투명이라 색은 안 보인다) Collapsible 기본 가로 여백을 0 으로, Badge · Chip 모서리를 `rounded-xl` 로 바꾼다. RN 소비 앱이 `font-mono` 를 쓰면 `JetBrainsMono` 등록이 필요하다(F-32). 릴리스 노트에 적는다
 - publish 뒤 **design-flow 쪽에 알린다**(decisions-r28 25): 그 설계 문서 5.2절의 시안 축 "brand 색 네 변수"가 R28 에서 다섯(`--bg-brand-subtle` 추가)이 됐고, 표면 관계 여섯 · 모서리 넷이 재선언 대상이 됐다. my-agent-setup 은 이 레포 밖이라 여기서 고치지 않고 0.6.0 을 낸 뒤 그 세션에 전한다
 - AC-23 스크린샷 네 장은 여전히 옛 모양이다. 0.6.0 에서 Card 테두리 1px 로 웹 화면이 또 달라진다. RN 을 기기에서 찍을 때 웹과 함께 다시 찍고, 그 전까지는 `docs/assets` 를 되돌린다(F-25)
-- R28 확인 필요 표시가 문서에 남아 있다 — 스펙 R28 요약의 "R28 보류" 줄과 알려진 동작 36, decisions-r28 8 · 17 이 아직 "확인 필요"다. 글꼴은 F-32 로 확인했고 Stepper 모양은 받아들였으니(N-20) R27 구분선 때처럼 docs 커밋으로 닫는다
+- ~~R28 확인 필요 표시~~ — **닫음(2026-11-16).** 스펙 "R28 보류" 줄 · 알려진 동작 36, decisions-r28 8 · 17 에 확인 결과를 적었다(글꼴 F-32, Stepper 모양 N-20)
 - 나중 판단 후보: native Link 와 Stepper 지난 단계 Pressable 의 `hitSlop`(누름 영역 24 < 48dp, 알려진 동작 18). bakery danger 채움 · `border.surface` 는 사용자가 지금 값을 유지했다(N-20, F-35)
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
