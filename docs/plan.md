@@ -1167,7 +1167,7 @@ native 컴포넌트를 고치는 태스크(4 · 9 · 10 · 12)보다 먼저 끝�
 
 기존 게이트 (6)처럼 `compileGlobalCss(extraCss)`로 컴파일해 `react-native-css/components`의 `View` · `Text`를 렌더하고 `toHaveStyle`로 단언한다:
 1. `extraCss = ":root { --radius-md: 2px; }"` → `<View className="rounded-md" />`의 `borderRadius`가 2. 대조군으로 재선언 없이 12
-2. `<Text className="text-lg font-normal">` → `fontWeight` `"400"`, `<Text className="font-normal text-lg">`도 `"400"`; `<Text className="text-md font-bold">`와 순서 바꾼 것 → `"700"`
+2. `<Text className="text-lg font-normal">` → `fontWeight` `400`(숫자 — react-native-css 가 숫자로 낸다, F-35), `<Text className="font-normal text-lg">`도 `400`; `<Text className="text-md font-bold">`와 순서 바꾼 것 → `700`
 3. `<Text className="font-mono">` → `fontFamily` `"JetBrainsMono"`
 4. `<View className="h-64 max-h-96" />` → `height` 256 · `maxHeight` 384; `<Text className="text-4xl">` → `fontSize` 48 · `lineHeight` 56
 
@@ -1319,7 +1319,7 @@ Task 3(게이트)이 끝난 뒤.
 **Interfaces:**
 - Consumes: Task 7 계약, native `tones` · `steps`(`packages/native/src/text.tsx` export), native `Icon`
 
-- [ ] **Step 1: 실패하는 테스트**(verify-expo jest) — Link: `getByRole("link", { name: label })`, 누르면 `onPress` 한 번, 글자 `color`가 `fg.brand`(라이트), `fontFamily` `Pretendard`. Callout: 채움 `backgroundColor`가 `bg.info-subtle`, `tone="danger"` 제목 글 `color`가 `fg.danger`, 제목 `fontWeight` `"600"`, `borderWidth`가 없다(0 또는 미설정). 타입(native contracts.test-d): `@ts-expect-error href`, `@ts-expect-error` `onPress` 누락, `@ts-expect-error` Callout 문자열 children
+- [ ] **Step 1: 실패하는 테스트**(verify-expo jest) — Link: `getByRole("link", { name: label })`, 누르면 `onPress` 한 번, 글자 `color`가 `fg.brand`(라이트), `fontFamily` `Pretendard`. Callout: 채움 `backgroundColor`가 `bg.info-subtle`, `tone="danger"` 제목 글 `color`가 `fg.danger`, 제목 `fontWeight` `600`(숫자), `borderWidth`가 없다(0 또는 미설정). 타입(native contracts.test-d): `@ts-expect-error href`, `@ts-expect-error` `onPress` 누락, `@ts-expect-error` Callout 문자열 children
 - [ ] **Step 2: 실패 확인** — Run: `pnpm -r build` → `pnpm --filter verify-expo test`. Expected: FAIL
 - [ ] **Step 3: 구현** — Link: `react-native-css/components`의 `Pressable`(`accessibilityRole="link"`, `accessibilityLabel={label}`, `onPress`, `className={cn("self-start active:opacity-80", className)}`) 안에 `Text`(`font-sans` + tone + step). Callout: `View`(§4.10 Callout 클래스에서 `break-keep wrap-break-word` 제외) + 제목 `Text font-sans font-semibold` + `Icon`. 클래스가 표면(Pressable · View)에 붙고 글자 클래스는 안쪽 Text에 닿지 않는다(알려진 동작 22)는 것을 JSDoc에 한 줄
 - [ ] **Step 4: 통과 확인** — Run: native · verify-expo 테스트. Expected: PASS
@@ -1352,7 +1352,7 @@ Task 3(게이트)이 끝난 뒤.
 **Interfaces:**
 - Consumes: Task 4 ~ 8의 웹 컴포넌트, `e2e/color.ts`(`backgroundRgba` · `toRgba` · `expectSameColor`), `@eeennsu/tokens/brands/base`의 `colors`
 
-- [ ] **Step 1: 화면 쓰기** — `/components`에 더한다: Link 셋(기본, `tone="muted"`, `size="lg"`), Callout 다섯 tone(`title` · `icon` 있는 것 하나, 없는 것 하나), Stepper(네 단계, `value="b"` · `reached="d"`, 클라이언트 상태를 쓰므로 작은 `"use client"` 래퍼 파일 `components/stepper-demo.tsx`), Collapsible `secondary` 하나 · `disabled` 하나, `className="max-h-96"` Table(39행), 긴 URL이 든 Prose 문단, `Text size="4xl"` · `Text className="font-semibold"` · `font-mono` 글. `/surface`는 `surface.css`에서 `@import "@eeennsu/web/themes/base.css";` 뒤에 `:root { --radius-md: 2px; --radius-xl: 4px; --bg-canvas: oklch(100% 0 0); --border-surface: oklch(87% 0 0); }`(다크 블록은 이 라우트가 라이트만 보므로 생략하고 주석으로 이유)를 두고 Card · Input · Badge · Chip · Button과 `rounded-lg` Box · `rounded-full` Box를 놓는다
+- [ ] **Step 1: 화면 쓰기** — `/components`에 더한다: Link 셋(기본, `tone="muted"`, `size="lg"`), Callout 다섯 tone(`title` · `icon` 있는 것 하나, 없는 것 하나), Stepper(다섯 단계 — 구현에서 네 단계가 다섯으로 늘었다. 4단계로는 `value="b"` · `reached="d"`에 "남은 단계 버튼 없음" 검사를 둘 다 만족할 수 없다, N-20. `value="b"` · `reached="d"`, 클라이언트 상태를 쓰므로 작은 `"use client"` 래퍼 파일 `components/stepper-demo.tsx`), Collapsible `secondary` 하나 · `disabled` 하나, `className="max-h-96"` Table(39행), 긴 URL이 든 Prose 문단, `Text size="4xl"` · `Text className="font-semibold"` · `font-mono` 글. `/surface`는 `surface.css`에서 `@import "@eeennsu/web/themes/base.css";` 뒤에 `:root { --radius-md: 2px; --radius-xl: 4px; --bg-canvas: oklch(100% 0 0); --border-surface: oklch(87% 0 0); }`(다크 블록은 이 라우트가 라이트만 보므로 생략하고 주석으로 이유)를 두고 Card · Input · Badge · Chip · Button과 `rounded-lg` Box · `rounded-full` Box를 놓는다
 - [ ] **Step 2: Playwright 단언 쓰기** — `test.use({ viewport: { width: 393, height: 851 } })`. (1) Link `href` · 포커스 시 `outline-style: solid`, 쉬는 `text-decoration-line: none`, hover 시 `underline`; (2) Callout `role="note"` · 배경 = `colors.light.bg["info-subtle"]` · 제목 색 = `fg.info`; (3) Stepper `aria-current="step"` 하나, 지난 단계 버튼 클릭 시 펼친 단계가 바뀐다, 남은 단계에 버튼 없음; (4) Collapsible ghost 트리거 `padding-left: 0px`, disabled 트리거 클릭해도 `aria-expanded="false"`; (5) Prose `word-break: keep-all`, 긴 URL 문단 `scrollWidth <= clientWidth`; (6) `max-h-96` Table 영역 `scrollHeight > clientHeight` · `overflow-y: auto` · `tabindex="0"`; (7) `text-4xl` font-size 48px, `font-semibold` font-weight 600, `font-mono` font-family가 `"JetBrains Mono"`로 시작; (8) `/surface` — `rounded-md` 요소(Input) `border-radius: 2px`, Card · Badge · Chip `4px`, 재선언 안 한 `rounded-lg` Box는 16px, `rounded-full` Box는 재선언 전과 같은 값, Card · Input 테두리 색 = `oklch(87% 0 0)`의 sRGB, Card `border-top-width: 1px`
 - [ ] **Step 3: 실행** — Run: `pnpm -r build` → `pnpm --filter verify-next exec playwright test e2e/r28.spec.ts e2e/components.spec.ts e2e/verify.spec.ts`. Expected: PASS(기존 두 spec도). `docs/assets` 변경 없음
 - [ ] **Step 4: 사용자 확인(decisions-r28 17, 확인 필요 항목)** — `pnpm --filter verify-next dev`를 따로 띄우고(PID를 로그 옆 파일에 적는다) `/components`의 Stepper · Callout · Collapsible `secondary`를 라이트 · 다크로 사용자에게 보여 준다. Stepper 모양을 받아들이는지 묻고 답을 구현 노트에 적는다. 바꾸라고 하면 계약은 그대로 두고 내부 클래스만 고친다. 끝나면 띄운 PID만 끈다
@@ -1363,7 +1363,7 @@ Task 3(게이트)이 끝난 뒤.
 **Files:**
 - Modify: `apps/verify-expo/App.tsx`, `apps/verify-expo/tests/ds.test.tsx`
 
-- [ ] **Step 1: 화면 · 테스트** — App.tsx에 Link · Callout(둘) · Stepper(`useState`) · `Text size="4xl"` · `Text className="font-semibold"` · `tone` 넷(`brand` · `success` · `warning` · `info`)을 더한다. jest(`describe("R28")`): 새 tone 네 개의 `color`, `text-4xl` `fontSize` 48, `font-semibold` `fontWeight` `"600"`, Badge · Chip `borderRadius` 20, smoke가 App을 렌더한다. 앞 태스크가 이미 단언한 것은 반복하지 않는다
+- [ ] **Step 1: 화면 · 테스트** — App.tsx에 Link · Callout(둘) · Stepper(`useState`) · `Text size="4xl"` · `Text className="font-semibold"` · `tone` 넷(`brand` · `success` · `warning` · `info`)을 더한다. jest(`describe("R28")`): 새 tone 네 개의 `color`, `text-4xl` `fontSize` 48, `font-semibold` `fontWeight` `600`(숫자), Badge · Chip `borderRadius` 20, smoke가 App을 렌더한다. 앞 태스크가 이미 단언한 것은 반복하지 않는다
 - [ ] **Step 2: 실행** — Run: `pnpm -r build` → `pnpm --filter verify-expo test`. Expected: PASS
 - [ ] **Step 3: 커밋** — `feat: verify-expo R28 화면`
 

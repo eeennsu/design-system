@@ -3,13 +3,14 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-10-24
+- 기준일: 2026-11-16
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` 을 **2026-09-26 npm 에 publish 했다**(`latest`). spendback 이 0.4.0 으로 올라갔다
 - v1 이후 네 번째: web · native 패키지 README 에 `## 소비 규칙` 을 실은 `0.4.1` 을 **2026-10-21 npm 에 publish 했다**(`latest`, 코드 무변경). spendback 이 0.4.1 로 올라갔다. my-agent-setup 의 design-flow 라우터가 설치본의 이 절을 읽는다
 - v1 이후 다섯 번째: 웹 전용 컴포넌트 5개(Tabs · Table · CodeBlock · Prose · Collapsible)를 더한(N-19, 스펙 R27) `0.5.0` 을 **2026-10-25 npm 에 publish 했다**(`latest`). 구분선은 사용자 위임으로 지금 값을 받아들였다(N-19)
+- v1 이후 여섯 번째: 모서리 4개 · 표면 관계 재선언 통로(C-5c 열림), 상태색 · 굵기 · 간격 · 큰 제목 · `font-mono` 어휘, Link · Callout · Stepper(웹 · native)와 Collapsible · Prose · Table 보정을 담은(N-20, 스펙 R28) `0.6.0` 을 **준비했다. publish 전이다**(2026-11-16, `pnpm verify:pack` 통과). publish 는 사용자가 자기 터미널에서 한다(F-17 · F-29)
 
 ## 1. 완료 상태
 
@@ -32,6 +33,7 @@
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 | v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
 | v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 완료 · `0.5.0` publish(2026-10-25). 구분선 받아들임 | tokens 72 · web 129 · native 26 · verify-expo 50 · verify-next 37(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
+| v1 이후 | 모서리 · 표면 관계 재선언(C-5c), 상태색 · border.surface · 굵기 · 간격 · 큰 제목 · font-mono, Link · Callout · Stepper(웹 · native), Collapsible · Prose · Table 보정 (N-20, R28) | `0.6.0` 준비 완료 · publish 전(2026-11-16) | tokens 82 · web 181 · native 34 · verify-expo 75 · verify-next 47(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
 
 수동 확인 상태:
 
@@ -315,6 +317,43 @@ spendback 실험(앱 브랜치 `exp/toss-look`, 커밋 `6d7d0d3`)에서 사용�
   Tabs · Collapsible 높이 42 가 build-output 높이 테스트에 없는 것, Collapsible · Tabs `className` 병합 테스트가 겨루는 클래스 없이 존재만 보는 것, C-4 단언이 hydration 뒤 가시성만 보는 것
   (`javaScriptEnabled: false` 로 돌리면 서버 HTML 을 직접 증명한다)
 
+### N-20. v1 이후 여섯 번째 — 재선언 통로 · 어휘 · Link · Callout · Stepper (0.6.0)
+
+소비 앱 두 개(spendback · amulator)를 만든 뒤 사용자가 "색 말고는 인상이 구분되지 않는다"고 판단해 나온 요구를 base 에 올렸다. 스펙 R28, 대안 비교는 [decisions-r28.md](decisions-r28.md) 다. C-5c(컴포넌트 내부 형태를 앱 단위로 바꾸는 통로)가 열렸다 —
+radius 변수 4개와 표면 관계(`--border-surface` · surface-muted 구분)를 소비 앱이 `:root` 한 블록으로 재선언한다. 웹 컴포넌트가 21 → 24, native 가 11 → 14 개가 됐다(Link · Callout · Stepper 양쪽).
+Task 1 ~ 14 는 `main` 위에서 제자리로 진행했고 태스크마다 리뷰를 받았다.
+
+- **토큰 · 어휘(Task 1 · 2)**: 굵기(`font-normal` · `font-semibold` · `font-bold`, `medium` 은 내지 않는다) · 간격 6개(32 ~ 96) · 글자 스텝 3xl · 4xl(36/44 · 48/56) · `font-mono`(JetBrains Mono, native `JetBrainsMono`)를 더했다.
+  상태색(success · warning · info 의 fg · subtle 짝)과 `border.surface` 토큰을 더했고 `Tone` 이 7개가 됐다. base 라이트 `fg.success` 는 green-700 → green-800 이다(canvas 위 4.49 → 6.45, 4.5:1 미만이라 올렸다)
+- **게이트(Task 3)**: native 가 새 어휘를 해석하는지 4항목을 verify-expo 게이트 테스트로 먼저 쟀다. **네 항목 모두 통과했고 래퍼 우회는 없다.** (1) `:root` 의 `--radius-md` 재선언이 `rounded-md` 에 닿는다(대조군은 12).
+  (2) `font-normal` · `font-bold` 가 클래스 순서와 무관하게 400 · 700 이다 — **`fontWeight` 는 문자열이 아니라 숫자로 나온다**(F-35). (3) `font-mono` 가 `JetBrainsMono` 다. (4) `h-64 max-h-96` 이 256 · 384, `text-4xl` 이 48 · 56 이다.
+  게이트 CSS 는 소스 감지가 없어 (2)(3)(4)의 클래스에 `@source inline(...)` 을 더했다. 계획의 `"400"` · `"700"` 문구는 숫자로 고쳤다(plan.md Task 3 Step 1)
+- **표면 · 모서리(Task 4)**: Card · Input · Textarea · 고르지 않은 Chip 이 `border-border-surface` 를 쓴다. Card · Badge · Chip 모서리는 `rounded-xl` 이다.
+  **Badge 는 `border-transparent` 로 남는다** — 스펙과 plan §4.10 이 표면 경계선을 Card · Input · Textarea · 고르지 않은 Chip 에만 준다. 계획 문구가 Badge 에도 준 것은 리뷰에서 되돌렸다
+- **Collapsible · Prose · Table(Task 5 · 6)**: Collapsible 에 `disabled` 와 `variant`(`ghost` 기본, `secondary`)를 더했다. **disabled 스타일은 `data-disabled` 선택자가 아니라 prop 으로 준다**(Button 과 같은 방식).
+  Base UI 는 disabled 트리거에 네이티브 `disabled` 를 쓰지 않고 `aria-disabled="true"` · `data-disabled` 만 둔다 — tabindex 가 0 이라 **포커스가 간다.** Button 의 네이티브 `disabled` 와 다르다.
+  Prose 루트에 `break-keep wrap-break-word`(한국어는 어절 단위로, 줄보다 긴 URL 은 단어 안에서 꺾는다)를 더했고 `a` 에 포커스 윤곽을 줬다. Table 루트가 `overflow-x-auto` 에서 `overflow-auto` 가 돼 `className="max-h-96"` 이면 세로로도 스크롤한다
+- **웹 Link · Callout · Stepper(Task 7 · 8)**: Link 는 `href` 가 필수인 `<a>`(쉬는 때 밑줄 없음, hover 때 밑줄). Callout 은 `role="note"` 에 tone 다섯과 `title` · `icon`. Stepper 는 `items` 데이터 방식이고 값 3종(`value` · `reached` · `onValueChange`)이다.
+  **지난 단계는 `onValueChange` 가 없어도 항상 "완료"를 알린다** — 숨김 글 `, 완료`(sr-only)다. 스펙 321 · decisions-r28 279 가 버튼 여부와 무관하게 말하는데 브리프에 빠졌던 것을 리뷰가 잡았다
+- **native Link · Callout · Stepper(Task 9 · 10)**: Link 는 `href` 대신 `onPress` 를 받는다(`role="link"`). 계획과 갈린 곳이 둘이다 — (1) Callout **제목에 글자 스텝(`steps.md`)을 줬다.**
+  계획은 루트에 `text-md` 를 뒀는데 RN Text 는 부모 글자 크기를 상속하지 않아 제목이 RN 기본 크기가 되고 배수 line-height 도 빠진다(게이트 (5) 결함 재발 위험, F-9). 루트에서는 `text-md text-fg` 를 빼고 `flex` 대신 `flex-row` 를 쓴다.
+  (2) Stepper 는 웹과 같은 완료 알림 규칙을 따른다 — 지난 단계 + `onValueChange` 면 `Pressable`(이름 "라벨, 완료"), 핸들러가 없으면 Text 에 같은 `accessibilityLabel`. 펼친 단계 줄이 `accessibilityState={{ selected: true }}` 다.
+  표시 막대는 `borderLeftWidth` 만 쓴다(F-36). 단계 상태 규칙은 `step-states.ts`(react-native import 없음)로 떼어 vitest 로 본다
+- **검증 화면(Task 11)**: verify-next `/components` 에 R28 영역 일곱 개를 더하고 `/surface`(소비자 재선언 라우트: `--radius-md: 2px` · `--radius-xl: 4px` · canvas 흰색 · `--border-surface`)를 새로 뒀다. Playwright `r28.spec.ts` 10개다.
+  **Stepper 데모는 5단계다** — 계획은 4단계에 `value="b"` · `reached="d"` 였는데, 그러면 d 가 마지막이라 "남은 단계에는 버튼이 없다"를 볼 단계가 없다. 데모 한 줄을 늘렸다.
+  CodeBlock 글꼴 단언은 `JetBrains Mono` 로 바꿨다
+- **Stepper 모양 확인(2026-11-16)**: 사용자가 라이트 · 다크 스크린샷(`out/r28-dev/{light,dark}-*.png`, gitignored)을 보고 **그대로 받아들였다.** 표시 막대 높이 24px 를 줄이지 않았다(decisions-r28 17 의 스케치와 맞는다)
+- **bakery 위험색 — 사용자 결정(2026-11-16)**: Task 2 가 bakery `bg.danger-subtle` 을 white · black 으로 둬 램프 밖이고 라이트 surface 와 1.00:1 이 됐다. 사용자가 **C** 를 골랐다 —
+  bakery `fg.danger` 를 base 값(light red-700, dark red-400)으로, `bg.danger-subtle` 을 원래 값(red-50 · red-950)으로. 대비는 5.88 · 5.58 이다. **decisions-r26 5 를 사용자가 다시 열었다.** plan §4.10 표를 맞췄다
+- **README(Task 13)**: web · native README 에 앱이 바꿀 수 있는 것(색 다섯 · 표면 여섯 · 모서리 넷), 폰트 로딩 의무, 바꾸지 않는 것, `0.6.0` 달라진 점을 실었다. 리뷰가 웹 Pretendard 로딩 방법 · 이름, 글꼴 로딩 판정 방식(F-37), native Link(`onPress`) 안내를 더하게 했다
+- **검증 결과**(2026-11-16, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 82, web 181, native 34, verify-expo 75, verify-vite 5, verify-next 47 통과 + 2 건너뜀(R27 구분선 스크린샷). `docs/assets` 는 되돌렸다(F-25).
+  `pnpm verify:pack` 통과 — 세 패키지가 `0.6.0` 이고 타르볼 설치 상태에서 verify-next 47 · verify-vite 5 · verify-expo 75 가 돈다. 첫 실행은 환경 문제 둘로 실패해 고쳤다(F-33)
+- 리뷰에서 미룬 것(막지 않는 지적): `gate.test.tsx` 의 R28 게이트가 `toMatchObject`(기존은 `toEqual`)이고 `text-4xl` fontWeight 를 단언하지 않는 것, 웹 테스트 제목 "Card 와 Badge 가 표면 경계선…" 이 Badge 와 맞지 않는 것, Link 누락 타입 테스트가 AC-14 describe 밖이고 `className` 테스트가 `text-md` 생존을 안 보는 것,
+  Callout `Icon` 에 `size="md"` 를 명시하지 않은 것, Prose 링크 포커스 특이성(0,1,1)이 주석과 어긋나는 것과 `table.tsx` 의 "가로 스크롤" 주석, Stepper 중복 `value` 의 key 경고, 표시 막대 24px, native Link 에 `hitSlop` 이 없는 것,
+  native Callout 의 `children` 글자색을 정하지 않는 것(소비자가 `Text` 를 쓴다), Stepper native 막대 색 · done/upcoming muted 단언이 자기 비교인 것, verify-expo tone hex 리터럴을 `DS_*` 상수로 바꾸는 것, verify-next 의 `rounded-full` 9999px 리터럴 · 구조 의존 선택자 · Callout 긴 URL 단언 없음,
+  `cn("font-sans", "font-medium")` 이 font-sans 를 지우는 것(F-34), 굵기 값이 build-outputs 에 리터럴인 것, `cssFontStack` 오류 라벨이 sans 고정인 것, tokens 대비 테스트의 `Scheme` 리터럴 타입 tsc 오류(R28 이전부터), bakery `brand-subtle` == `surface-muted`
+- **기기 확인은 하지 않았다.** jest 가 스타일 값과 접근성 속성을 본다. native Stepper 의 `accessible` 없는 View 에 단 `accessibilityLabel` · `selected` 가 iOS VoiceOver 에 읽히는지는 기기에서 봐야 한다(§4)
+
 ## 3. 구현 중 확인한 사실
 
 ### F-1. R23 요구 (a) — 비-inline `@theme` 변수도 소비자가 덮을 수 있다
@@ -584,6 +623,43 @@ Expo 패키지의 export 이름은 native 래퍼가 내는 `--font-mono: JetBrai
 키를 `JetBrainsMono` 로 바꿔 등록해야 이름이 맞는다. 무게별 등록은 Pretendard 소비 규칙(N-18 "소비 앱의 RN 글꼴 등록")과 같은 방식을 따른다.
 DS 는 글꼴 파일을 동봉하지 않는다(C-7b, AC-6c). 버전은 확인일 기준이며 소비 앱을 만들 때 다시 조회한다.
 
+### F-33. `pnpm verify:pack` 은 lockfile 없이 설치해 새 버전을 끌어온다 (2026-11-16, 0.6.0)
+
+`verify:pack` 은 임시 폴더 사본에 타르볼을 설치하므로 레포 lockfile 이 닿지 않는다. 그래서 레포의 `pnpm -r test` 는 통과해도 의존성 최신 해석이 만드는 문제가 여기서만 드러난다. `0.6.0` 에서 둘을 겪었다.
+
+- **Playwright 브라우저가 없다.** 새로 해석된 `@playwright/test 1.65.1` 이 크로미엄 빌드 1255 를 요구하는데 이 컴퓨터에는 1243 · 1248 만 있었다. verify-next 가 `browserType.launch: Executable doesn't exist` 로 49개 중 47개가 3ms 안에 실패했다.
+  고침: `npx playwright@<버전> install chromium chromium-headless-shell`(버전은 로그의 `@playwright/test` 줄). 새로 깐 뒤 verify-next 47 · verify-vite 5 가 돈다
+- **`magic-string` 1.4.5 는 ESM 전용이다.** `@tailwindcss/node 4.3.5` 가 끌어와 verify-expo 게이트 CSS 헬퍼(`tests/gate-css.ts`)에서 jest 가 `SyntaxError: Cannot use import statement outside a module` 로 두 스위트를 못 돌렸다.
+  고침: `apps/verify-expo/jest.config.js` 의 `transformIgnorePatterns` 허용 목록에 `magic-string` 을 더했다(N-14 와 같은 방식, 커밋 `78bdc3d`). `.mjs` 변환은 이미 있다
+- 같은 실행에서 pnpm 메타데이터 캐시가 낡아 `ERR_PNPM_NO_MATCHING_VERSION @react-native/codegen@0.88.1` 이 한 번 났다(레지스트리에는 2026-10-27 부터 있다). `pnpm view @react-native/codegen` 로 캐시를 새로 받고 다시 돌리면 지나간다
+
+앞으로 `verify:pack` 이 레포 테스트가 통과하는데 혼자 실패하면 먼저 lockfile 없는 해석 차이를 의심한다. 첫 오류 줄이 브라우저 실행 파일이면 위 첫째, 파싱 오류면 위 둘째다.
+
+### F-34. tailwind-merge v3 의 굵기 theme 키는 `font-weight` 이고, DS 어휘 밖 `font-sans` 는 `font-medium` 과 겹친다
+
+`twMergeConfig` 에 굵기 열거를 줄 때 키는 `fontWeight` 가 아니라 kebab `font-weight` 다. `fontWeight` 로 두면 `cn("font-normal", "font-bold")` 같은 기본 케이스는 tailwind-merge 기본값이 이미 덮어 통과해 틀린 키가 드러나지 않는다.
+`cn("font-medium", "font-bold")` 가 둘 다 남는 것을 보는 테스트로 키를 확인했다. 또 `cn("font-sans", "font-medium")` 은 `font-sans` 를 지운다 — `font-medium` 이 DS 어휘 밖(`medium` 은 내지 않는다)이다. 왜 `font-sans` 가 빠지는지는 따로 파지 않았다.
+native Text 는 `font-sans` 를 직접 두므로 소비자가 어휘 밖 굵기를 주면 글꼴이 빠진다. 계약 밖 입력이라 지금은 막지 않는다.
+
+### F-35. react-native-css 는 `fontWeight` 를 숫자로 낸다
+
+`<Text className="font-semibold">` 의 `fontWeight` 는 `"600"` 이 아니라 `600` 이다(게이트 R28 (2)와 ds.test 가 숫자로 단언한다). 계획과 브리프가 문자열로 적은 곳을 모두 숫자로 읽는다.
+
+### F-36. react-native-css 는 `border-brand` 를 `borderColor`(네 변까지)로 푼다
+
+native Stepper 의 현재 단계 막대는 웹의 `border-l-2 border-brand` 에 해당하지만 RN 에서 `border-brand` 는 `borderLeftColor` 가 아니라 `borderColor` 로 풀려 네 변 모두에 색이 간다.
+그래서 막대는 `borderLeftWidth` 만 주고(나머지 변은 두께 0), 테스트는 `borderColor` 로 단언한다.
+
+### F-37. `document.fonts.check` 는 없는 글꼴에도 `true` 를 돌려준다 (MDN, 2026-11-16 확인)
+
+web README 의 폰트 로딩 설명을 처음에는 `document.fonts.check('1em Pretendard')` 로 썼다. MDN 은 맞는 글꼴 면이 없는 패밀리에도 `true` 를 준다고 설명한다. 로딩 확인에 쓸 수 없다.
+`document.fonts.ready` 를 기다린 뒤 `FontFace` 의 `status` 를 보는 방식으로 고쳤다(Task 13 리뷰).
+
+### F-38. Git Bash heredoc 은 테스트 정규식의 백슬래시를 접는다
+
+구현자가 heredoc 으로 덧붙인 테스트 파일에서 `/(^|\s)bg-/` 가 `/(^|s)bg-/` 로 접힌 일이 Task 4 · 5 에 두 번 있었다(규칙: 백슬래시 · 백틱이 든 내용은 Write/Edit 로 쓴다). 정규식이 조용히 다른 뜻이 돼 통과하는 단언이 된다.
+정규식을 쓴 뒤 파일 바이트를 Read/Grep 으로 다시 확인한다.
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -617,5 +693,10 @@ DS 는 글꼴 파일을 동봉하지 않는다(C-7b, AC-6c). 버전은 확인일
 - `0.5.0`(N-19, R27)은 2026-10-25 publish 했다. `feat/r27-web-components` 를 main 에 fast-forward 로 합친 뒤 사용자가 자기 터미널에서 `pnpm -r publish --access public` 을 돌렸다(F-17 · F-29).
   tokens · native 는 바로 보였고 web 은 약 30초 늦게 레지스트리에 보였다 — 그 사이 다시 낸 `pnpm --filter @eeennsu/web publish` 는 "There are no new packages that should be published" 였다(이미 올라간 것). 늦게 보이면 `--prefer-online` 이나 레지스트리 JSON 으로 다시 본다.
   0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
+- `0.6.0`(N-20, R28)은 2026-11-16 준비를 마쳤다(버전 올림 · build · test · `verify:pack` 통과, F-33). **publish 는 사용자 몫이다**(F-17 · F-29). 남은 것:
+  - **design-flow 알림**: my-agent-setup 의 design-flow 시안 축이 "brand 색 네 변수"로 적혀 있다 → 다섯으로(decisions-r28 25). my-agent-setup 은 이 레포 밖이라 `0.6.0` publish 뒤 그 세션에 알린다
+  - **native Stepper iOS 확인**: `accessible` 없는 View 에 단 `accessibilityLabel` · `accessibilityState` 가 iOS VoiceOver 에 읽히는지 기기에서 본다(Android 도 TalkBack 으로 한 번). jest 는 속성만 본다
+  - **AC-23 스크린샷 네 장은 옛 모양이다** — Card 테두리 1px(decisions-r28 2)와 R26 이후 모양이 반영되지 않았다. RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다(F-25)
+  - RN 소비 앱은 `0.6.0` 으로 올릴 때 `JetBrainsMono` 글꼴을 등록한다(F-32). 새 `Tone` · `TypographyStep` 으로 전수 맵을 가진 소비자 코드는 컴파일 에러가 난다(알려진 동작 34)
 - 다음 릴리스: `pnpm version:set <v>` → `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack` →
   `npm login` → `pnpm -r publish --access public` (패키지마다 브라우저 인증, F-17)
