@@ -38,6 +38,26 @@
         "overlay": {
           "$type": "color",
           "$value": "{primitive.color.black-alpha.50}"
+        },
+        "brand-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.50}"
+        },
+        "success-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.green.50}"
+        },
+        "warning-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.amber.50}"
+        },
+        "info-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.sky.50}"
+        },
+        "danger-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.red.50}"
         }
       },
       "fg": {
@@ -64,6 +84,18 @@
         "on-danger": {
           "$type": "color",
           "$value": "{primitive.color.white}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{primitive.color.green.800}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{primitive.color.amber.800}"
+        },
+        "info": {
+          "$type": "color",
+          "$value": "{primitive.color.sky.700}"
         }
       },
       "border": {
@@ -74,6 +106,10 @@
         "focus": {
           "$type": "color",
           "$value": "{semantic.light.bg.brand}"
+        },
+        "surface": {
+          "$type": "color",
+          "$value": "{primitive.color.transparent}"
         }
       }
     },
@@ -114,6 +150,26 @@
         "overlay": {
           "$type": "color",
           "$value": "{primitive.color.black-alpha.60}"
+        },
+        "brand-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.blue.950}"
+        },
+        "success-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.green.950}"
+        },
+        "warning-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.amber.950}"
+        },
+        "info-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.sky.950}"
+        },
+        "danger-subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.red.950}"
         }
       },
       "fg": {
@@ -140,6 +196,18 @@
         "on-danger": {
           "$type": "color",
           "$value": "{primitive.color.white}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{primitive.color.green.400}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{primitive.color.amber.400}"
+        },
+        "info": {
+          "$type": "color",
+          "$value": "{primitive.color.sky.400}"
         }
       },
       "border": {
@@ -150,6 +218,10 @@
         "focus": {
           "$type": "color",
           "$value": "{semantic.dark.bg.brand}"
+        },
+        "surface": {
+          "$type": "color",
+          "$value": "{primitive.color.transparent}"
         }
       }
     }

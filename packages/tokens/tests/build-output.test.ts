@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { buildOutputs } from "../scripts/build-outputs.js";
-import { component, text } from "../src/generated/values.js";
+import { component, fontFamily, text } from "../src/generated/values.js";
 
 const tokensRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const packagesRoot = dirname(tokensRoot);
@@ -104,7 +104,7 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
       const nativeDarkMedia = /^ {2}:root \{\n([\s\S]*?)^ {2}\}/m.exec(native)?.[1] ?? "";
 
       const fromClass = declarations(tokenDarkClass);
-      expect(Object.keys(fromClass)).toHaveLength(17);
+      expect(Object.keys(fromClass)).toHaveLength(26);
       expect(declarations(tokenDarkMedia)).toEqual(fromClass);
       expect(declarations(nativeDarkMedia)).toEqual(fromClass);
     });
@@ -131,6 +131,32 @@ describe("T-N0 native 래퍼 다크 · line-height", () => {
   it("native 래퍼는 --font-sans 를 RN 패밀리 이름 하나로 다시 낸다 (C-7b R26)", () => {
     expect(output("native/themes/base.css")).toContain("--font-sans: Pretendard;");
     expect(output("web/themes/base.css")).not.toContain("--font-sans");
+  });
+
+  it("native 래퍼는 --font-mono 도 RN 이름 하나로 다시 낸다 (C-6 · C-7b R28)", () => {
+    for (const brand of ["base", "bakery"] as const) {
+      expect(output(`native/themes/${brand}.css`)).toContain("--font-mono: JetBrainsMono;");
+    }
+    expect(output("web/themes/base.css")).not.toContain("--font-mono");
+  });
+
+  it("native 래퍼가 R28 스텝 3xl · 4xl 의 배수 line-height 를 낸다", () => {
+    const native = output("native/themes/base.css");
+    expect(native).toContain(`--text-3xl--line-height: ${String(44 / 36)};`);
+    expect(native).toContain(`--text-4xl--line-height: ${String(56 / 48)};`);
+  });
+
+  it("fontFamily JS 객체가 sans · mono 의 웹 스택과 RN 이름을 갖는다 (R28)", () => {
+    expect(fontFamily).toEqual({
+      sans: {
+        web: '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        native: "Pretendard",
+      },
+      mono: {
+        web: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+        native: "JetBrainsMono",
+      },
+    });
   });
 
   it("토큰 CSS 와 web 래퍼는 무변경이다 — 배수는 native 래퍼에만 있다", () => {
@@ -165,15 +191,22 @@ describe("토큰 CSS 구조 (§3.11)", () => {
     ]) {
       expect(css).toContain(reset);
     }
-    // 패밀리는 리셋하지 않고 덮어쓴다(C-6). --font-mono · --font-serif 는 Tailwind 기본이 남는다(§9 S-7).
+    // 패밀리는 리셋하지 않고 덮어쓴다(C-6). R28 부터 --font-mono 도 덮고, --font-serif 만 Tailwind 기본이 남는다(§9 S-7).
     expect(css).not.toContain("--font-*: initial;");
     expect(css).toContain("--font-sans: ");
+    expect(css).toContain("--font-mono: ");
+    expect(css).not.toContain("--font-serif");
   });
 
-  it("inline 은 색 17개뿐이다 (§3.7, R26 fg-brand)", () => {
+  it("굵기는 리셋 뒤 세 키만 채운다 — medium 은 내지 않는다 (C-6 R28)", () => {
+    const weights = css.match(/^\s+--font-weight-[a-z]+: \d+;$/gm)?.map((line) => line.trim()) ?? [];
+    expect(weights).toEqual(["--font-weight-normal: 400;", "--font-weight-semibold: 600;", "--font-weight-bold: 700;"]);
+  });
+
+  it("inline 은 색 26개뿐이다 (§3.7, R28 상태색 · border-surface)", () => {
     const inline = /@theme inline \{\n([\s\S]*?)^\}/m.exec(css)?.[1] ?? "";
     const lines = inline.trim().split("\n");
-    expect(lines).toHaveLength(17);
+    expect(lines).toHaveLength(26);
     for (const line of lines) expect(line.trim()).toMatch(/^--color-[a-z-]+: var\(--(bg|fg|border)-[a-z-]+\);$/);
   });
 
@@ -181,6 +214,19 @@ describe("토큰 CSS 구조 (§3.11)", () => {
     expect(css).toContain("--text-xl: 22px;");
     expect(css).toContain("--text-xl--line-height: 30px;");
     expect(css).toContain("--text-xl--font-weight: 700;");
+    expect(css).toContain("--text-3xl: 36px;");
+    expect(css).toContain("--text-3xl--line-height: 44px;");
+    expect(css).toContain("--text-3xl--font-weight: 700;");
+    expect(css).toContain("--text-4xl: 48px;");
+    expect(css).toContain("--text-4xl--line-height: 56px;");
+    expect(css).toContain("--text-4xl--font-weight: 700;");
+  });
+
+  it("간격 열거가 16키 + 영점이다 (C-7a R28)", () => {
+    const keys = [...css.matchAll(/^\s+--spacing-(\d+): /gm)].map((match) => match[1]);
+    expect(keys).toEqual(["0", "1", "2", "3", "4", "6", "8", "12", "16", "20", "24", "32", "40", "48", "64", "80", "96"]);
+    expect(css).toContain("--spacing-32: 128px;");
+    expect(css).toContain("--spacing-96: 384px;");
   });
 
   it("별칭 1개만 var() 로 남는다 (plan D-3, R26 fg-danger 별칭 해제)", () => {
@@ -202,6 +248,14 @@ describe("AC-4 RN JS 객체", () => {
   it("bakery 는 brand 가 amber 다", () => {
     expect(output("tokens/src/brands/bakery.ts")).toContain('"brand": "oklch(66.6% 0.179 58.318)"');
   });
+
+  it("border.surface 는 두 브랜드 · 두 스킴 모두 투명이다 (R28, plan D-37)", () => {
+    for (const brand of ["base", "bakery"] as const) {
+      const ts = output(`tokens/src/brands/${brand}.ts`);
+      // light · dark 두 번. primitive `transparent` 참조가 해석된 값이다
+      expect(ts.match(/"surface": "oklch\(0% 0 0 \/ 0\)"/g), brand).toHaveLength(2);
+    }
+  });
 });
 
 describe("component recipe 가 plan §3.8 표와 같다", () => {
@@ -221,9 +275,10 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
 
   it("나머지 컴포넌트", () => {
     expect(component.badge).toEqual({
-      sm: { paddingX: "2", paddingY: "0", text: "sm", radius: "full" },
-      md: { paddingX: "3", paddingY: "1", text: "sm", radius: "full" },
+      sm: { paddingX: "2", paddingY: "0", text: "sm", radius: "xl" },
+      md: { paddingX: "3", paddingY: "1", text: "sm", radius: "xl" },
     });
+    expect(component.chip).toEqual({ paddingX: "4", paddingY: "2", text: "sm", radius: "xl" });
     expect(component.icon).toEqual({ size: { sm: 16, md: 20, lg: 24 } });
     expect(component.card).toEqual({ padding: "6", radius: "xl" });
     expect(component.dialog).toEqual({ padding: "6", radius: "xl", shadow: "lg", maxWidth: "max-w-md" });
@@ -233,6 +288,8 @@ describe("component recipe 가 plan §3.8 표와 같다", () => {
     expect(component.codeBlock).toEqual({ padding: "4", text: "sm", radius: "lg" });
     expect(component.tabs).toEqual({ paddingX: "4", paddingY: "2", text: "md" });
     expect(component.collapsible).toEqual({ paddingX: "3", paddingY: "2", text: "md", radius: "md" });
+    expect(component.callout).toEqual({ padding: "4", radius: "lg", gap: "3", text: "md" });
+    expect(component.stepper).toEqual({ paddingY: "2", gap: "3", markerWidth: "4", text: "md" });
   });
 
   it("컨트롤 높이는 2 x paddingY + lineHeight + 2 = 30 / 42 / 52 다 (plan D-6, R26 lg)", () => {

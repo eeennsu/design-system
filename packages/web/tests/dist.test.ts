@@ -25,6 +25,7 @@ const interactive = [
   "drawer.js",
   "tabs.js",
   "collapsible.js",
+  "stepper.js",
 ];
 
 const built = existsSync(join(dist, "index.js"));

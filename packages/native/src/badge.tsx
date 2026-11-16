@@ -24,8 +24,8 @@ const foregrounds: Record<BadgeVariant, string> = {
 
 /** 투명 테두리는 웹과 같이 Input 과 높이를 맞추기 위해서다(plan D-6). */
 const boxes: Record<BadgeSize, string> = {
-  sm: "px-2 py-0 rounded-full",
-  md: "px-3 py-1 rounded-full",
+  sm: "px-2 py-0 rounded-xl",
+  md: "px-3 py-1 rounded-xl",
 };
 
 /**

@@ -9,17 +9,20 @@ type ProseProps = Contracts<"web">["Prose"];
  * Prose 안의 DS 컴포넌트 클래스와 소비자 `className` 이 이긴다(decisions-r27 13 · 15).
  * Tailwind 스캐너가 후보를 찾도록 클래스는 정적 리터럴로만 적는다.
  * `pre` · `th` · `td` 값은 CodeBlock · Table recipe 와 같고 recipe 테스트가 지킨다(decisions-r27 20).
+ * 한국어는 어절 단위로 바꾸고(`break-keep`) 줄보다 긴 URL · 식별자는 넘치지 않게 끊는다(`wrap-break-word`, R28).
+ * 링크는 키보드 포커스 때 다른 컨트롤과 같은 `border-focus` outline 을 그린다(R28).
  */
 export const Prose: FC<ProseProps> = ({ children, className }) => (
   <div
     className={cn(
-      "text-md text-fg",
+      "text-md text-fg break-keep wrap-break-word",
       "[:where(&)>*+*]:mt-4",
       "[:where(&)_h1]:text-2xl [:where(&)_h2]:text-xl [:where(&)_h3]:text-lg",
       "[:where(&)>*+h1]:mt-8 [:where(&)>*+h2]:mt-8 [:where(&)>*+h3]:mt-6",
       "[:where(&)_ul]:list-disc [:where(&)_ol]:list-decimal [:where(&)_ul]:ps-6 [:where(&)_ol]:ps-6",
       "[:where(&)_li+li]:mt-1",
       "[:where(&)_a]:text-fg-brand [:where(&)_a]:underline",
+      "[:where(&)_a:focus-visible]:outline-2 [:where(&)_a:focus-visible]:outline-offset-2 [:where(&)_a:focus-visible]:outline-border-focus",
       "[:where(&)_:not(pre)>code]:font-mono [:where(&)_:not(pre)>code]:text-sm [:where(&)_:not(pre)>code]:bg-surface-muted [:where(&)_:not(pre)>code]:rounded-sm [:where(&)_:not(pre)>code]:px-1",
       "[:where(&)_pre]:p-4 [:where(&)_pre]:overflow-x-auto [:where(&)_pre]:text-sm [:where(&)_pre]:font-mono [:where(&)_pre]:text-fg [:where(&)_pre]:bg-surface-muted [:where(&)_pre]:rounded-lg",
       "[:where(&)_blockquote]:border-s-4 [:where(&)_blockquote]:border-border [:where(&)_blockquote]:ps-4 [:where(&)_blockquote]:text-fg-muted",

@@ -1,4 +1,5 @@
-import { Box, Button, Card, Chip, Icon, Input, Label, Stack, Text } from "@eeennsu/native";
+import { Box, Button, Callout, Card, Chip, Icon, Input, Label, Link, Stack, Stepper, Text } from "@eeennsu/native";
+import type { StepItem } from "@eeennsu/native";
 import { useUnstableNativeVariable } from "nativewind";
 import { useState } from "react";
 import { Appearance, Pressable, Text as RNText, ScrollView } from "react-native";
@@ -20,6 +21,13 @@ function Probe({ name }: { name: string }) {
   );
 }
 
+/** R28 Stepper 항목. 지난 단계를 누르면 그 단계로 돌아간다. */
+const signupSteps: StepItem[] = [
+  { value: "account", label: "계정 만들기", content: <Text size="sm" tone="muted">이메일과 비밀번호를 정한다</Text> },
+  { value: "profile", label: "프로필 입력", content: <Text size="sm" tone="muted">이름과 사진을 넣는다</Text> },
+  { value: "done", label: "시작하기", content: <Text size="sm" tone="muted">첫 화면으로 간다</Text> },
+];
+
 /**
  * T-R1 검증 화면 (AC-11 RN절 · AC-19 (c) · AC-22 · AC-23 · AC-25 · AC-26 RN절).
  *
@@ -28,6 +36,7 @@ function Probe({ name }: { name: string }) {
  */
 export default function App() {
   const [category, setCategory] = useState("식비");
+  const [step, setStep] = useState("profile");
 
   return (
     <ScrollView className="bg-canvas" contentContainerClassName="p-4 pt-24">
@@ -98,6 +107,38 @@ export default function App() {
           >
             <RNText className="text-md text-fg">toggle color scheme</RNText>
           </Pressable>
+        </Stack>
+      </Card>
+
+      {/* R28: Link · Callout · Stepper · 새 스텝(4xl) · 굵기 유틸리티 · 상태 tone 넷. */}
+      <Card className="mt-4 w-full">
+        <Stack className="gap-4">
+          <Text size="4xl">R28</Text>
+          <Text className="font-semibold">semibold 본문</Text>
+
+          <Stack className="gap-1">
+            <Text tone="brand">brand 글자</Text>
+            <Text tone="success">success 글자</Text>
+            <Text tone="warning">warning 글자</Text>
+            <Text tone="info">info 글자</Text>
+          </Stack>
+
+          <Link label="처음 단계로" onPress={() => setStep("account")} />
+
+          <Callout title="알림" icon="info">
+            <Text size="sm">기본 tone 은 info 다</Text>
+          </Callout>
+          <Callout tone="warning" title="주의" icon="alert-circle">
+            <Text size="sm">되돌릴 수 없다</Text>
+          </Callout>
+
+          <Stepper
+            label="가입 단계"
+            items={signupSteps}
+            value={step}
+            reached="done"
+            onValueChange={setStep}
+          />
         </Stack>
       </Card>
     </ScrollView>

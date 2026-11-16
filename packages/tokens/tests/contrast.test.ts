@@ -61,6 +61,24 @@ const textPairs = (s: Scheme): [string, string, string][] => [
   ["fg.on-brand / bg.brand-hover", s.fg["on-brand"], s.bg["brand-hover"]],
   ["fg.on-danger / bg.danger", s.fg["on-danger"], s.bg.danger],
   ["fg.on-danger / bg.danger-hover", s.fg["on-danger"], s.bg["danger-hover"]],
+  // R28 상태색(decisions-r28 12) — 새 글자색은 표면 · 바탕 · 자기 연한 채움 위, 기존 글자색은 자기 채움 위
+  ["fg.success / bg.canvas (R28)", s.fg.success, s.bg.canvas],
+  ["fg.success / bg.surface (R28)", s.fg.success, s.bg.surface],
+  ["fg.success / bg.success-subtle (R28)", s.fg.success, s.bg["success-subtle"]],
+  ["fg.warning / bg.canvas (R28)", s.fg.warning, s.bg.canvas],
+  ["fg.warning / bg.surface (R28)", s.fg.warning, s.bg.surface],
+  ["fg.warning / bg.warning-subtle (R28)", s.fg.warning, s.bg["warning-subtle"]],
+  ["fg.info / bg.canvas (R28)", s.fg.info, s.bg.canvas],
+  ["fg.info / bg.surface (R28)", s.fg.info, s.bg.surface],
+  ["fg.info / bg.info-subtle (R28)", s.fg.info, s.bg["info-subtle"]],
+  ["fg.brand / bg.brand-subtle (R28)", s.fg.brand, s.bg["brand-subtle"]],
+  ["fg.danger / bg.danger-subtle (R28)", s.fg.danger, s.bg["danger-subtle"]],
+  // Callout 본문
+  ["fg.default / bg.brand-subtle (R28)", s.fg.default, s.bg["brand-subtle"]],
+  ["fg.default / bg.success-subtle (R28)", s.fg.default, s.bg["success-subtle"]],
+  ["fg.default / bg.warning-subtle (R28)", s.fg.default, s.bg["warning-subtle"]],
+  ["fg.default / bg.info-subtle (R28)", s.fg.default, s.bg["info-subtle"]],
+  ["fg.default / bg.danger-subtle (R28)", s.fg.default, s.bg["danger-subtle"]],
 ];
 
 const nonTextPairs = (s: Scheme): [string, string, string][] => [

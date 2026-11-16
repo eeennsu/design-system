@@ -16,8 +16,19 @@ export const STATIC_COLORS = ["inherit", "current", "transparent"] as const;
 export const MODES = ["light", "dark"] as const;
 export type Mode = (typeof MODES)[number];
 
-export const TEXT_STEPS = ["sm", "md", "lg", "xl", "2xl"] as const;
+export const TEXT_STEPS = ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"] as const;
 export type TextStep = (typeof TEXT_STEPS)[number];
+
+/**
+ * 굵기 유틸리티 키 → primitive fontWeight 키 (C-6 R28). `--font-weight-*` 리셋 뒤 이 셋만 채운다.
+ * Tailwind 이름 `normal` 이 primitive `regular` 다. `medium` 은 내지 않는다(RN 소비 앱이 등록하는 Pretendard 무게 밖).
+ */
+export const FONT_WEIGHTS = { normal: "regular", semibold: "semibold", bold: "bold" } as const;
+export type FontWeightKey = keyof typeof FONT_WEIGHTS;
+
+/** DS 가 덮어쓰는 글꼴 패밀리. `--font-serif` 는 Tailwind 기본으로 남는다(C-6 R28). */
+export const FONT_FAMILIES = ["sans", "mono"] as const;
+export type FontFamilyKey = (typeof FONT_FAMILIES)[number];
 
 /** DS-local $type. DTCG 표준 타입 + 원시 유틸리티 클래스 조각(className). */
 export const ALLOWED_TYPES = new Set([
@@ -271,28 +282,45 @@ function textSteps(shared: Json): Record<TextStep, TextValue> {
 }
 
 /** 공백이 있는 패밀리 이름은 CSS 에서 따옴표로 감싼다. */
-function cssFontStack(stack: readonly unknown[]): string {
+function cssFontStack(stack: readonly unknown[], path: string): string {
   return stack
     .map((entry) => {
-      const name = expectString(entry, "fontFamily.sans");
+      const name = expectString(entry, path);
       return /\s/.test(name) ? `"${name}"` : name;
     })
     .join(", ");
 }
 
-function fontFamilyOf(primitive: Json): { sans: { web: string; native: string } } {
-  const node = getNode(primitive, "primitive.typography.fontFamily.sans");
-  if (!isToken(node)) throw new Error("primitive.typography.fontFamily.sans 없음");
-  const stack = node["$value"];
-  if (!Array.isArray(stack)) throw new Error("fontFamily.sans 는 배열이어야 한다");
-  const extensions = node["$extensions"];
-  const native = isRecord(extensions) ? extensions["ds.native"] : undefined;
-  return {
-    sans: {
-      web: cssFontStack(stack),
-      native: expectString(native, "fontFamily.sans.$extensions.ds.native"),
-    },
-  };
+export type FontFamilyValue = { web: string; native: string };
+
+/** 패밀리마다 웹 스택(CSS 목록)과 RN 이름(`$extensions["ds.native"]`) 하나를 낸다. */
+function fontFamilyOf(primitive: Json): Record<FontFamilyKey, FontFamilyValue> {
+  return Object.fromEntries(
+    FONT_FAMILIES.map((family) => {
+      const path = `primitive.typography.fontFamily.${family}`;
+      const node = getNode(primitive, path);
+      if (!isToken(node)) throw new Error(`${path} 없음`);
+      const stack = node["$value"];
+      if (!Array.isArray(stack)) throw new Error(`fontFamily.${family} 는 배열이어야 한다`);
+      const extensions = node["$extensions"];
+      const native = isRecord(extensions) ? extensions["ds.native"] : undefined;
+      const value: FontFamilyValue = {
+        web: cssFontStack(stack, `fontFamily.${family}`),
+        native: expectString(native, `fontFamily.${family}.$extensions.ds.native`),
+      };
+      return [family, value] as const;
+    }),
+  ) as Record<FontFamilyKey, FontFamilyValue>;
+}
+
+/** 굵기 유틸리티 키 → 숫자 무게. primitive fontWeight 에서 읽는다(C-6 R28). */
+function fontWeightsOf(primitive: Json): Record<FontWeightKey, number> {
+  return Object.fromEntries(
+    Object.entries(FONT_WEIGHTS).map(([key, primitiveKey]) => {
+      const path = `primitive.typography.fontWeight.${primitiveKey}`;
+      return [key, expectNumber(resolveToken(primitive, path).value, path)] as const;
+    }),
+  ) as Record<FontWeightKey, number>;
 }
 
 // ----------------------------------------------------- component 계층 (§3.8)
@@ -375,6 +403,7 @@ function tokenCss(source: TokenSource, brand: Brand): string {
   const shadow = scaleRecord(source.primitive, "shadow");
   const text = textSteps(source.shared);
   const fontFamily = fontFamilyOf(source.primitive);
+  const fontWeight = fontWeightsOf(source.primitive);
 
   const lines: string[] = [];
   lines.push(GENERATED);
@@ -409,6 +438,9 @@ function tokenCss(source: TokenSource, brand: Brand): string {
   lines.push("  --text-*: initial;");
   lines.push("  --font-weight-*: initial;");
   lines.push("");
+  lines.push("  /* 굵기 — 리셋 뒤 세 키만 채운다. 스텝 무게를 덮는 유틸리티다(C-6 · C-7b R28). */");
+  for (const [key, value] of Object.entries(fontWeight)) lines.push(`  --font-weight-${key}: ${value};`);
+  lines.push("");
   for (const [key, value] of Object.entries(spacing)) lines.push(`  --spacing-${key}: ${value};`);
   lines.push("");
   for (const [key, value] of Object.entries(radius)) lines.push(`  --radius-${key}: ${value};`);
@@ -423,6 +455,7 @@ function tokenCss(source: TokenSource, brand: Brand): string {
   }
   lines.push("");
   lines.push(`  --font-sans: ${fontFamily.sans.web};`);
+  lines.push(`  --font-mono: ${fontFamily.mono.web};`);
   lines.push("}");
   lines.push("");
   lines.push("/* inline 은 색만 — var() 참조여야 :root 재선언이 클래스까지 전파된다(C-5b). */");
@@ -472,7 +505,7 @@ function webWrapperCss(brand: Brand): string {
  * 같은 클래스에 RN 전용 선언을 더해 웹과 같은 결과를 낸다(AC-25, 구현 노트 F-21).
  *
  * `--font-sans` 는 웹 목록(`"Pretendard Variable", Pretendard, …`)의 첫 이름을 RN 이 그대로 요청하므로
- * 토큰 소스의 RN 이름(`$extensions["ds.native"]`) 하나로 다시 낸다(C-7b R26).
+ * 토큰 소스의 RN 이름(`$extensions["ds.native"]`) 하나로 다시 낸다(C-7b R26). `--font-mono` 도 같다(R28).
  */
 function nativeWrapperCss(source: TokenSource, brand: Brand): string {
   const text = textSteps(source.shared);
@@ -502,9 +535,11 @@ function nativeWrapperCss(source: TokenSource, brand: Brand): string {
   }
   lines.push("}");
   lines.push("");
-  lines.push("/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */");
+  lines.push("/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26 · R28). */");
+  const fontFamily = fontFamilyOf(source.primitive);
   lines.push("@theme {");
-  lines.push(`  --font-sans: ${fontFamilyOf(source.primitive).sans.native};`);
+  lines.push(`  --font-sans: ${fontFamily.sans.native};`);
+  lines.push(`  --font-mono: ${fontFamily.mono.native};`);
   lines.push("}");
   lines.push("");
   lines.push("/* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */");
@@ -564,6 +599,8 @@ function valuesTs(source: TokenSource): string {
     radius: Object.keys(radius),
     shadow: Object.keys(shadow),
     text: [...TEXT_STEPS],
+    // tailwind-merge 3 의 theme 키 이름이 `font-weight` 다. 등록 밖 굵기(font-medium)는 DS 굵기를 밀어내지 않는다.
+    "font-weight": Object.keys(FONT_WEIGHTS),
   };
 
   const semanticVariables: Record<string, string> = {};

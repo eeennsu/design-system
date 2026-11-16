@@ -7,7 +7,7 @@
 import { component } from "@eeennsu/tokens";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Badge, Button, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
+import { Badge, Button, Callout, Card, Chip, CodeBlock, Collapsible, Dialog, Drawer, Input, Prose, Stepper, Table, Tabs, Textarea, Tooltip } from "../src/index.js";
 
 type Recipe = { paddingX?: string; paddingY?: string; text?: string; radius?: string; gap?: string };
 
@@ -54,12 +54,20 @@ describe("Badge", () => {
       expect(screen.getByText("표시")).toHaveClass(...expected(component.badge[size]));
     });
   }
+
+  it("모서리 recipe 는 radius xl 이다 (R28)", () => {
+    expect([component.badge.sm.radius, component.badge.md.radius]).toEqual(["xl", "xl"]);
+  });
 });
 
 describe("Chip", () => {
   it("토큰 recipe 와 같다 (N-17)", () => {
     render(<Chip label="식비" />);
     expect(screen.getByRole("button")).toHaveClass(...expected(component.chip));
+  });
+
+  it("모서리 recipe 는 radius xl 이다 (R28)", () => {
+    expect(component.chip.radius).toBe("xl");
   });
 });
 
@@ -78,9 +86,18 @@ describe("Tabs", () => {
 });
 
 describe("Collapsible", () => {
-  it("트리거가 토큰 recipe 와 같다 (R27)", () => {
-    render(<Collapsible label="답 보기">{null}</Collapsible>);
+  it("secondary 트리거가 토큰 recipe 와 같다 (R27, R28 secondary)", () => {
+    render(<Collapsible label="답 보기" variant="secondary">{null}</Collapsible>);
     expect(screen.getByRole("button")).toHaveClass(...expected(component.collapsible));
+    expect(screen.getByRole("button")).toHaveClass(`px-${component.collapsible.paddingX}`);
+  });
+
+  it("ghost(기본) 트리거는 recipe 의 세로 여백 · 글자만 쓰고 가로 여백 · 모서리는 쓰지 않는다 (R28)", () => {
+    const { paddingY, text, paddingX, radius } = component.collapsible;
+    render(<Collapsible label="답 보기">{null}</Collapsible>);
+    expect(screen.getByRole("button")).toHaveClass(...expected({ paddingY, text }));
+    expect(screen.getByRole("button")).not.toHaveClass(`px-${paddingX}`);
+    expect(screen.getByRole("button")).not.toHaveClass(`rounded-${radius}`);
   });
 });
 
@@ -110,6 +127,25 @@ describe("Prose", () => {
       `[:where(&)_td]:py-${table.paddingY}`,
       `[:where(&)_td]:text-${table.text}`,
     );
+  });
+});
+
+describe("Callout", () => {
+  it("루트가 padding · radius · gap · text 를 recipe 와 같게 가진다 (R28)", () => {
+    render(<Callout>{"글"}</Callout>);
+    const { padding, radius, gap, text } = component.callout;
+    expect(screen.getByRole("note")).toHaveClass(`p-${padding}`, `rounded-${radius}`, `gap-${gap}`, `text-${text}`);
+  });
+});
+
+describe("Stepper", () => {
+  it("줄이 paddingY · gap 을, 표시 자리가 markerWidth 를, 줄 글이 text 를 recipe 와 같게 가진다 (R28)", () => {
+    render(<Stepper label="단계" items={[{ value: "a", label: "하나" }]} value="a" />);
+    const { paddingY, gap, markerWidth, text } = component.stepper;
+    const row = screen.getByRole("listitem");
+    expect(row).toHaveClass(`py-${paddingY}`, `gap-${gap}`);
+    expect(row.firstElementChild).toHaveClass(`w-${markerWidth}`);
+    expect(screen.getByText("하나")).toHaveClass(`text-${text}`);
   });
 });
 

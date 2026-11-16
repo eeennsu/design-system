@@ -36,17 +36,23 @@ describe("AC-6 primitive 클래스가 생성되지 않는다", () => {
     for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(false);
   });
 
-  it("semantic 색 클래스는 생성된다 (대조군)", async () => {
-    const css = await build(["bg-brand", "text-fg-muted", "border-border-focus"]);
-    expect(hasRule(css, "bg-brand")).toBe(true);
-    expect(hasRule(css, "text-fg-muted")).toBe(true);
-    expect(hasRule(css, "border-border-focus")).toBe(true);
+  it("semantic 색 클래스는 생성된다 (대조군, R28 상태색 · border.surface 포함)", async () => {
+    const candidates = [
+      "bg-brand",
+      "text-fg-muted",
+      "border-border-focus",
+      "bg-info-subtle",
+      "text-fg-success",
+      "border-border-surface",
+    ];
+    const css = await build(candidates);
+    for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(true);
   });
 });
 
 describe("AC-6b 열거 밖 어휘가 무효다 (알려진 동작 1)", () => {
-  it("mt-5 · mt-17 · w-64 · font-bold · text-base 가 출력에 없다", async () => {
-    const candidates = ["mt-5", "mt-17", "w-64", "font-bold", "text-base"];
+  it("mt-5 · mt-17 · w-28 · font-medium · text-base 가 출력에 없다 (R28 열거 밖)", async () => {
+    const candidates = ["mt-5", "mt-17", "w-28", "font-medium", "text-base"];
     const css = await build(candidates);
     for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(false);
   });
@@ -72,10 +78,30 @@ describe("AC-6b 열거 밖 어휘가 무효다 (알려진 동작 1)", () => {
     expect(hasRule(css, "mt-4")).toBe(true);
   });
 
-  it("font-mono · font-serif 는 Tailwind 기본값으로 남는다 (알려진 동작 28, plan §9 S-7)", async () => {
-    const css = await build(["font-mono", "font-serif"]);
-    expect(hasRule(css, "font-mono")).toBe(true);
+  it("R28 새 키가 생성된다 — 간격 6키 · 3xl · 4xl · 굵기 3키 (C-6 · C-7a · C-7b R28)", async () => {
+    const candidates = ["h-64", "max-h-96", "w-80", "p-32", "text-3xl", "text-4xl", "font-normal", "font-semibold", "font-bold"];
+    const css = await build(candidates);
+    for (const candidate of candidates) expect(hasRule(css, candidate), candidate).toBe(true);
+    expect(css).toContain("font-weight: var(--font-weight-semibold)");
+    expect(tokenCss("base")).toContain("--font-weight-semibold: 600;");
+  });
+
+  it("font-mono 는 DS 토큰 --font-mono 를 가리킨다 (C-6 R28, 알려진 동작 28)", async () => {
+    const css = await build(["font-mono"]);
+    expect(css).toMatch(/\.font-mono\s*\{[^}]*font-family: var\(--font-mono\)/);
+    expect(tokenCss("base")).toContain(
+      '--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;',
+    );
+  });
+
+  it("font-serif 는 Tailwind 기본값으로 남는다 (알려진 동작 28, plan §9 S-7)", async () => {
+    const css = await build(["font-serif"]);
     expect(hasRule(css, "font-serif")).toBe(true);
+  });
+
+  it("웹: 굵기 유틸리티가 스텝 굵기를 이긴다 — 스텝 규칙이 --tw-font-weight 를 먼저 본다 (decisions-r28 7)", async () => {
+    const css = await build(["text-lg", "font-bold"]);
+    expect(css).toMatch(/\.text-lg\s*\{[^}]*font-weight: var\(--tw-font-weight, var\(--text-lg--font-weight\)\)/);
   });
 });
 
@@ -86,6 +112,25 @@ describe("R27 Prose 임의 변형이 특이성 0 선택자를 낸다 (decisions-
     expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) h2 \{\s*font-size: var\(--text-xl\)/m);
     expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) > \* \+ \* \{\s*margin-top: var\(--spacing-4\)/m);
     expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) :not\(pre\) > code \{\s*font-family: var\(--font-mono\)/m);
+  });
+});
+
+describe("R28 Prose 줄바꿈 · 링크 포커스 유틸리티가 tailwindcss 4.3.3 에서 생성된다", () => {
+  it("break-keep 은 word-break: keep-all, wrap-break-word 는 overflow-wrap: break-word 다", async () => {
+    const css = await build(["break-keep", "wrap-break-word"]);
+    expect(css).toMatch(/\.break-keep\s*\{\s*word-break: keep-all/);
+    expect(css).toMatch(/\.wrap-break-word\s*\{\s*overflow-wrap: break-word/);
+  });
+
+  it("[:where(&)_a:focus-visible]: 변형이 특이성 0 선택자로 outline 을 낸다 (색은 @theme inline 이라 :root 변수를 바로 쓴다)", async () => {
+    const css = await build([
+      "[:where(&)_a:focus-visible]:outline-2",
+      "[:where(&)_a:focus-visible]:outline-offset-2",
+      "[:where(&)_a:focus-visible]:outline-border-focus",
+    ]);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-width: 2px/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-offset: 2px/m);
+    expect(css).toMatch(/^\s*:where\(\.[^\n{]*\) a:focus-visible \{[^}]*outline-color: var\(--border-focus\)/m);
   });
 });
 
@@ -125,16 +170,18 @@ describe("AC-6a 브랜드 교체가 semantic 색만 바꾼다", () => {
         .split("\n")
         .filter((line) => line.trim().startsWith("--ds-"));
     expect(primitiveBlock("bakery")).toEqual(primitiveBlock("base"));
-    expect(primitiveBlock("base").length).toBe(62); // 5램프 x 11단 + 반 단계 3 + white + black + 검정 알파 2 (R26)
+    expect(primitiveBlock("base").length).toBe(98); // 8램프 x 11단 + 반 단계 5(R26 3 · R28 red 2) + white + black + 검정 알파 2 + transparent (R28)
   });
 });
 
 describe("R23 요구 (a) 비-inline @theme 변수도 소비자 :root 재선언으로 덮인다", () => {
-  it("rounded-md · font-sans 가 var() 를 참조하므로 뒤에 온 :root 선언이 이긴다", async () => {
-    const append = ":root { --radius-md: 2px; --font-sans: ProbeFont; }";
-    const css = await build(["rounded-md", "font-sans"], { append });
+  it("rounded-md · rounded-xl · font-sans 가 var() 를 참조하므로 뒤에 온 :root 선언이 이긴다 (C-5c 계약)", async () => {
+    const append = ":root { --radius-md: 2px; --radius-xl: 2px; --font-sans: ProbeFont; }";
+    const css = await build(["rounded-md", "rounded-xl", "font-sans"], { append });
 
     expect(css).toMatch(/\.rounded-md\s*\{[^}]*var\(--radius-md\)/);
+    expect(css).toMatch(/\.rounded-xl\s*\{[^}]*var\(--radius-xl\)/);
+    expect(css.lastIndexOf("--radius-xl: 2px")).toBeGreaterThan(css.indexOf(".rounded-xl"));
     expect(css).toMatch(/\.font-sans\s*\{[^}]*var\(--font-sans\)/);
     // 소비자 선언이 출력 뒤쪽에 그대로 남아 last-wins 로 이긴다.
     expect(css.lastIndexOf("--radius-md: 2px")).toBeGreaterThan(css.indexOf(".rounded-md"));

@@ -130,9 +130,9 @@ describe("AC-1 단일 소스와 참조 해석", () => {
     expect(signature("bakery")).toEqual(signature("base"));
   });
 
-  it("semantic 색은 그룹 3개 · 17개다 (R26 fg.brand)", () => {
+  it("semantic 색은 그룹 3개 · 26개다 (R28 상태색 · border.surface)", () => {
     const entries = semanticEntries(source, "base", "light");
-    expect(entries).toHaveLength(17);
+    expect(entries).toHaveLength(26);
     expect([...new Set(entries.map((entry) => entry.group))]).toEqual([...SEMANTIC_GROUPS]);
   });
 });
@@ -145,6 +145,14 @@ describe("AC-6c fontFamily 토큰", () => {
     expect(Array.isArray(token["$value"])).toBe(true);
     expect((token["$value"] as unknown[])[0]).toBe("Pretendard Variable");
     expect((token["$extensions"] as Json)["ds.native"]).toBe("Pretendard");
+  });
+
+  it("fontFamily.mono 가 JetBrains Mono 웹 스택과 RN 이름을 갖는다 (C-7b R28)", () => {
+    const node = getNode(source.primitive, "primitive.typography.fontFamily.mono");
+    expect(isToken(node)).toBe(true);
+    const token = node as Json;
+    expect(token["$value"]).toEqual(["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]);
+    expect((token["$extensions"] as Json)["ds.native"]).toBe("JetBrainsMono");
   });
 
   it("레포 패키지에 폰트 파일이 없다 (로딩은 소비 프로젝트 책임)", () => {
@@ -164,11 +172,25 @@ describe("AC-6c fontFamily 토큰", () => {
 });
 
 describe("component 계층 인벤토리", () => {
-  it("plan §3.8 의 10개 컴포넌트와 Chip(구현 노트 N-17) · Table · CodeBlock · Tabs · Collapsible(R27)이 있다", () => {
+  it("text 스텝이 7단이다 (C-7b R28)", () => {
+    const root = getNode(loadDir(join(tokensDir, "component")), "component.text");
+    expect(Object.keys(root as Json).filter((key) => !key.startsWith("$"))).toEqual([
+      "sm",
+      "md",
+      "lg",
+      "xl",
+      "2xl",
+      "3xl",
+      "4xl",
+    ]);
+  });
+
+  it("plan §3.8 의 10개 컴포넌트와 Chip(구현 노트 N-17) · Table · CodeBlock · Tabs · Collapsible(R27) · Callout · Stepper(R28)이 있다", () => {
     const root = getNode(loadDir(join(tokensDir, "component")), "component");
     expect(Object.keys(root as Json).sort()).toEqual([
       "badge",
       "button",
+      "callout",
       "card",
       "chip",
       "codeBlock",
@@ -177,6 +199,7 @@ describe("component 계층 인벤토리", () => {
       "drawer",
       "icon",
       "input",
+      "stepper",
       "table",
       "tabs",
       "text",

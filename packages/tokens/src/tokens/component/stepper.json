@@ -1,0 +1,23 @@
+{
+  "$description": "Stepper recipe(R28). 줄의 세로 여백 · 표시 자리와 글 사이 간격 · 표시 자리 폭(아이콘 sm 16px) · 줄 글자다. 펼친 단계 막대는 border-l-2(2px)다.",
+  "component": {
+    "stepper": {
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.2}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.3}"
+      },
+      "markerWidth": {
+        "$type": "dimension",
+        "$value": "{primitive.spacing.4}"
+      },
+      "text": {
+        "$type": "typography",
+        "$value": "{component.text.md}"
+      }
+    }
+  }
+}

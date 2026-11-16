@@ -6,11 +6,11 @@ export type Platform = "web" | "native";
 /** 전역 축 1 — 의도 4개 고정(C-8). 컴포넌트별 부분집합은 Extract 로 좁힌다. */
 export type Variant = "primary" | "secondary" | "ghost" | "danger";
 
-/** 전역 축 2 — t-shirt 5단(C-7a). 간격 어휘(숫자 키)와 의도적으로 분리한다. */
-export type Size = "sm" | "md" | "lg" | "xl" | "2xl";
+/** 전역 축 2 — t-shirt 7단(R28)(C-7a). 간격 어휘(숫자 키)와 의도적으로 분리한다. */
+export type Size = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 
 /**
- * 글자 크기 · 행간 · 무게를 함께 바꾸는 타이포 스텝. `Size` 5단 전부를 쓰며
+ * 글자 크기 · 행간 · 무게를 함께 바꾸는 타이포 스텝. `Size` 7단(R28) 전부를 쓰며
  * Text 전용 의미다(C-7b). 유틸리티 하나(`text-lg`)가 세 속성을 적용한다.
  */
 export type TypographyStep = Size;
@@ -21,8 +21,11 @@ export type ControlSize = Extract<Size, "sm" | "md" | "lg">;
 /** Badge 가 쓰는 `Size` 부분집합. lg 이상은 Badge 용도 밖(plan D-15). */
 export type BadgeSize = Extract<Size, "sm" | "md">;
 
-/** 전역 축 3 — 글자색 의도(C-8). danger 는 variant 의 danger 와 같은 semantic 색이다. */
-export type Tone = "default" | "muted" | "danger";
+/**
+ * 전역 축 3 — 글자색 의도(C-8). fg semantic 과 1:1, R28(brand · success · warning · info 추가).
+ * danger 는 variant 의 danger 와 같은 semantic 색이다.
+ */
+export type Tone = "default" | "muted" | "danger" | "brand" | "success" | "warning" | "info";
 
 /** Input 의 입력 종류. type · inputMode · autoComplete 매핑의 단일 입력이다(C-11). */
 export type InputKind = "text" | "password" | "email" | "number";
@@ -87,6 +90,16 @@ export type TableColumn = { label: string; align?: "start" | "end" };
 
 /** Table 행. 객체라 행 key · 행 머리글 · 행 강조를 선택 필드로 나중에 더해도 호출부가 깨지지 않는다(decisions-r27 7). */
 export type TableRow = { cells: ReactNode[] };
+
+/**
+ * Stepper 단계(R28). `value` 로 단계를 가리키고(number 가 아니다, C-14) `label` 이 줄 글이다.
+ * `content` 는 펼친 단계에서만 그 줄 아래에 그린다 — 웹 `ReactNode`, RN 은 컨테이너 규칙이다(C-17).
+ */
+export type StepItem<P extends Platform> = {
+  value: string;
+  label: string;
+  content?: P extends "web" ? ReactNode : ElementChildren;
+};
 
 /**
  * 컴포넌트 prop 계약. 웹·RN 구현이 이 맵을 그대로 만족해야 한다(C-17, AC-21).
@@ -267,7 +280,8 @@ export type Contracts<P extends Platform> = {
   /**
    * 접고 펴는 패널 하나(R27, 웹 전용). `label` 은 트리거의 보이는 글자이자 접근성 이름이다(C-13).
    * 개폐 3종은 오버레이와 같다(C-12) — `open` / `defaultOpen` / `onOpenChange`, 기본은 닫힘이고 닫힌 패널은 DOM 에 없다.
-   * 상자는 없다. 상자로 보이려면 Card 안에 둔다(알려진 동작 32).
+   * `variant` 는 `ghost`(기본, 상자 없음) · `secondary`(트리거 줄만 채움) 둘이다(R28, 알려진 동작 32).
+   * `disabled` 면 트리거가 개폐를 막고 지금 열림 상태 그대로 고정된다(R28).
    */
   Collapsible: {
     label: string;
@@ -275,11 +289,49 @@ export type Contracts<P extends Platform> = {
     open?: boolean;
     defaultOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
+    disabled?: boolean;
+    variant?: Extract<Variant, "ghost" | "secondary">;
+    className?: string;
+  };
+  /**
+   * 혼자 놓이는 링크(R28 — 내비, 목차, 카드 안의 이동). `label` 이 보이는 글이자 접근성 이름이고 `children` 은 없다(C-13).
+   * 이동 수단이 플랫폼마다 갈린다 — 웹은 `<a href>` 문서 이동, RN 은 `accessibilityRole="link"` 누름(C-12).
+   * 색 · 크기는 Text 와 같은 `tone` · `size` 축이고 기본은 `brand` · `md` 다. 문단 속 링크는 Prose `a` 를 쓴다(알려진 동작 33).
+   */
+  Link: {
+    label: string;
+    tone?: Tone;
+    size?: TypographyStep;
+    className?: string;
+  } & (P extends "web" ? { href: string } : { onPress: () => void });
+  /**
+   * 본문 흐름에서 한 구역을 짚는 연한 채움 상자(R28). 비인터랙티브라 `label` 이 없고 `title` 이 보이는 제목이다.
+   * `children` 은 웹 `ReactNode`(MDX 문단이 문자열로 온다), RN 은 컨테이너 규칙이다(C-17).
+   * `tone` 은 상태 다섯 개이고 기본은 `info` 다. `icon` 은 기본값이 없다 — 뜻은 `title` 이나 본문 글이 전한다(알려진 동작 37).
+   */
+  Callout: {
+    children: P extends "web" ? ReactNode : ElementChildren;
+    tone?: Extract<Tone, "info" | "success" | "warning" | "danger" | "brand">;
+    title?: string;
+    icon?: IconName;
+    className?: string;
+  };
+  /**
+   * 세로 단계 목록(R28). `label` 은 목록의 접근성 이름이고 보이지 않는다(C-13).
+   * 제어 전용이다 — `value`(펼친 단계)가 필수이고 `defaultValue` 가 없다(C-12). `reached` 는 가장 멀리 간 단계이고
+   * 없거나 `value` 보다 앞이면 `value` 를 따른다. `onValueChange` 가 있을 때만 지난 단계 줄이 눌린다(알려진 동작 36).
+   */
+  Stepper: {
+    label: string;
+    items: StepItem<P>[];
+    value: string;
+    reached?: string;
+    onValueChange?: (value: string) => void;
     className?: string;
   };
 };
 
-/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27. */
+/** v1 웹 구현 12개 + Text · Box 를 포함한 전체 목록(AC-7). Chip · Icon 은 v1 이후(N-17), Table · CodeBlock · Prose · Tabs · Collapsible 은 R27, Link · Callout · Stepper 는 R28. */
 export const webComponents = [
   "Button",
   "ButtonGroup",
@@ -302,11 +354,14 @@ export const webComponents = [
   "Prose",
   "Tabs",
   "Collapsible",
+  "Link",
+  "Callout",
+  "Stepper",
 ] as const satisfies readonly (keyof Contracts<"web">)[];
 
 /**
- * RN 구현 11개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
- * Chip · Icon(N-17)을 더했다. 오버레이 · Form · ButtonGroup 은 v2.
+ * RN 구현 14개. v1 핵심 5개(AC-20)에 Textarea · Label · Badge · Box(구현 노트 N-16)와
+ * Chip · Icon(N-17), Link · Callout · Stepper(R28)를 더했다. 오버레이 · Form · ButtonGroup 은 v2.
  */
 export const nativeComponents = [
   "Button",
@@ -320,6 +375,9 @@ export const nativeComponents = [
   "Text",
   "Stack",
   "Box",
+  "Link",
+  "Callout",
+  "Stepper",
 ] as const satisfies readonly (keyof Contracts<"native">)[];
 
 export type WebKey = (typeof webComponents)[number];

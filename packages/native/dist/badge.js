@@ -17,8 +17,8 @@ const foregrounds = {
 };
 /** 투명 테두리는 웹과 같이 Input 과 높이를 맞추기 위해서다(plan D-6). */
 const boxes = {
-    sm: "px-2 py-0 rounded-full",
-    md: "px-3 py-1 rounded-full",
+    sm: "px-2 py-0 rounded-xl",
+    md: "px-3 py-1 rounded-xl",
 };
 /**
  * 짧은 상태 표시. 웹은 `inline-flex` 라 블록 흐름에서 글자 폭만큼 줄지만 RN 에는 인라인이 없다 —

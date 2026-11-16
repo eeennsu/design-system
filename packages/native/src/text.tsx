@@ -10,6 +10,10 @@ export const tones: Record<Tone, string> = {
   default: "text-fg",
   muted: "text-fg-muted",
   danger: "text-fg-danger",
+  brand: "text-fg-brand",
+  success: "text-fg-success",
+  warning: "text-fg-warning",
+  info: "text-fg-info",
 };
 
 /**
@@ -22,6 +26,8 @@ export const steps: Record<TypographyStep, string> = {
   lg: "text-lg",
   xl: "text-xl",
   "2xl": "text-2xl",
+  "3xl": "text-3xl",
+  "4xl": "text-4xl",
 };
 
 /**

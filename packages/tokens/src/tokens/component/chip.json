@@ -16,7 +16,7 @@
       },
       "radius": {
         "$type": "dimension",
-        "$value": "{primitive.radius.full}"
+        "$value": "{primitive.radius.xl}"
       }
     }
   }

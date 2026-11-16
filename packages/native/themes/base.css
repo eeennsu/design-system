@@ -17,14 +17,23 @@
     --bg-danger: oklch(57.7% 0.245 27.325);
     --bg-danger-hover: oklch(50.5% 0.213 27.518);
     --bg-overlay: oklch(0% 0 0 / 0.6);
+    --bg-brand-subtle: oklch(28.2% 0.091 267.935);
+    --bg-success-subtle: oklch(26.6% 0.065 152.934);
+    --bg-warning-subtle: oklch(27.9% 0.077 45.635);
+    --bg-info-subtle: oklch(29.3% 0.066 243.157);
+    --bg-danger-subtle: oklch(25.8% 0.092 26.042);
     --fg-default: oklch(96.7% 0.001 286.375);
     --fg-muted: oklch(70.5% 0.015 286.067);
     --fg-brand: oklch(70.7% 0.165 254.624);
     --fg-danger: oklch(70.4% 0.191 22.216);
     --fg-on-brand: oklch(100% 0 0);
     --fg-on-danger: oklch(100% 0 0);
+    --fg-success: oklch(79.2% 0.209 151.711);
+    --fg-warning: oklch(82.8% 0.189 84.429);
+    --fg-info: oklch(74.6% 0.16 232.661);
     --border-default: oklch(27.4% 0.006 286.033);
     --border-focus: var(--bg-brand);
+    --border-surface: oklch(0% 0 0 / 0);
   }
 }
 
@@ -35,11 +44,14 @@
   --text-lg--line-height: 1.4444444444444444;
   --text-xl--line-height: 1.3636363636363635;
   --text-2xl--line-height: 1.2857142857142858;
+  --text-3xl--line-height: 1.2222222222222223;
+  --text-4xl--line-height: 1.1666666666666667;
 }
 
-/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26). */
+/* RN 글꼴 — react-native-css 는 font-family 목록의 첫 이름만 쓴다. RN 패밀리 이름 하나로 다시 낸다(C-7b R26 · R28). */
 @theme {
   --font-sans: Pretendard;
+  --font-mono: JetBrainsMono;
 }
 
 /* RN tabular-nums — font-variant-numeric 을 옮기지 않으므로 RN 선언을 더한다(구현 노트 F-21). */

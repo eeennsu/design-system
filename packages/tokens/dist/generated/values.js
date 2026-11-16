@@ -11,7 +11,13 @@ export const spacing = {
     "12": "48px",
     "16": "64px",
     "20": "80px",
-    "24": "96px"
+    "24": "96px",
+    "32": "128px",
+    "40": "160px",
+    "48": "192px",
+    "64": "256px",
+    "80": "320px",
+    "96": "384px"
 };
 /** 모서리 반경 스케일. */
 export const radius = {
@@ -53,6 +59,16 @@ export const text = {
         "fontSize": "28px",
         "lineHeight": "36px",
         "fontWeight": 700
+    },
+    "3xl": {
+        "fontSize": "36px",
+        "lineHeight": "44px",
+        "fontWeight": 700
+    },
+    "4xl": {
+        "fontSize": "48px",
+        "lineHeight": "56px",
+        "fontWeight": 700
     }
 };
 /** 폰트 패밀리. 폰트 파일은 동봉하지 않는다 — 로딩은 소비 프로젝트 책임(C-7b, AC-6c). */
@@ -60,6 +76,10 @@ export const fontFamily = {
     "sans": {
         "web": "\"Pretendard Variable\", Pretendard, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
         "native": "Pretendard"
+    },
+    "mono": {
+        "web": "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+        "native": "JetBrainsMono"
     }
 };
 /**
@@ -78,14 +98,23 @@ export const twMergeConfig = {
         "danger",
         "danger-hover",
         "overlay",
+        "brand-subtle",
+        "success-subtle",
+        "warning-subtle",
+        "info-subtle",
+        "danger-subtle",
         "fg",
         "fg-muted",
         "fg-brand",
         "fg-danger",
         "fg-on-brand",
         "fg-on-danger",
+        "fg-success",
+        "fg-warning",
+        "fg-info",
         "border",
         "border-focus",
+        "border-surface",
         "inherit",
         "current",
         "transparent"
@@ -101,7 +130,13 @@ export const twMergeConfig = {
         "12",
         "16",
         "20",
-        "24"
+        "24",
+        "32",
+        "40",
+        "48",
+        "64",
+        "80",
+        "96"
     ],
     "radius": [
         "sm",
@@ -120,7 +155,14 @@ export const twMergeConfig = {
         "md",
         "lg",
         "xl",
-        "2xl"
+        "2xl",
+        "3xl",
+        "4xl"
+    ],
+    "font-weight": [
+        "normal",
+        "semibold",
+        "bold"
     ]
 };
 /** @theme inline 색 키 → :root 변수 이름. C-5b 공개 계약의 실체다. */
@@ -134,14 +176,23 @@ export const semanticVariables = {
     "danger": "--bg-danger",
     "danger-hover": "--bg-danger-hover",
     "overlay": "--bg-overlay",
+    "brand-subtle": "--bg-brand-subtle",
+    "success-subtle": "--bg-success-subtle",
+    "warning-subtle": "--bg-warning-subtle",
+    "info-subtle": "--bg-info-subtle",
+    "danger-subtle": "--bg-danger-subtle",
     "fg": "--fg-default",
     "fg-muted": "--fg-muted",
     "fg-brand": "--fg-brand",
     "fg-danger": "--fg-danger",
     "fg-on-brand": "--fg-on-brand",
     "fg-on-danger": "--fg-on-danger",
+    "fg-success": "--fg-success",
+    "fg-warning": "--fg-warning",
+    "fg-info": "--fg-info",
     "border": "--border-default",
-    "border-focus": "--border-focus"
+    "border-focus": "--border-focus",
+    "border-surface": "--border-surface"
 };
 /**
  * component 계층 recipe. 값은 스케일 키이며 클래스 조립은 컴포넌트 구현이 한다
@@ -153,13 +204,13 @@ export const component = {
             "paddingX": "2",
             "paddingY": "0",
             "text": "sm",
-            "radius": "full"
+            "radius": "xl"
         },
         "md": {
             "paddingX": "3",
             "paddingY": "1",
             "text": "sm",
-            "radius": "full"
+            "radius": "xl"
         }
     },
     "button": {
@@ -185,6 +236,12 @@ export const component = {
             "gap": "2"
         }
     },
+    "callout": {
+        "padding": "4",
+        "radius": "lg",
+        "gap": "3",
+        "text": "md"
+    },
     "card": {
         "padding": "6",
         "radius": "xl"
@@ -193,7 +250,7 @@ export const component = {
         "paddingX": "4",
         "paddingY": "2",
         "text": "sm",
-        "radius": "full"
+        "radius": "xl"
     },
     "codeBlock": {
         "padding": "4",
@@ -242,6 +299,12 @@ export const component = {
             "text": "lg",
             "radius": "md"
         }
+    },
+    "stepper": {
+        "paddingY": "2",
+        "gap": "3",
+        "markerWidth": "4",
+        "text": "md"
     },
     "table": {
         "paddingX": "3",

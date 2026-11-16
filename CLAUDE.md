@@ -13,7 +13,7 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 - 배포 형태: npm 패키지 3개 (`tokens` / `web` / `native`). pnpm workspace 단일 레포, 공개 npm
 - 웹과 RN은 **토큰과 클래스 어휘를 공유**하고 컴포넌트 구현은 분리한다. 웹은 Tailwind v4, RN은 NativeWind v5
 - 소비 프로젝트는 `className`으로 커스텀할 수 있다. 어휘는 DS 토큰에서 나온 Tailwind 테마다
-- 앱 단위 색은 소비 프로젝트가 전역 CSS에서 semantic 변수를 재선언해 바꾼다(C-5b). DS 레포에 브랜드 파일을 추가하지 않아도 된다. 간격·타이포 스케일은 전 앱 공유
+- 앱 단위 색은 소비 프로젝트가 전역 CSS에서 semantic 변수를 재선언해 바꾼다(C-5b). 모서리(`--radius-sm` · `md` · `lg` · `xl`)와 표면 관계도 같은 방식이다(C-5c, R28). DS 레포에 브랜드 파일을 추가하지 않아도 된다. 간격·타이포 스케일은 전 앱 공유
 - v1은 웹 컴포넌트 전체 + RN 핵심 컴포넌트 일부. RN 오버레이 컴포넌트는 v2
 - 프레임워크 비종속. Next.js는 검증 환경일 뿐 설계 기준이 아니다
 
@@ -26,27 +26,28 @@ React 웹/앱 공통 개인 디자인 시스템. 웹(Next.js / Vite)과 React Na
 ## 문서
 
 - 스펙: [docs/design-system-spec.md](docs/design-system-spec.md). 토큰 구조, 컴포넌트 API 계약, 수용 기준이 여기 있다. 구현 전 검증(R21), 소비 프로젝트 특화 통로(R22), 확대안 연기 결정(R23), C-19 게이트 실행(R24), 첫 RN 소비 앱 반영(R25)까지 마쳤고 구현하면서 바뀔 수 있다
-- 2026-10-24 R27 개정이 현재 기준(첫 웹 소비 앱 amulator 학습 사이트가 요청한 **웹 전용** Tabs · Table · CodeBlock · Prose · Collapsible 다섯 개, `0.5.0`. 새 의존성과 새 semantic 토큰은 없다. 구분선은 지금 값을 받아들였다). 그 전은 R26(base 를 토스 앱 인상을 참고한 값으로 — 회색 canvas · 흰 surface · 채움 입력 칸 · 글자 스텝 · 모서리 · RN 글꼴, `fg.brand`. 사용자가 spendback 실험을 보고 채택했다)이고, 그 전은 R25(Chip · Icon, RN 보정, 글자 대비). 스펙 상단 "R21 개정 요약"~"R27 개정 요약"과 Constraints 아래 "알려진 동작(v1)"을 먼저 읽는다. **R24 는 게이트 실측 반영이다 — RN 다크는 hybrid 가 아니라 OS 단독이고, native 래퍼만 `@media (prefers-color-scheme: dark) { :root }` 블록을 추가로 낸다. 웹은 무변경.** R20 미결 3건은 닫혔다(1·2 종결, 3은 C-19 착수 게이트). 결정 대기는 R25 보류 1건이다 — 사용률 막대(Progress)와 `numberOfLines`처럼 데이터 값 number prop을 열지(C-14 · AC-15와 부딪힌다) 사용자가 판단한다. R27 구분선(`border.default`, 라이트 canvas 위 1.12:1)은 2026-10-24 받아들였다(decisions-r27 19). plan §2.3 D-31(RN line-height는 native 래퍼가 배수로 낸다)은 2026-09-06 확정
-- **base 자체가 토스풍이고 앱은 메인 색(brand 짝 4개)만 C-5b 로 지정한다**(R26, 사용자 결정). 토스는 인상의 참고일 뿐 API · 이름을 가져오지 않는다
-- **앱마다 갈리는 축은 색·간격 리듬·화면 구조 셋이다**(알려진 동작 14). 컴포넌트 내부 형태와 폰트 패밀리를 앱 단위로 바꾸는 통로(C-5c)는 열지 않았다 — 소비 프로젝트 2개를 만든 뒤 판단하는 조건부 항목이며 조건은 C-5b (R23)에 있다. 그 전에 미리 열지 않는다
-- 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md), [docs/decisions-r25.md](docs/decisions-r25.md)(첫 RN 소비 앱 반영), [docs/decisions-r26.md](docs/decisions-r26.md)(base 토스풍), [docs/decisions-r27.md](docs/decisions-r27.md)(웹 컴포넌트 5종). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
-- 구현 계획: [docs/plan.md](docs/plan.md) v2. 토큰 인벤토리·값, 컴포넌트 축 매트릭스, `Contracts<P>`, 패키지 구성, 태스크(T-0 ~ T-P1, R27 은 T-W9 ~ T-P4)와 AC 매핑이 여기 있다. 스펙과 어긋나는 지점은 plan.md §9에 모으고 스펙은 고치지 않는다
+- 2026-11-15 R28 개정이 현재 기준(소비 앱 두 개 뒤 **C-5c 를 열었다** — radius 네 키 · 표면 관계, `border.surface` 신설. 표현 어휘 — 굵기 유틸리티 · 큰 제목 `3xl` · `4xl` · DS 소유 `--font-mono`(JetBrains Mono) · 상태색 연한 채움과 글자 · 간격 키 6개 · `tone` 7개. 웹 · native Link · Callout · Stepper, Collapsible `disabled` · `variant`, Prose · Table 보정. `0.6.0`, 새 의존성 없음. Stepper 모양은 2026-11-16 받아들였다). 그 전은 R27(첫 웹 소비 앱 amulator 가 요청한 **웹 전용** Tabs · Table · CodeBlock · Prose · Collapsible, `0.5.0`. 구분선은 지금 값을 받아들였다), R26(base 를 토스 앱 인상을 참고한 값으로 — 회색 canvas · 흰 surface · 채움 입력 칸 · 글자 스텝 · 모서리 · RN 글꼴, `fg.brand`. 사용자가 spendback 실험을 보고 채택했다), R25(Chip · Icon, RN 보정, 글자 대비) 순이다. 스펙 상단 "R21 개정 요약"~"R28 개정 요약"과 Constraints 아래 "알려진 동작(v1)"을 먼저 읽는다. **R24 는 게이트 실측 반영이다 — RN 다크는 hybrid 가 아니라 OS 단독이고, native 래퍼만 `@media (prefers-color-scheme: dark) { :root }` 블록을 추가로 낸다. 웹은 무변경.** R20 미결 3건은 닫혔다(1·2 종결, 3은 C-19 착수 게이트). 결정 대기는 R25 보류 1건이다 — 사용률 막대(Progress)와 `numberOfLines`처럼 데이터 값 number prop을 열지(C-14 · AC-15와 부딪힌다) 사용자가 판단한다. R27 구분선(`border.default`, 라이트 canvas 위 1.12:1)은 2026-10-24 받아들였다(decisions-r27 19). plan §2.3 D-31(RN line-height는 native 래퍼가 배수로 낸다)은 2026-09-06 확정
+- **base 자체가 토스풍이고 앱은 메인 색을 C-5b 로 지정한다**(R26, 사용자 결정. R28 에서 brand 짝이 다섯 — `--bg-brand-subtle` 추가). 토스는 인상의 참고일 뿐 API · 이름을 가져오지 않는다
+- **앱마다 갈리는 축은 색(메인 색 · 표면 관계) · 모서리 · 간격 리듬 · 화면 구조다**(알려진 동작 14). C-5c 는 R28 에서 radius 네 키와 표면 관계 semantic 변수(canvas · surface · surface-muted · surface-hover · border-default · border-surface)로만 열렸다. **폰트 패밀리와 컴포넌트 치수(Button 높이 · 패딩)는 여전히 앱 단위 통로가 없고**, `--radius-full` 도 계약 밖이다. 재선언 변수 목록은 web · native README 에 있다
+- 결정 근거: [docs/decisions-r21.md](docs/decisions-r21.md), [docs/decisions-r22.md](docs/decisions-r22.md), [docs/decisions-r23.md](docs/decisions-r23.md), [docs/decisions-r25.md](docs/decisions-r25.md)(첫 RN 소비 앱 반영), [docs/decisions-r26.md](docs/decisions-r26.md)(base 토스풍), [docs/decisions-r27.md](docs/decisions-r27.md)(웹 컴포넌트 5종), [docs/decisions-r28.md](docs/decisions-r28.md)(C-5c · 표현 어휘 · Link · Callout · Stepper). 스펙 본문은 결과만 싣고 대안 비교·조합 검증은 여기 있다. 닫힌 결정을 다시 열지 않는다
+- 구현 계획: [docs/plan.md](docs/plan.md) v2. 토큰 인벤토리·값, 컴포넌트 축 매트릭스, `Contracts<P>`, 패키지 구성, 태스크(T-0 ~ T-P1, R27 은 T-W9 ~ T-P4, R28 은 Task 1 ~ 15)와 AC 매핑이 여기 있다. 스펙과 어긋나는 지점은 plan.md §9에 모으고 스펙은 고치지 않는다
 - 계획 검증: [docs/plan-verification.md](docs/plan-verification.md). 2026-09-05 검증 완료(B 2·P 21·N 13, 전부 plan.md v2에 반영). 사용자 확정 4건은 plan.md D-6 · D-28 · D-29 · D-30
 - 착수 게이트는 두 단계이고 **둘 다 닫혔다** — 웹 선확인(T-W0) 2026-09-05 통과, C-19 게이트(T-G1 · T-G2) 2026-09-06 실행, 게이트 (7) 기기 화면 확인 2026-09-08 완료(Android 에뮬레이터 + Expo Go, 스크린샷은 `docs/assets/`). **Phase 5 착수 조건은 없다.** 기기 확인에서 (5) lineHeight 결함이 화면 레이아웃을 무너뜨리는 것을 봤고, T-N0 이 그것을 고쳤다
-- 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 9항목 판정과 고정한 버전이 여기 있다 — (1)(3)(6)(7)(8)(9) 통과, (2)(4) 실패(R24 개정 + T-N0 우회), (5) 부분(T-N0 배수 line-height 로 해소). T-R1 의 AC-23 웹·RN 비교도 이 문서에 있다
-- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — npm `0.1.0` · `0.2.0`(2026-09-24), `0.3.0`(2026-09-25) publish, `0.4.0`(R26, 2026-09-26) publish, `0.4.1`(README 소비 규칙, 2026-10-21) publish, `0.5.0`(R27, 2026-10-25) publish**), 계획과 갈린 지점 19건, 구현 중 확인한 사실 31건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
+- 게이트 기록: [docs/gate-c19.md](docs/gate-c19.md). 9항목 판정과 고정한 버전이 여기 있다 — (1)(3)(6)(7)(8)(9) 통과, (2)(4) 실패(R24 개정 + T-N0 우회), (5) 부분(T-N0 배수 line-height 로 해소). T-R1 의 AC-23 웹·RN 비교와 R28 착수 게이트 4항목(전부 통과, 우회 없음, jest 측정만)도 이 문서에 있다
+- 구현 노트: [docs/implementation-notes.md](docs/implementation-notes.md). 진행 상태(**Phase 0~7 완료 — npm `0.1.0` · `0.2.0`(2026-09-24), `0.3.0`(2026-09-25) publish, `0.4.0`(R26, 2026-09-26) publish, `0.4.1`(README 소비 규칙, 2026-10-21) publish, `0.5.0`(R27, 2026-10-25) publish, `0.6.0`(R28) 준비 완료 · publish 전**), 계획과 갈린 지점 20건, 구현 중 확인한 사실 41건이 여기 있다. 계획을 다시 읽기 전에 이걸 먼저 본다
 
 ## 현재 코드 상태
 
-- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 72(브랜드 × 스킴 글자 대비 포함)
-- `packages/web` — 컴포넌트 21개(Chip · Icon 은 R25 · `0.3.0`, Tabs · Table · CodeBlock · Prose · Collapsible 은 R27 · `0.5.0`, 웹 전용), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 129(타입 테스트 포함)
-- `packages/native` — 컴포넌트 11개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` publish), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 26(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
-- `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 37 + 5(verify-next 는 구분선 스크린샷 2개를 더 건너뛴다 — `R27_DIVIDERS=1` 일 때만 돈다. `/components` 화면이 R27)
-- `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 50(게이트 20 + DS 29 + smoke 1)
+- `packages/tokens` — DTCG 소스 3계층 + 빌드(`scripts/build-outputs.ts`가 산출물 문자열, `scripts/build.ts`가 쓰기) + 계약 타입. 테스트 88(브랜드 × 스킴 글자 대비 포함)
+- `packages/web` — 컴포넌트 24개(Chip · Icon 은 R25 · `0.3.0`, Tabs · Table · CodeBlock · Prose · Collapsible 은 R27 · `0.5.0`, 웹 전용, Link · Callout · Stepper 는 R28 · `0.6.0`), Base UI 1.8.0 · lucide 1.41.0 · tailwind-merge 3. 테스트 188(타입 테스트 포함)
+- `packages/native` — 컴포넌트 14개(Button · Input · Textarea · Label · Card · Badge · Chip · Icon · Text · Stack · Box · Link · Callout · Stepper. Textarea · Label · Badge · Box 는 N-16 · `0.2.0` publish, Chip · Icon 은 N-17 · `0.3.0` publish, Link · Callout · Stepper 는 N-20 · `0.6.0`), NativeWind 5.0.0-preview.4 · react-native-css 3.0.7 peer 고정, lucide-react-native 1.41.0(아이콘별 경로 import). 테스트 41(타입·dist). 게이트 스텁은 실제 dist 로 대체됐다
+- `apps/verify-next` · `apps/verify-vite` — 웹 검증 앱. Playwright 53 + 5(verify-next 는 구분선 스크린샷 2개를 더 건너뛴다 — `R27_DIVIDERS=1` 일 때만 돈다). verify-next `/components` 가 R27 · R28 컴포넌트 화면, `/surface` 가 radius · 표면 관계 재선언(C-5c) 화면이다
+- `apps/verify-expo` — 게이트 · RN 검증 앱(Expo SDK 57). jest-expo + RNTL 14, 테스트 84(게이트 29 + DS 53 + smoke 2)
 - 검증 화면 스크린샷은 `docs/assets/` 에 있다 — 게이트 (7) 기기 확인 2장, AC-23 웹·RN 비교 4장, T-P1 npm 설치 확인 2장
 - 명령: `pnpm -r build` · `pnpm -r test` · `pnpm verify:pack`(타르볼 설치 재검증) · `pnpm version:set <v>`. Node 22 에서 돌린다 — Node 20 이면 web 테스트가 jsdom 로딩에서 죽는다(구현 노트 N-18)
 - 배포: npm `@eeennsu/{tokens,web,native}` 를 lockstep 으로 함께 낸다. publish 직전에 `npm login`, `pnpm -r publish --access public` 은 패키지마다 브라우저 2FA 인증을 요구한다(구현 노트 F-17)
 - 토큰 산출물(`packages/*/themes/*.css`, `packages/tokens/src/generated`, `src/brands`)과 `dist`는 **추적한다**. 손으로 고치지 않는다 — 빌드가 덮고 테스트가 잡는다
-- native 래퍼만 다크 블록(`@media … { :root }`), **배수** line-height(T-N0), `.tabular-nums` 의 RN 선언(N-17), `--font-sans: Pretendard`(R26)를 추가로 낸다. RN 소비 앱은 `Pretendard` 글꼴을 등록해야 한다(구현 노트 N-18). 웹 산출물과 토큰 CSS 는 무변경이다
+- native 래퍼만 다크 블록(`@media … { :root }`), **배수** line-height(T-N0), `.tabular-nums` 의 RN 선언(N-17), `--font-sans: Pretendard`(R26)와 `--font-mono: JetBrainsMono`(R28)를 추가로 낸다. RN 소비 앱은 `Pretendard` 글꼴을, `font-mono` 를 쓰면 `JetBrainsMono` 도 등록해야 한다(구현 노트 N-18 · F-32). 웹은 토큰 CSS 의 `--font-mono` 스택을 쓰고 글꼴 파일은 앱이 로딩한다(C-7b)
 - `verify-next` 의 스크린샷 테스트는 실행할 때마다 `docs/assets/ac23-web-*.png` 를 덮어쓴다(구현 노트 F-25). 다른 기기에서 돌렸으면 커밋 전에 되돌린다
+- `pnpm verify:pack` 은 lockfile 없이 설치해 검증 앱 의존성이 레포보다 새 판으로 풀린다 — Playwright 브라우저가 없거나 jest 가 새 ESM 의존성에서 깨질 수 있다(구현 노트 F-41)
 - `packages/native` 의 `react` · `react-native` devDependency 는 검증 앱과 **정확히 같은 버전**이어야 한다. 어긋나면 pnpm 격리 레이아웃에서 React 가 두 벌이 되어 검증 앱이 "Invalid hook call" 로 죽는다(구현 노트 N-11)

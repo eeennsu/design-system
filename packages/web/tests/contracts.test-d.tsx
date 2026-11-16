@@ -16,8 +16,9 @@ import { webComponents } from "@eeennsu/tokens";
 import { Trash } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { assertType, describe, expectTypeOf, it } from "vitest";
-import type { TabItem, TableColumn, TableRow } from "../src/index.js";
-import { Badge, Button, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Prose, Stack, Table, Tabs, Text, components } from "../src/index.js";
+import type { StepItem, TabItem, TableColumn, TableRow } from "../src/index.js";
+import type { StepItem as PlatformStepItem } from "@eeennsu/tokens";
+import { Badge, Button, Callout, Chip, CodeBlock, Collapsible, Dialog, Icon, Input, Link, Prose, Stack, Stepper, Table, Tabs, Text, components } from "../src/index.js";
 
 // label 을 뺀 JSX 를 쓰기 위한 지역 별칭. AC-14 테스트에서만 쓴다.
 const ButtonGroupProbe = components.ButtonGroup;
@@ -36,16 +37,22 @@ describe("C-17 맵 동등성", () => {
 });
 
 describe("AC-9 · AC-10 전역 축", () => {
-  it("variant 4개 · tone 3개가 전역 집합이다", () => {
+  it("variant 4개 · tone 7개(R28)가 전역 집합이다", () => {
     expectTypeOf<Variant>().toEqualTypeOf<"primary" | "secondary" | "ghost" | "danger">();
-    expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger">();
+    expectTypeOf<Tone>().toEqualTypeOf<"default" | "muted" | "danger" | "brand" | "success" | "warning" | "info">();
   });
 
-  it("Size 는 5단이고 컨트롤은 부분집합이다", () => {
-    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl">();
+  it("Size 는 7단(R28)이고 컨트롤은 부분집합이다", () => {
+    expectTypeOf<Size>().toEqualTypeOf<"sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl">();
     expectTypeOf<ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
     expectTypeOf<Contracts<"web">["Button"]["size"]>().toEqualTypeOf<ControlSize | undefined>();
     expectTypeOf<Contracts<"web">["Text"]["size"]>().toEqualTypeOf<Size | undefined>();
+  });
+
+  it("Text 는 R28 스텝 4xl 까지 받고 그 밖은 거부한다", () => {
+    assertType(<Text size="4xl">큰 제목</Text>);
+    // @ts-expect-error 7단 밖의 스텝
+    assertType(<Text size="5xl">큰 제목</Text>);
   });
 
   it("Badge 는 variant · size 의 부분집합만 받는다", () => {
@@ -218,7 +225,111 @@ describe("R27 Collapsible 계약", () => {
   });
 });
 
+describe("R28 Collapsible disabled · variant 계약", () => {
+  it("disabled 는 boolean, variant 는 ghost · secondary 뿐이다", () => {
+    expectTypeOf<Contracts<"web">["Collapsible"]["disabled"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<Contracts<"web">["Collapsible"]["variant"]>().toEqualTypeOf<"ghost" | "secondary" | undefined>();
+    assertType(
+      <Collapsible label="답" variant="secondary" disabled>
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error variant 는 ghost · secondary 뿐이다
+      <Collapsible label="답" variant="primary">
+        {null}
+      </Collapsible>,
+    );
+    assertType(
+      // @ts-expect-error variant 는 ghost · secondary 뿐이다
+      <Collapsible label="답" variant="danger">
+        {null}
+      </Collapsible>,
+    );
+  });
+});
+
+describe("R28 Link 계약", () => {
+  it("label · href 필수, tone · size 는 Text 와 같은 축이고 이동은 href 하나다", () => {
+    expectTypeOf<Contracts<"web">["Link"]["label"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Link"]["href"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Link"]["tone"]>().toEqualTypeOf<Tone | undefined>();
+    expectTypeOf<Contracts<"web">["Link"]["size"]>().toEqualTypeOf<Size | undefined>();
+    expectTypeOf<Contracts<"web">["Link"]>().not.toHaveProperty("onClick");
+    expectTypeOf<Contracts<"web">["Link"]>().not.toHaveProperty("onPress");
+    assertType(<Link label="다음" href="/next" tone="muted" size="sm" className="mt-2" />);
+    // @ts-expect-error href 필수
+    assertType(<Link label="다음" />);
+    // @ts-expect-error 웹 Link 는 누름 이벤트를 받지 않는다 — 이동은 href 다
+    assertType(<Link label="다음" href="/next" onClick={() => {}} />);
+    // @ts-expect-error children 이 없다 — 글은 label 이다
+    assertType(<Link label="다음" href="/next">다음</Link>);
+  });
+});
+
+describe("R28 Callout 계약", () => {
+  it("children 은 ReactNode, tone 은 상태 다섯 개, title · icon 은 선택이다", () => {
+    expectTypeOf<Contracts<"web">["Callout"]["children"]>().toEqualTypeOf<ReactNode>();
+    expectTypeOf<Contracts<"web">["Callout"]["tone"]>().toEqualTypeOf<
+      "info" | "success" | "warning" | "danger" | "brand" | undefined
+    >();
+    expectTypeOf<Contracts<"web">["Callout"]["title"]>().toEqualTypeOf<string | undefined>();
+    assertType(<Callout>{"글"}</Callout>);
+    assertType(
+      <Callout tone="danger" title="주의" icon="alert-circle">
+        <p>글</p>
+      </Callout>,
+    );
+    // @ts-expect-error muted 는 Callout tone 이 아니다
+    assertType(<Callout tone="muted">{"글"}</Callout>);
+    // @ts-expect-error default 는 Callout tone 이 아니다
+    assertType(<Callout tone="default">{"글"}</Callout>);
+    // @ts-expect-error 목록에 없는 아이콘 이름
+    assertType(<Callout icon="nope">{"글"}</Callout>);
+    // @ts-expect-error children 은 필수다
+    assertType(<Callout />);
+  });
+});
+
+describe("R28 Stepper 계약", () => {
+  const items: StepItem[] = [{ value: "a", label: "하나", content: <p>내용</p> }, { value: "b", label: "둘" }];
+
+  it("진입점이 StepItem 을 타입 전용으로 다시 내보내고 제어 전용 value · onValueChange 만 있다", () => {
+    expectTypeOf<StepItem>().toEqualTypeOf<{ value: string; label: string; content?: ReactNode }>();
+    expectTypeOf<StepItem>().toEqualTypeOf<PlatformStepItem<"web">>();
+    expectTypeOf<Contracts<"web">["Stepper"]["items"]>().toEqualTypeOf<StepItem[]>();
+    expectTypeOf<Contracts<"web">["Stepper"]["value"]>().toEqualTypeOf<string>();
+    expectTypeOf<Contracts<"web">["Stepper"]["reached"]>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Contracts<"web">["Stepper"]["onValueChange"]>().toEqualTypeOf<((value: string) => void) | undefined>();
+    expectTypeOf<Contracts<"web">["Stepper"]>().not.toHaveProperty("defaultValue");
+  });
+
+  it("값은 문자열 필수이고 number · defaultValue · 번호 prop 은 받지 않는다", () => {
+    assertType(<Stepper label="단계" items={items} value="a" reached="b" onValueChange={(v: string) => void v} className="mt-4" />);
+    // @ts-expect-error value 필수 (제어 전용)
+    assertType(<Stepper label="단계" items={items} />);
+    // @ts-expect-error 값은 string 이다 (C-14)
+    assertType(<Stepper label="단계" items={items} value={1} />);
+    // @ts-expect-error 단계 번호 prop 은 없다 (C-14 · AC-15)
+    assertType(<Stepper label="단계" items={items} value="a" current={2} />);
+    // @ts-expect-error 제어 전용이라 defaultValue 가 없다
+    assertType(<Stepper label="단계" items={items} value="a" defaultValue="a" />);
+    // @ts-expect-error 콜백 인자는 string 이다
+    assertType(<Stepper label="단계" items={items} value="a" onValueChange={(v: number) => void v} />);
+  });
+});
+
 describe("AC-14 label 누락은 타입 에러다", () => {
+  it("Stepper", () => {
+    // @ts-expect-error label 필수
+    assertType(<Stepper items={[]} value="a" />);
+  });
+
+  it("Link", () => {
+    // @ts-expect-error label 필수
+    assertType(<Link href="/next" />);
+  });
+
   it("Tabs", () => {
     // @ts-expect-error label 필수
     assertType(<Tabs items={[]} />);

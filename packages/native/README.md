@@ -18,7 +18,7 @@ peer 의존성(`nativewind` · `react-native-css` · `react-native-svg` · `tail
 
 이 한 줄은 Expo 소비자 기준이다. Expo 없는 RN CLI 앱의 Metro 설정은 그 앱의 몫이다.
 
-브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 기본은 `base` 다. 앱 색은 아래 C-5b 재선언으로 정하고, `themes/` 폴더의 `bakery` 는 DS 가 브랜드 교체(AC-6a)를 검증하는 프리셋이다.
+브랜드는 앱당 하나이고 import 하는 `themes/<brand>.css` 로 고른다. 기본은 `base` 다. 앱의 색과 모서리는 아래 재선언(C-5b · C-5c)으로 정하고, `themes/` 폴더의 `bakery` 는 DS 가 브랜드 교체(AC-6a)를 검증하는 프리셋이다. 글꼴 파일은 DS 가 싣지 않으므로 앱이 등록한다(아래 "RN 에서만 지켜야 하는 것").
 
 ## 소비 규칙
 
@@ -26,52 +26,83 @@ peer 의존성(`nativewind` · `react-native-css` · `react-native-svg` · `tail
 
 ### 앱이 바꿀 수 있는 것
 
-앱마다 갈리는 축은 색, 간격 리듬, 화면 구조 셋이다.
+앱마다 갈리는 축은 색(메인 색 · 표면 관계), 모서리, 간격 리듬, 화면 구조 넷이다(알려진 동작 14). 색과 모서리는 변수를 재선언해서 바꾸고, 간격 리듬과 화면 구조는 화면 코드에서 정한다.
 
-**메인 색.** 전역 CSS 에서 DS import **다음 줄**, `@layer` **밖**에 semantic 변수를 재선언한다(C-5b). 앱이 지정하는 것은 메인 색 네 개이고, 넷을 짝으로 덮는다.
+**재선언할 수 있는 변수.** 전역 CSS 에서 DS import **다음 줄**, `@layer` **밖**에 재선언한다(C-5b · C-5c). 어휘 목록은 이 문서에 옮겨 적지 않는 것이 원칙이지만(아래 "어휘 위치"), 이 목록은 계약이라 여기 적는다.
 
-- `--bg-brand`, `--bg-brand-hover`: 채움 색
-- `--fg-on-brand`: 채움 위 글자
-- `--fg-brand`: 표면 위에 쓰는 브랜드 색 글자
+| 묶음 | 변수 | 쓰는 블록 |
+|---|---|---|
+| 메인 색 다섯 | `--bg-brand` · `--bg-brand-hover` · `--fg-on-brand` · `--fg-brand` · `--bg-brand-subtle` | 라이트 · 다크 2블록 |
+| 표면 관계 여섯 | `--bg-canvas` · `--bg-surface` · `--bg-surface-muted` · `--bg-surface-hover` · `--border-default` · `--border-surface` | 라이트 · 다크 2블록 |
+| 모서리 넷 | `--radius-sm` · `--radius-md` · `--radius-lg` · `--radius-xl` | `:root` 한 블록 |
 
-RN 은 웹과 블록 구성이 다르다. 쓰는 블록은 **2개**다: `:root` 와 `@media (prefers-color-scheme: dark) { :root }`.
+나머지 semantic 색(`--bg-danger`, `--fg-muted`, 상태색 등)도 재선언 대상이다(C-5b). 이름은 설치된 토큰 CSS 의 `:root` 에 있다.
+
+RN 은 웹과 블록 구성이 다르다. 색은 **2블록**, `:root` 와 `@media (prefers-color-scheme: dark) { :root }` 에 쓴다. 모서리는 스킴과 상관없으니 `:root` 에 한 번만 쓴다. `:root` 의 모서리 재선언이 RN 에서도 이기는 것은 R28 착수 게이트에서 확인했다.
 
 ```css
 @import "@eeennsu/native/themes/base.css";
 
 :root {
+  /* 색: 라이트 값 */
   --bg-brand: oklch(…);
   --bg-brand-hover: oklch(…);
   --fg-on-brand: oklch(…);
   --fg-brand: oklch(…);
+  --bg-brand-subtle: oklch(…);
+
+  /* 모서리: 스킴과 무관하니 여기 한 번만 */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* 같은 네 변수, 다크 값 */
+    /* 같은 색 변수, 다크 값 */
   }
 }
 ```
 
 - `.dark` 블록과 `:root:not(.light)` 블록은 RN 에서 죽으므로 쓰지 않는다. 웹의 3블록 CSS 를 그대로 붙여 넣으면 다크에서 앱의 **라이트** 값이 나온다. 에러가 아니라 무효다(알려진 동작 15).
 - 값은 빌드 시점 캐스케이드로 굳고 런타임 CSS 변수로 남지 않는다. NativeWind 의 런타임 오버라이드(`VariableContextProvider`, `vars()`)는 DS 채널이 아니며, 런타임 브랜드 전환은 범위 밖이다(C-5a · C-5b).
-- 재선언은 `@eeennsu/tokens` 의 JS 토큰 객체에 닿지 않는다. 앱 코드(Reanimated 등)가 JS 객체에서 색을 읽으면 재선언 전의 값이 나온다(알려진 동작 11).
-- 공개 계약은 semantic 변수 **이름**이다. 이름 변경·삭제는 파괴적 변경(major)이다.
-- 짝 대비: `--bg-brand` 를 덮으면 그 위 글자 `--fg-on-brand` 도 함께 본다(`--bg-danger` 와 `--fg-on-danger` 도 같다). DS 는 자기 브랜드의 짝만 4.5:1 을 보장하므로, 앱 색의 짝 대비는 앱이 맞춘다. base 의 on-brand 는 라이트·다크 모두 흰색이다. 채움을 밝게 바꿔 흰 글자가 4.5:1 에 못 미치면 on-brand 를 어두운 값으로 다시 정한다(C-5b R26).
+- 재선언은 `@eeennsu/tokens` 의 JS 토큰 객체에 닿지 않는다. 색도 모서리(`radius`)도 같다. 앱 코드(Reanimated 등)가 JS 객체에서 값을 읽으면 재선언 전의 값이 나온다(알려진 동작 11).
+- 공개 계약은 변수 **이름**이다. 이름 변경·삭제는 파괴적 변경(major)이다.
+
+**메인 색.** 다섯을 짝으로 덮는다.
+
+- `--bg-brand`, `--bg-brand-hover`: 채움 색
+- `--fg-on-brand`: 채움 위 글자
+- `--fg-brand`: 표면 위에 쓰는 브랜드 색 글자. 글자에는 `text-fg-brand`(또는 `tone="brand"`)를 쓴다. `text-brand` 는 채움 색이라 다크 surface 위에서 대비가 모자란다(알려진 동작 27).
+- `--bg-brand-subtle`: 브랜드 색 연한 채움. `tone="brand"` Callout 의 바탕이다.
+
+**표면 관계.** base 는 회색 canvas 위에 흰 surface(Card)를 놓는 모양이다. 이 관계도 바꿀 수 있고, 바꿀 때는 짝을 맞춘다(C-5c).
+
+- canvas 와 surface 를 같은 값으로 두면 Card 경계가 사라진다. 그때는 `--border-surface` 에 값을 준다. Card · Input · Textarea · 고르지 않은 Chip 의 쉬는 테두리가 이 색이라 Card 마다 `className` 을 붙일 필요가 없다(알려진 동작 24).
+- `--bg-surface-muted` 는 canvas · surface 와 구분되게 둔다. 입력 칸 채움이 이 색이다. 채움을 없애고 싶다면 `--border-surface` 에 값을 줘서 입력 칸을 테두리로 보이게 한다(알려진 동작 25).
+- `--border-surface` 의 base 값은 투명이다. 포커스(`border-focus`)와 `invalid`(danger) 테두리는 이 색 위를 덮는다.
+
+**모서리.** `rounded-sm` · `rounded-md` · `rounded-lg` · `rounded-xl` 이 네 변수를 읽는다. DS 컴포넌트의 모서리는 모두 이 넷 중 하나라서 네 값을 정하면 앱 전체의 모서리가 바뀐다. Badge · Chip 도 `rounded-xl` 이라 `--radius-xl` 을 줄이면 Card 와 함께 각이 진다(알려진 동작 38). 원 모양과 `className="rounded-full"` 은 따라가지 않는다.
+
+**대비는 앱이 맞춘다.** DS 는 자기 브랜드의 짝만 4.5:1 을 보장한다. 덮은 값의 대비는 앱이 본다.
+
+- `--bg-brand` 를 덮으면 그 위 글자 `--fg-on-brand` 도 함께 본다(`--bg-danger` 와 `--fg-on-danger` 도 같다). base 의 on-brand 는 라이트·다크 모두 흰색이다. 채움을 밝게 바꿔 흰 글자가 4.5:1 에 못 미치면 on-brand 를 어두운 값으로 다시 정한다(C-5b R26).
+- `--fg-brand` 는 canvas · surface · `--bg-brand-subtle` 위에서 4.5:1 을 맞춘다.
+- 상태색(`--bg-{success,warning,info,danger}-subtle`, `--fg-{success,warning,info}`)을 덮을 때도 같다. `--fg-success` · `--fg-warning` · `--fg-info` 는 canvas · surface · 자기 연한 채움 위에서, `--fg-danger` 는 `--bg-danger-subtle` 위에서, `--fg-default` 는 다섯 연한 채움 위에서 4.5:1 이 DS 기준이다. Callout 이 연한 채움 위에 이 글자색들을 올린다.
 - 채움과 글자 색은 별개 값이다. `--bg-danger` 만 덮으면 글자 빨강(`tone="danger"`)은 따라가지 않는다(`--fg-danger`, C-5b R26).
-- 브랜드 색 **글자**에는 `text-fg-brand` 를 쓴다. `text-brand` 는 채움 색이라 다크 surface 위에서 대비가 모자란다(알려진 동작 27).
-- 메인 색 밖의 `--bg-canvas` · `--bg-surface-muted` 는 건드리지 않는 것이 기본이다. canvas 를 surface 와 같은 값으로 덮으면 Card 경계가 사라지고(그때는 `className="border border-border"`), `--bg-surface-muted` 를 canvas 나 surface 와 같게 덮으면 입력 칸 채움이 보이지 않는다(알려진 동작 24 · 25).
 
-**간격 리듬.** 간격·글자 스케일은 전 앱이 공유한다. 앱이 정하는 것은 그 열거 안에서 어떤 단계를 쓰는가다(C-7a, 알려진 동작 14). 간격은 `className`(`p-4`, `gap-6`, `mt-2` 등)으로만 주고, `padding={16}` 같은 prop 은 없다(C-14). 허용 키는 설치된 토큰 CSS 의 `--spacing-*` 가 정한다. 그 밖의 키(`mt-5`, `mt-17`)는 에러가 아니라 클래스가 생성되지 않는 무효다(알려진 동작 1).
+**간격 리듬.** 간격·글자 스케일은 전 앱이 공유한다. 앱이 정하는 것은 그 열거 안에서 어떤 단계를 쓰는가다(C-7a, 알려진 동작 14). 간격은 `className`(`p-4`, `gap-6`, `mt-2` 등)으로만 주고, `padding={16}` 같은 prop 은 없다(C-14). 허용 키는 설치된 토큰 CSS 의 `--spacing-*` 가 정한다. 그 밖의 키(`mt-5`, `w-28`)는 에러가 아니라 클래스가 생성되지 않는 무효다(알려진 동작 1). 글자는 `size` 일곱 단계(`sm` ~ `4xl`)에서 고르고, 스텝 무게는 `font-normal` · `font-semibold` · `font-bold` 로 덮는다.
 
-**화면 구조.** 어떤 컴포넌트를 어떤 순서와 배치로 놓는지는 앱이 정한다. 배치의 1순위 수단은 `Stack` · `Box` 이지만 강제는 아니고 `className` 의 레이아웃 유틸리티도 쓴다(C-15). `Stack` 의 배치 prop 은 `direction` · `align` · `justify` · `wrap` 뿐이고, `Box` 는 `children` 과 `className` 만 받는다. 둘 다 `gap` · `padding` prop 은 없다. 컨테이너(Card · Stack · Box)의 자식으로 문자열을 직접 넣을 수 없다. RN `View` 안의 원시 문자열은 크래시하므로 타입이 막는다. 글자는 `Text` 로 감싼다(C-17).
+**화면 구조.** 어떤 컴포넌트를 어떤 순서와 배치로 놓는지는 앱이 정한다. 배치의 1순위 수단은 `Stack` · `Box` 이지만 강제는 아니고 `className` 의 레이아웃 유틸리티도 쓴다(C-15). `Stack` 의 배치 prop 은 `direction` · `align` · `justify` · `wrap` 뿐이고, `Box` 는 `children` 과 `className` 만 받는다. 둘 다 `gap` · `padding` prop 은 없다. 컨테이너(Card · Stack · Box · Callout)의 자식으로 문자열을 직접 넣을 수 없다. RN `View` 안의 원시 문자열은 크래시하므로 타입이 막는다. 글자는 `Text` 로 감싼다(C-17).
 
 ### 바꾸지 않는 것
 
-- **컴포넌트 소스와 내부 형태.** 소비 프로젝트는 컴포넌트 소스를 고치지 않는다(C-2). Button 높이·패딩, Card radius, Input 테두리를 앱 단위로 바꾸는 통로는 없다. 앱 전체를 바꾸려면 호출 지점마다 `className` 임의값을 반복해야 하고 빠뜨린 곳을 잡는 테스트도 없다(알려진 동작 14).
-- **폰트 패밀리.** 앱 단위로 바꾸지 않는다. 패밀리 이름(`Pretendard`)과 크기·줄 높이·무게 스케일은 DS 가 갖는다. 폰트 파일은 동봉하지 않으며 등록은 앱의 의무다(아래 "RN 에서만 지켜야 하는 것").
-- **`@theme` 확장과 새 토큰.** `@theme { --color-accent: … }` 로 새 클래스를 만들지 않는다. 지원하지 않으며, 그 클래스는 DS 어휘가 아니라 병합 키 목록에도 없다(Non-Goals). 간격·타이포·radius·shadow 변수는 재선언 대상이 아니다. primitive 변수(`--ds-*`)는 덮으면 동작하지만 계약 밖이라 이름 안정성이 없다(알려진 동작 13).
-- **스케일 밖 임의값.** `bg-[#333]`, `mt-[13px]` 은 타입도 구조도 막지 못하는 **의도된 탈출구**일 뿐 기본 수단이 아니다(C-14 · C-15, 알려진 동작 3). 96px 를 넘는 고정 폭·높이 유틸리티(`w-64` 등)는 없으므로 `w-full`, `max-w-*`, 임의값을 쓴다(알려진 동작 2).
+- **컴포넌트 소스와 치수.** 소비 프로젝트는 컴포넌트 소스를 고치지 않는다(C-2). Button · Input 의 높이와 패딩 같은 컴포넌트 치수를 앱 단위로 바꾸는 통로는 없다. 앱 전체를 바꾸려면 호출 지점마다 `className` 임의값을 반복해야 하고 빠뜨린 곳을 잡는 테스트도 없다(알려진 동작 14). 모서리와 쉬는 테두리 색은 위 변수로 바꾼다.
+- **폰트 패밀리.** `--font-sans` · `--font-mono` 는 재선언하면 기술적으로 덮이지만 계약 밖이다(C-5c). 패밀리 이름(`Pretendard` · `JetBrainsMono`)과 크기·줄 높이·무게 스케일은 DS 가 갖는다. 폰트 파일은 동봉하지 않으며 등록은 앱의 의무다(아래 "RN 에서만 지켜야 하는 것").
+- **`--radius-full`.** 원과 알약의 기하다. 덮으면 원이 네모가 된다. 덮어도 동작은 하지만 계약 밖이다(C-5c).
+- **`@theme` 확장과 새 토큰.** `@theme { --color-accent: … }` 로 새 클래스를 만들지 않는다. 지원하지 않으며, 그 클래스는 DS 어휘가 아니라 병합 키 목록에도 없다(Non-Goals). 간격·타이포·shadow 변수는 재선언 대상이 아니고, radius 는 위 네 키만 대상이다. primitive 변수(`--ds-*`)는 덮으면 동작하지만 계약 밖이라 이름 안정성이 없다(알려진 동작 13).
+- **스케일 밖 임의값.** `bg-[#333]`, `mt-[13px]` 은 타입도 구조도 막지 못하는 **의도된 탈출구**일 뿐 기본 수단이 아니다(C-14 · C-15, 알려진 동작 3). 간격 열거는 96px 위로 `32` · `40` · `48` · `64` · `80` · `96`(128~384px)만 있고, 그 사이 값(112px `w-28` 등)은 키가 없다. 그보다 큰 크기는 `w-full` · `max-w-*` · `h-1/2` 같은 비율 유틸리티를 쓰고, 그래도 없을 때만 임의값을 쓴다(알려진 동작 2).
 
 컴포넌트 하나만 다르게 하려면 `className` 을 쓴다. `className` 이 유일한 커스텀 채널이고 `style` 은 열려 있지 않다. DS 기본 스타일과 병합되며 충돌하면 앱이 이긴다. 단 같은 유틸리티 그룹, 같은 변형만 덮는다(C-15, 알려진 동작 4). 색 의도를 받는 prop(`variant` · `tone`)은 열거값만 받는다(C-14).
 
@@ -81,28 +112,62 @@ RN 은 hybrid 가 아니라 **OS 단독**이다(C-20 R24). 루트 `.dark` · `.l
 
 ### RN 에서만 지켜야 하는 것
 
-**Pretendard 글꼴 등록.** RN 에는 글꼴 상속이 없어서 DS 텍스트 컴포넌트(Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea)가 각자 `font-sans` 로 `Pretendard` 패밀리를 요청한다(C-7b R26). 폰트 파일은 동봉하지 않으므로 앱이 `Pretendard` 라는 이름으로 등록해야 한다.
+**글꼴 등록.** RN 에는 글꼴 상속이 없어서 DS 텍스트 컴포넌트(Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea · Link · Callout · Stepper)가 각자 `font-sans` 로 `Pretendard` 패밀리를 요청한다(C-7b R26). 폰트 파일은 동봉하지 않고 DS 는 글꼴 패키지에 의존하지 않으므로, 앱이 아래 이름 그대로 등록해야 한다.
 
-- 등록할 무게는 글자 스텝이 쓰는 400 · 600 · 700 이다. 500 도 넣으면 앱의 `className` 에 안전하다.
+| 클래스 | 등록할 이름 | 무게 | 누가 등록하나 |
+|---|---|---|---|
+| `font-sans`(DS 컴포넌트 전부) | `Pretendard` | 400 · 600 · 700(500 도 넣으면 앱의 `className` 에 안전하다) | 모든 앱 |
+| `font-mono` | `JetBrainsMono` | 400 · 600 · 700 | `font-mono` 를 쓰는 앱. native 에는 코드 컴포넌트가 없어 쓰지 않으면 등록하지 않아도 된다 |
+
 - 등록하지 않으면 Android 는 기본 글꼴로 조용히 떨어진다. iOS 는 "Unrecognized font family" 메시지를 낸다고 알려져 있으나 기기에서 확인하지 못했다. 등록한 글꼴에 없는 무게는 가까운 무게로 그려진다(알려진 동작 26).
-- Expo: `expo-font` 로 같은 이름을 등록한다. 무게별 등록 방법은 SDK 문서를 따른다. DS 는 이 경로를 확인하지 못했다.
-- RN CLI Android: `android/app/src/main/res/font/` 에 `pretendard_regular.otf` 처럼 소문자 이름으로 넣고, 같은 폴더의 `pretendard.xml` 에 무게별 `<font>` 를 가진 `<font-family>` 를 둔다. `MainApplication.onCreate` 에서 `ReactFontManager.getInstance().addCustomFont(this, "Pretendard", R.font.pretendard)` 를 부른다. RN 이 `fontWeight` 로 무게를 고른다. 에뮬레이터에서 확인했다.
-- Pretendard 는 SIL OFL 1.1 이다.
+- `font-mono` 는 웹과 달리 뒤에 시스템 고정폭 목록이 없다. native 래퍼가 `JetBrainsMono` 이름 하나만 내기 때문에, 등록하지 않으면 고정폭이 아니라 플랫폼 기본 글꼴로 떨어진다.
+- Expo: `expo-font` 로 위 이름을 등록한다. `useFonts` 에 넘기는 객체의 **키**가 패밀리 이름이 된다. `@expo-google-fonts/jetbrains-mono` 의 export 를 그대로 넘기면(`useFonts({ JetBrainsMono_400Regular })`) 패밀리 이름이 `JetBrainsMono_400Regular` 가 되어 DS 와 맞지 않으니 키를 바꾼다. 같은 이름 아래 무게별로 등록하는 방법은 Expo SDK 문서를 따른다. DS 는 이 경로를 확인하지 못했다(Pretendard 도 같다).
+
+```ts
+import { useFonts } from "expo-font";
+import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
+
+const [loaded] = useFonts({
+  Pretendard: require("./assets/fonts/Pretendard-Regular.otf"),
+  JetBrainsMono: JetBrainsMono_400Regular,
+});
+```
+
+- RN CLI Android: `android/app/src/main/res/font/` 에 `pretendard_regular.otf` 처럼 소문자 이름으로 넣고, 같은 폴더의 `pretendard.xml` 에 무게별 `<font>` 를 가진 `<font-family>` 를 둔다. `MainApplication.onCreate` 에서 `ReactFontManager.getInstance().addCustomFont(this, "Pretendard", R.font.pretendard)` 를 부른다. RN 이 `fontWeight` 로 무게를 고른다. 에뮬레이터에서 확인했다. JetBrains Mono 는 같은 방식에 이름만 `"JetBrainsMono"` 로 두면 될 것으로 보지만 확인하지 않았다.
+- Pretendard 와 JetBrains Mono 는 둘 다 SIL OFL 1.1 이다.
 
 **배수 line-height.** react-native-css 는 line-height 를 단위 없는 배수로 읽는다. `px` 값을 그대로 두면 `fontSize 20 × 28 = 560` 이 되어 화면이 무너지고, `rem` 도 같은 방식으로 틀린다. 그래서 native 래퍼가 `--text-<step>--line-height` 를 배수로 다시 낸다(알려진 동작 16). 줄 높이는 `text-<step>` 클래스로 정하고, 앱 CSS 에서 `px`·`rem` 으로 직접 선언하지 않는다. 앱의 `className="text-lg"` 도 크기·줄 높이·무게 세 값이 모두 적용된다. className 의 line-height 임의값(`leading-[22px]` 등)은 탈출구로도 쓰지 않는다. react-native-css 가 이 값의 단위를 어떻게 읽는지는 DS 가 확인하지 못했다.
 
 **웹과 다르게 동작하는 것.**
 
-- Button · Chip 의 `className` 은 표면(Pressable)에 붙는다. 글자 클래스(`text-*`, `tabular-nums`)는 라벨에 닿지 않는다(알려진 동작 22).
+- Button · Chip · Link · Callout · Stepper 의 `className` 은 바깥 표면(Pressable · View)에 붙는다. 글자 클래스(`text-*`, `font-*`, `tabular-nums`)는 안쪽 글자에 닿지 않는다(알려진 동작 22). Link 글자는 `tone` · `size` prop 으로 바꾼다.
+- Link 는 `href` 가 아니라 `onPress` 를 받는다. RN 에는 문서 이동이 없어 이동은 앱의 내비게이션 코드가 한다. 밑줄과 포커스 외곽선은 없다.
+- Link 에는 `hitSlop` 이 없어 누름 영역이 글자 줄 높이(`md` 는 24)다. 48dp 에 못 미치니 터치 목표로 쓸 때는 `className="py-3"` 처럼 표면에 세로 여백을 준다. Stepper 의 지난 단계 줄도 누름 영역이 글자 줄 높이이고, 이쪽은 앱이 넓힐 통로가 없다.
 - `Icon` 의 그림 크기는 `size` prop 만 정한다. `className` 의 `size-*` · `w-*` · `h-*` 는 바꾸지 못한다. 배치·변형·투명도 클래스(`ml-*`, `absolute`, `self-*`, `rotate-*`, `opacity-*`)는 svg 를 감싼 루트 View 에 걸리고, 색 클래스(`text-*`)만 svg 색으로 간다(알려진 동작 20).
 - `font-variant-numeric` 유틸리티 중 `tabular-nums` 만 동작한다(알려진 동작 17).
 - Button(sm · md)과 Chip 은 세로 `hitSlop` 으로 누름 영역 48dp 를 채운다. 세로로 쌓을 때 sm 은 18, md 는 6, Chip 줄은 10 이상 띄운다. 겹치면 뒤 형제가 누름을 가져간다. Input · Textarea 에는 `hitSlop` 이 없어 sm · md 는 48dp 에 못 미치므로 터치 폼은 `lg` 를 권한다(알려진 동작 18).
 
+### 0.6.0 으로 올릴 때
+
+0.5.0 에서 올리는 앱이 고칠 것:
+
+- `Record<Tone, …>` · `Record<TypographyStep, …>` 처럼 전수 맵을 둔 앱 코드는 키가 모자라 컴파일 에러가 난다. `Tone` 에 `brand` · `success` · `warning` · `info` 를, `TypographyStep` 에 `3xl` · `4xl` 을 더한다(알려진 동작 34).
+- Card 에 1px 테두리(`--border-surface`, base 는 투명)가 생겨 안쪽 폭이 2px 준다.
+- Badge · Chip 이 `rounded-full` 에서 `rounded-xl` 로 옮겼다. base 에서는 여전히 알약 모양이다.
+- `font-mono` 가 `JetBrainsMono` 를 요청한다. `font-mono` 를 쓰고 있었다면 그 이름으로 등록한다.
+
+새로 생긴 것을 쓸 때:
+
+- Link 는 혼자 놓이는 링크(내비, 목차, 카드 안의 이동)다. 문단 속 부분 링크는 없다 — Text 는 문자열만 받는다(알려진 동작 6 · 33).
+- Callout 의 뜻은 글로 전한다. `icon` 은 기본값이 없고 색만으로는 뜻이 전해지지 않으니, 상태는 `title` 이나 본문에 쓴다(알려진 동작 37).
+- Stepper 는 제어 전용이라 `value` 가 필수다. 단계를 바꾸려면 `onValueChange` 에서 앱 상태를 고친다. `onValueChange` 가 없으면 줄을 누를 수 없다(알려진 동작 36).
+- 굵기 유틸리티는 `font-normal` · `font-semibold` · `font-bold` 셋뿐이다. `font-medium` 은 없다(클래스가 생성되지 않는다). 굵기를 쓰려면 그 무게의 글꼴이 등록돼 있어야 한다.
+
 ### 어휘 위치
 
-어휘 목록은 이 문서에 옮겨 적지 않는다. 옮겨 적은 목록은 버전이 오르면 어긋나므로 설치된 버전의 파일이 기준이다.
+어휘 목록은 이 문서에 옮겨 적지 않는다(위 재선언 변수 표만 예외다). 옮겨 적은 목록은 버전이 오르면 어긋나므로 설치된 버전의 파일이 기준이다.
 
-- 색·간격·글자 스텝·radius·shadow: `themes/<brand>.css` 가 import 하는 `@eeennsu/tokens/themes/<brand>.css`. `@theme` 블록이 스케일을, `@theme inline` 블록이 semantic 색 매핑을 갖고, `:root` 에 semantic 변수가 있다. 이 패키지의 `themes/<brand>.css` 는 거기에 RN 다크 블록, 배수 line-height, `--font-sans`, `tabular-nums` 선언을 더한다.
-- 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다.
+- 색·간격·글자 스텝·굵기·radius·shadow: `themes/<brand>.css` 가 import 하는 `@eeennsu/tokens/themes/<brand>.css`. `@theme` 블록이 스케일을, `@theme inline` 블록이 semantic 색 매핑을 갖고, `:root` 에 semantic 변수가 있다. 이 패키지의 `themes/<brand>.css` 는 거기에 RN 다크 블록, 배수 line-height, `--font-sans` · `--font-mono`, `tabular-nums` 선언을 더한다.
+- 컴포넌트와 prop 타입: `dist/index.d.ts` 가 내보내는 것이 공개 컴포넌트이고, 컴포넌트별 타입은 `dist/<컴포넌트>.d.ts` 에 있다. 공용 prop 계약과 `IconName` 은 `@eeennsu/tokens` 의 `dist/contracts.d.ts` 에 있다. `StepItem` 은 `@eeennsu/native` 에서 import 한다.
 
 `@eeennsu/tokens` 는 이 패키지의 `dependencies` 라서 앱의 직접 의존성이 아니다. `node-linker=hoisted` 설치에서는 최상위 `node_modules/@eeennsu/tokens/` 에 있다. pnpm 격리 레이아웃(기본값)에서는 최상위 `node_modules/@eeennsu/` 에 `native` 만 보이고, `tokens` 는 이 패키지 실경로(`node_modules/.pnpm/@eeennsu+native@…/node_modules/@eeennsu/native`) 옆의 `../tokens` 에 있다. pnpm 의 기본 hoist 설정이면 `node_modules/.pnpm/node_modules/@eeennsu/tokens/` 에도 있다.
