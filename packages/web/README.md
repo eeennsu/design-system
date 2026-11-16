@@ -79,7 +79,7 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 ```css
 :root {
-  --radius-md: 2px;
+  --radius-md: 2px; /* 예시 값 */
 }
 ```
 
@@ -102,9 +102,9 @@ peer 의존성(`react` · `react-dom` · `tailwindcss`)의 범위는 설치된 `
 
 DS 는 패밀리 이름만 갖고 파일을 싣지 않는다. 소비 앱이 글꼴을 로딩한다.
 
-- Pretendard 400 · 600 · 700. `--font-sans` 가 이 패밀리를 요청한다.
+- Pretendard 400 · 600 · 700. `--font-sans` 는 `"Pretendard Variable"` 과 `Pretendard` 두 이름을 차례로 요청하므로 로딩한 글꼴의 `font-family` 가 둘 중 하나여야 한다. 로딩 방법은 npm `pretendard` 패키지의 CSS 를 전역으로 import 하거나 Next 의 `next/font/local` 로 파일을 싣는 식이다. 어느 쪽이든 DS 가 이 경로를 확인한 것은 아니며, 이름 규칙은 구현 노트 N-18 에 있다.
 - `font-mono` 를 쓰면(CodeBlock · Prose 의 코드 등) JetBrains Mono. 라이선스는 SIL OFL 1.1 이고 npm 의 `@fontsource/jetbrains-mono`(400 · 600 · 700 css 를 import)나 가변 글꼴 `@fontsource-variable/jetbrains-mono` 로 받는다(구현 노트 F-32). 패밀리 이름은 `JetBrains Mono` 다.
-- 로딩됐는지는 `document.fonts.check('16px "JetBrains Mono"')` 가 `true` 인지, 또는 `await document.fonts.ready` 뒤 `document.fonts` 에 그 패밀리가 `loaded` 로 있는지로 확인한다. 로딩하지 않으면 조용히 기본 글꼴로 떨어진다.
+- 로딩됐는지는 `await document.fonts.ready` 뒤 그 패밀리의 `FontFace` 가 `status === "loaded"` 인지로 확인한다. 예: `[...document.fonts].some(f => f.family.replace(/"/g, "") === "JetBrains Mono" && f.status === "loaded")`. `document.fonts.check()` 는 목록에 없는 글꼴에도 `true` 를 돌려주므로 증거가 되지 않는다. 로딩하지 않으면 조용히 기본 글꼴로 떨어진다.
 - 무게 유틸리티는 `font-normal` 400 · `font-semibold` 600 · `font-bold` 700 이다. `font-medium` 은 없다.
 
 ### 0.6.0 에서 달라진 것

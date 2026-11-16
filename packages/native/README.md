@@ -80,7 +80,7 @@ RN 은 웹과 블록 구성이 다르다. 색은 **2개** 블록을 쓴다: `:ro
 
 ```css
 :root {
-  --radius-md: 2px;
+  --radius-md: 2px; /* 예시 값 */
 }
 ```
 
@@ -105,7 +105,7 @@ RN 은 hybrid 가 아니라 **OS 단독**이다(C-20 R24). 루트 `.dark` · `.l
 
 ### RN 에서만 지켜야 하는 것
 
-**Pretendard 글꼴 등록.** RN 에는 글꼴 상속이 없어서 DS 텍스트 컴포넌트(Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea)가 각자 `font-sans` 로 `Pretendard` 패밀리를 요청한다(C-7b R26). 폰트 파일은 동봉하지 않으므로 앱이 `Pretendard` 라는 이름으로 등록해야 한다.
+**Pretendard 글꼴 등록.** RN 에는 글꼴 상속이 없어서 DS 텍스트 컴포넌트(Text · Button 라벨 · Chip 라벨 · Badge · Label · Input · Textarea · Link · Callout · Stepper)가 각자 `font-sans` 로 `Pretendard` 패밀리를 요청한다(C-7b R26). 폰트 파일은 동봉하지 않으므로 앱이 `Pretendard` 라는 이름으로 등록해야 한다.
 
 - 등록할 무게는 글자 스텝이 쓰는 400 · 600 · 700 이다. 500 도 넣으면 앱의 `className` 에 안전하다.
 - 등록하지 않으면 Android 는 기본 글꼴로 조용히 떨어진다. iOS 는 "Unrecognized font family" 메시지를 낸다고 알려져 있으나 기기에서 확인하지 못했다. 등록한 글꼴에 없는 무게는 가까운 무게로 그려진다(알려진 동작 26).
@@ -116,20 +116,20 @@ RN 은 hybrid 가 아니라 **OS 단독**이다(C-20 R24). 루트 `.dark` · `.l
 **JetBrains Mono 글꼴 등록.** `font-mono` 를 쓰면 native 래퍼의 `--font-mono: JetBrainsMono` 가 이 이름의 패밀리를 요청한다. 쓰지 않으면 등록하지 않아도 된다. 라이선스는 SIL OFL 1.1 이다.
 
 - 등록 이름은 `JetBrainsMono` 이고 무게는 400 · 600 · 700 이다.
-- Expo 의 `@expo-google-fonts/jetbrains-mono` 는 `JetBrainsMono_400Regular` · `JetBrainsMono_600SemiBold` · `JetBrainsMono_700Bold` 를 내보내는데, 이 export 이름은 등록 이름과 다르다. 키를 `JetBrainsMono` 로 바꿔 등록한다. 예: `useFonts({ JetBrainsMono: JetBrainsMono_400Regular })`. 자세한 내용은 구현 노트 F-32 에 있다.
+- Expo 의 `@expo-google-fonts/jetbrains-mono` 는 `JetBrainsMono_400Regular` · `JetBrainsMono_600SemiBold` · `JetBrainsMono_700Bold` 를 내보내는데, 이 export 이름은 등록 이름과 다르다. 키를 `JetBrainsMono` 로 바꿔 등록한다. 예: `useFonts({ JetBrainsMono: JetBrainsMono_400Regular })`. 이 예는 400 하나만 등록한다. 600 · 700 을 무게별로 등록하는 방법은 Pretendard 와 같이 SDK 문서를 따르고, DS 는 이 경로를 확인하지 못했다. 자세한 내용은 구현 노트 F-32 에 있다.
 - 무게 유틸리티는 `font-normal` 400 · `font-semibold` 600 · `font-bold` 700 이다. `font-medium` 은 없다.
 
 **0.6.0 에서 달라진 것.**
 
 - tone 이 일곱이 됐다: brand · success · warning · info 가 늘었다. 글자 스텝에 `3xl` · `4xl`, 간격 키에 32 · 40 · 48 · 64 · 80 · 96 이 늘었다. `Record<Tone, …>` 나 `Record<TypographyStep, …>` 처럼 전수 맵을 가진 앱은 새 키를 더해야 타입이 맞는다.
 - Callout 의 뜻은 글로 전한다. 색만으로 구분하지 않는다.
-- 웹 Link 는 문서 이동(`href`)이고 문단 속 링크는 Prose `a` 다. Collapsible 과 Prose 는 웹 전용이라 native 에 없다.
+- Link · Callout · Stepper 는 native 에도 있다. 웹 Link 는 문서 이동(`href`)이고 문단 속 링크는 Prose `a` 인 반면, native Link 는 `onPress` 로 화면을 옮긴다. Collapsible 과 Prose 는 웹 전용이라 native 에 없다.
 
 **배수 line-height.** react-native-css 는 line-height 를 단위 없는 배수로 읽는다. `px` 값을 그대로 두면 `fontSize 20 × 28 = 560` 이 되어 화면이 무너지고, `rem` 도 같은 방식으로 틀린다. 그래서 native 래퍼가 `--text-<step>--line-height` 를 배수로 다시 낸다(알려진 동작 16). 줄 높이는 `text-<step>` 클래스로 정하고, 앱 CSS 에서 `px`·`rem` 으로 직접 선언하지 않는다. 앱의 `className="text-lg"` 도 크기·줄 높이·무게 세 값이 모두 적용된다. className 의 line-height 임의값(`leading-[22px]` 등)은 탈출구로도 쓰지 않는다. react-native-css 가 이 값의 단위를 어떻게 읽는지는 DS 가 확인하지 못했다.
 
 **웹과 다르게 동작하는 것.**
 
-- Button · Chip 의 `className` 은 표면(Pressable)에 붙는다. 글자 클래스(`text-*`, `tabular-nums`)는 라벨에 닿지 않는다(알려진 동작 22).
+- Button · Chip · Link 의 `className` 은 표면(Pressable)에 붙는다. 글자 클래스(`text-*`, `tabular-nums`)는 라벨에 닿지 않는다(알려진 동작 22).
 - `Icon` 의 그림 크기는 `size` prop 만 정한다. `className` 의 `size-*` · `w-*` · `h-*` 는 바꾸지 못한다. 배치·변형·투명도 클래스(`ml-*`, `absolute`, `self-*`, `rotate-*`, `opacity-*`)는 svg 를 감싼 루트 View 에 걸리고, 색 클래스(`text-*`)만 svg 색으로 간다(알려진 동작 20).
 - `font-variant-numeric` 유틸리티 중 `tabular-nums` 만 동작한다(알려진 동작 17).
 - Button(sm · md)과 Chip 은 세로 `hitSlop` 으로 누름 영역 48dp 를 채운다. 세로로 쌓을 때 sm 은 18, md 는 6, Chip 줄은 10 이상 띄운다. 겹치면 뒤 형제가 누름을 가져간다. Input · Textarea 에는 `hitSlop` 이 없어 sm · md 는 48dp 에 못 미치므로 터치 폼은 `lg` 를 권한다(알려진 동작 18).
