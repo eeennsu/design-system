@@ -1046,7 +1046,7 @@ describe("R28 Stepper", () => {
     const buttons = screen.getAllByRole("button");
     expect(buttons).toHaveLength(1);
     expect(buttons[0]).toHaveAttribute("type", "button");
-    expect(buttons[0]).toHaveAccessibleName(/완료/);
+    expect(buttons[0]).toHaveAccessibleName(/계정.*완료/);
     fireEvent.click(buttons[0]!);
     expect(onValueChange).toHaveBeenCalledTimes(1);
     expect(onValueChange).toHaveBeenCalledWith("a");
@@ -1059,9 +1059,12 @@ describe("R28 Stepper", () => {
     expect(within(lis[2]!).queryByRole("button")).toBeNull();
   });
 
-  it("onValueChange 가 없으면 버튼이 없다", () => {
+  it("onValueChange 가 없으면 버튼이 없지만 지난 단계는 완료로 읽힌다", () => {
     render(<Stepper label="단계" items={items} value="c" />);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
+    const lis = screen.getAllByRole("listitem");
+    expect(lis[0]).toHaveTextContent("완료");
+    expect(lis[2]).not.toHaveTextContent("완료");
   });
 
   it("지난 단계는 체크 svg, 펼친 단계는 border-l-2 border-brand 표시를 갖는다", () => {

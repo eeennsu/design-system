@@ -45,7 +45,10 @@ export const Stepper: FC<Contracts<"web">["Stepper"]> = ({ label, items, value, 
                   <span className="sr-only">, 완료</span>
                 </button>
               ) : (
-                <p className="text-md text-fg-muted">{item.label}</p>
+                <p className="text-md text-fg-muted">
+                  {item.label}
+                  {state === "done" ? <span className="sr-only">, 완료</span> : null}
+                </p>
               )}
               {state === "current" && item.content !== undefined ? <div className="mt-2">{item.content}</div> : null}
             </div>

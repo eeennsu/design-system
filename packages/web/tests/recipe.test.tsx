@@ -184,5 +184,6 @@ describe("Stepper", () => {
     const li = screen.getByRole("listitem");
     expect(li).toHaveClass(`py-${component.stepper.paddingY}`, `gap-${component.stepper.gap}`);
     expect(li.firstElementChild).toHaveClass(`w-${component.stepper.markerWidth}`);
+    expect(screen.getByText("하나")).toHaveClass(`text-${component.stepper.text}`);
   });
 });
