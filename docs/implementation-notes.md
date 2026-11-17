@@ -3,14 +3,14 @@
 [plan.md](plan.md) 를 실행하면서 계획과 갈린 지점, 구현 중 확인한 사실을 모은다.
 스펙 내부 불일치는 plan.md §9 에 있고 이 문서는 **계획 ↔ 구현** 사이만 다룬다.
 
-- 기준일: 2026-11-16
+- 기준일: 2026-11-17
 - 진행: **Phase 0 ~ Phase 7 완료.** 2026-09-24 `@eeennsu/tokens` · `web` · `native` `0.1.0` 을 npm 에 publish 했다
 - v1 이후: 2026-09-24 RN 컴포넌트 4개(Textarea · Label · Badge · Box)를 더한(N-16) `0.2.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 두 번째: 2026-09-25 Chip · Icon 과 RN 보정 · 글자 대비를 담은(N-17, 스펙 R25) `0.3.0` 을 **같은 날 npm 에 publish 했다**(`latest`)
 - v1 이후 세 번째: 2026-09-25 base 를 토스 앱 인상을 참고한 값으로 바꾼(N-18, 스펙 R26) `0.4.0` 을 **2026-09-26 npm 에 publish 했다**(`latest`). spendback 이 0.4.0 으로 올라갔다
 - v1 이후 네 번째: web · native 패키지 README 에 `## 소비 규칙` 을 실은 `0.4.1` 을 **2026-10-21 npm 에 publish 했다**(`latest`, 코드 무변경). spendback 이 0.4.1 로 올라갔다. my-agent-setup 의 design-flow 라우터가 설치본의 이 절을 읽는다
 - v1 이후 다섯 번째: 웹 전용 컴포넌트 5개(Tabs · Table · CodeBlock · Prose · Collapsible)를 더한(N-19, 스펙 R27) `0.5.0` 을 **2026-10-25 npm 에 publish 했다**(`latest`). 구분선은 사용자 위임으로 지금 값을 받아들였다(N-19)
-- v1 이후 여섯 번째: 모서리 4개 · 표면 관계 재선언 통로(C-5c 열림), 상태색 · 굵기 · 간격 · 큰 제목 · `font-mono` 어휘, Link · Callout · Stepper(웹 · native)와 Collapsible · Prose · Table 보정을 담은(N-20, 스펙 R28) `0.6.0` 을 **준비했다. publish 전이다**(2026-11-16, `pnpm verify:pack` 통과). publish 는 사용자가 자기 터미널에서 한다(F-17 · F-29)
+- v1 이후 여섯 번째: 모서리 4개 · 표면 관계 재선언 통로(C-5c 열림), 상태색 · 굵기 · 간격 · 큰 제목 · `font-mono` 어휘, Link · Callout · Stepper(웹 · native)와 Collapsible · Prose · Table 보정을 담은(N-20, 스펙 R28) `0.6.0` 을 **2026-11-17 npm 에 publish 했다**(`latest`). web 은 E409 로 한 번 막힌 것처럼 보였으나 이미 staged 상태였고 약 1분 뒤 보였다(F-39)
 
 ## 1. 완료 상태
 
@@ -33,7 +33,7 @@
 | v1 이후 | Chip · Icon, RN 눌림 · 누름 영역 · 포커스 · placeholder · 고정폭 숫자 · 아이콘별 import, 글자 대비 (N-17, R25) | 완료 · `0.3.0` publish(2026-09-25) | tokens 67 · web 79 · native 26 · verify-expo 50 |
 | v1 이후 | base 토스풍 — 색 · 글자 스텝 · 모서리 · Card · 채움 입력 칸 · RN 글꼴, `fg.brand`, twMerge 정적 색 (N-18, R26) | 완료 · `0.4.0` publish(2026-09-26) | tokens 69 · web 79 · native 26 · verify-expo 50 · verify-next 18 · verify-vite 5 |
 | v1 이후 | 웹 Tabs · Table · CodeBlock · Prose · Collapsible, `/components` 검증 화면 (N-19, R27) | 완료 · `0.5.0` publish(2026-10-25). 구분선 받아들임 | tokens 72 · web 129 · native 26 · verify-expo 50 · verify-next 37(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
-| v1 이후 | 모서리 · 표면 관계 재선언(C-5c), 상태색 · border.surface · 굵기 · 간격 · 큰 제목 · font-mono, Link · Callout · Stepper(웹 · native), Collapsible · Prose · Table 보정 (N-20, R28) | `0.6.0` 준비 완료 · publish 전(2026-11-16) | tokens 82 · web 181 · native 34 · verify-expo 75 · verify-next 47(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
+| v1 이후 | 모서리 · 표면 관계 재선언(C-5c), 상태색 · border.surface · 굵기 · 간격 · 큰 제목 · font-mono, Link · Callout · Stepper(웹 · native), Collapsible · Prose · Table 보정 (N-20, R28) | 완료 · `0.6.0` publish(2026-11-17) | tokens 83 · web 181 · native 34 · verify-expo 75 · verify-next 47(+2 건너뜀) · verify-vite 5. `pnpm verify:pack` 통과 |
 
 수동 확인 상태:
 
@@ -346,10 +346,10 @@ Task 1 ~ 14 는 `main` 위에서 제자리로 진행했고 태스크마다 리�
 - **bakery 위험색 — 사용자 결정(2026-11-16)**: Task 2 가 bakery `bg.danger-subtle` 을 white · black 으로 둬 램프 밖이고 라이트 surface 와 1.00:1 이 됐다. 사용자가 **C** 를 골랐다 —
   bakery `fg.danger` 를 base 값(light red-700, dark red-400)으로, `bg.danger-subtle` 을 원래 값(red-50 · red-950)으로. 대비는 5.88 · 5.58 이다. **decisions-r26 5 를 사용자가 다시 열었다.** plan §4.10 표를 맞췄다
 - **README(Task 13)**: web · native README 에 앱이 바꿀 수 있는 것(색 다섯 · 표면 여섯 · 모서리 넷), 폰트 로딩 의무, 바꾸지 않는 것, `0.6.0` 달라진 점을 실었다. 리뷰가 웹 Pretendard 로딩 방법 · 이름, 글꼴 로딩 판정 방식(F-37), native Link(`onPress`) 안내를 더하게 했다
-- **검증 결과**(2026-11-16, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 82, web 181, native 34, verify-expo 75, verify-vite 5, verify-next 47 통과 + 2 건너뜀(R27 구분선 스크린샷). `docs/assets` 는 되돌렸다(F-25).
+- **검증 결과**(2026-11-16, Node 22): `pnpm -r build` 통과. `pnpm -r test` — tokens 83(최종 리뷰 반영 뒤, `font` 키 단언 +1), web 181, native 34, verify-expo 75, verify-vite 5, verify-next 47 통과 + 2 건너뜀(R27 구분선 스크린샷). `docs/assets` 는 되돌렸다(F-25).
   `pnpm verify:pack` 통과 — 세 패키지가 `0.6.0` 이고 타르볼 설치 상태에서 verify-next 47 · verify-vite 5 · verify-expo 75 가 돈다. 첫 실행은 환경 문제 둘로 실패해 고쳤다(F-33)
 - 리뷰에서 미룬 것(막지 않는 지적): `gate.test.tsx` 의 R28 게이트가 `toMatchObject`(기존은 `toEqual`)이고 `text-4xl` fontWeight 를 단언하지 않는 것, 웹 테스트 제목 "Card 와 Badge 가 표면 경계선…" 이 Badge 와 맞지 않는 것, Link 누락 타입 테스트가 AC-14 describe 밖이고 `className` 테스트가 `text-md` 생존을 안 보는 것,
-  Callout `Icon` 에 `size="md"` 를 명시하지 않은 것, Prose 링크 포커스 특이성(0,1,1)이 주석과 어긋나는 것과 `table.tsx` 의 "가로 스크롤" 주석, Stepper 중복 `value` 의 key 경고, 표시 막대 24px, native Link 에 `hitSlop` 이 없는 것,
+  Callout `Icon` 에 `size="md"` 를 명시하지 않은 것, Stepper 중복 `value` 의 key 경고, 표시 막대 24px, native Link 에 `hitSlop` 이 없는 것,
   native Callout 의 `children` 글자색을 정하지 않는 것(소비자가 `Text` 를 쓴다), Stepper native 막대 색 · done/upcoming muted 단언이 자기 비교인 것, verify-expo tone hex 리터럴을 `DS_*` 상수로 바꾸는 것, verify-next 의 `rounded-full` 9999px 리터럴 · 구조 의존 선택자 · Callout 긴 URL 단언 없음,
   굵기 값이 build-outputs 에 리터럴인 것, `cssFontStack` 오류 라벨이 sans 고정인 것, tokens 대비 테스트의 `Scheme` 리터럴 타입 tsc 오류(R28 이전부터), bakery `brand-subtle` == `surface-muted`
 - **기기 확인은 하지 않았다.** jest 가 스타일 값과 접근성 속성을 본다. native Stepper 의 `accessible` 없는 루트 View 에 단 `accessibilityLabel` 이 iOS VoiceOver 에 읽히는지는 기기에서 봐야 한다(§4)
@@ -663,6 +663,14 @@ web README 의 폰트 로딩 설명을 처음에는 `document.fonts.check('1em P
 구현자가 heredoc 으로 덧붙인 테스트 파일에서 `/(^|\s)bg-/` 가 `/(^|s)bg-/` 로 접힌 일이 Task 4 · 5 에 두 번 있었다(규칙: 백슬래시 · 백틱이 든 내용은 Write/Edit 로 쓴다). 정규식이 조용히 다른 뜻이 돼 통과하는 단언이 된다.
 정규식을 쓴 뒤 파일 바이트를 Read/Grep 으로 다시 확인한다.
 
+### F-39. npm E409 "Cannot publish over previously staged version" 은 이미 받아들여진 것이다 (2026-11-17, 0.6.0)
+
+`0.6.0` 을 낼 때 tokens · native 는 바로 보였고, web 을 다시 내자 `409 Conflict - PUT …/@eeennsu%2fweb - Cannot publish over previously staged version "0.6.0"` 이 났다.
+npm 은 받아들인 publish 를 잠시 staged 상태로 두고 검증하는데, 그동안 `npm view` 는 E404 이고 같은 버전을 다시 내면 E409 다.
+web 은 다시 내지 않고 기다리자 약 1분 뒤(12:26 UTC) 레지스트리 JSON 에 보였다. 다른 프로젝트들은 이 창을 4~17분으로 보고한다.
+E409 가 나면 다시 내지 말고 `https://registry.npmjs.org/@eeennsu%2f<pkg>` 의 `time["<버전>"]` 이 생길 때까지 기다린다.
+npm 공식 문서는 찾지 못했다. 근거는 GitHub 이슈들이다(예: https://github.com/nexus-substrate/nexus-agents/issues/6500 , https://github.com/craftsamo/agent-tool-starter/issues/8 , 확인일 2026-11-17).
+
 ## 4. 다음
 
 - **v1 구현과 배포가 끝났다.** npm `0.1.0` (2026-09-24)
@@ -696,8 +704,8 @@ web README 의 폰트 로딩 설명을 처음에는 `document.fonts.check('1em P
 - `0.5.0`(N-19, R27)은 2026-10-25 publish 했다. `feat/r27-web-components` 를 main 에 fast-forward 로 합친 뒤 사용자가 자기 터미널에서 `pnpm -r publish --access public` 을 돌렸다(F-17 · F-29).
   tokens · native 는 바로 보였고 web 은 약 30초 늦게 레지스트리에 보였다 — 그 사이 다시 낸 `pnpm --filter @eeennsu/web publish` 는 "There are no new packages that should be published" 였다(이미 올라간 것). 늦게 보이면 `--prefer-online` 이나 레지스트리 JSON 으로 다시 본다.
   0.5.0 은 웹 컴포넌트 5개를 더하는 것이라 RN 소비 앱에는 영향이 없다(native 는 코드 변경 없이 lockstep 으로 올렸다)
-- `0.6.0`(N-20, R28)은 2026-11-16 준비를 마쳤다(버전 올림 · build · test · `verify:pack` 통과, F-33). **publish 는 사용자 몫이다**(F-17 · F-29). 남은 것:
-  - **design-flow 알림**: my-agent-setup 의 design-flow 시안 축이 "brand 색 네 변수"로 적혀 있다 → 다섯으로(decisions-r28 25). my-agent-setup 은 이 레포 밖이라 `0.6.0` publish 뒤 그 세션에 알린다
+- `0.6.0`(N-20, R28)은 2026-11-16 준비를 마치고(버전 올림 · build · test · `verify:pack` 통과, F-33) 2026-11-17 사용자가 자기 터미널에서 publish 했다(F-17 · F-29 · F-39). 남은 것:
+  - **design-flow 알림**: my-agent-setup 의 design-flow 시안 축이 "brand 색 네 변수"로 적혀 있다 → 다섯으로(decisions-r28 25). my-agent-setup 은 이 레포 밖이라 그 세션에 알린다(2026-11-17 사용자에게 전달)
   - **native Stepper iOS 확인**: 목록 루트 View 의 `accessibilityLabel` 이 `accessible` 이 아니라 VoiceOver 에 읽히는지 기기에서 본다(Android 도 TalkBack 으로 한 번). 펼친 단계의 `selected` 는 최종 리뷰에서 라벨 Text 로 옮겼다. jest 는 속성만 본다
   - **기기 확인 필요**: 목록 `accessibilityLabel`(루트 View)은 그대로 뒀다. 읽히지 않으면 루트를 `accessible` 로 바꾸지 말고(자식 버튼이 묻힌다) 라벨을 다른 곳으로 옮긴다
   - **AC-23 스크린샷 네 장은 옛 모양이다** — Card 테두리 1px(decisions-r28 2)와 R26 이후 모양이 반영되지 않았다. RN 을 기기에서 찍을 때 웹과 함께 다시 찍는다(F-25)
